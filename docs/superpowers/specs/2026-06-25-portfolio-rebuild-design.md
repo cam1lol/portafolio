@@ -32,7 +32,7 @@ El proyecto es demasiado grande para un solo plan de implementación. Se constru
 - **Referencia cruzada con Velamentum** (proyecto hermano del usuario, mismo stack Angular standalone, en `D:\kmilo\Escritorio\VelamentumPage\velamentumstore`): se reutiliza el patrón de **guard de rutas** (`CanActivateFn` + `take(1)` sobre el observable de sesión + `router.createUrlTree` con `returnUrl` si no hay sesión) para `authGuard` en `/admin/**`. Se reutiliza también la simetría de operaciones de un servicio de "secciones dinámicas" (`HomeSectionService`: `getPublicSections` / `getAll` / `create` / `update` / `toggle` / `reorder` / `delete`) como modelo para el `BlocksService` de este proyecto — adaptado a llamadas directas de Supabase (PostgREST) en vez de una API REST propia, porque este proyecto no tiene backend propio. **No** se adopta GSAP, Lenis ni Spline de Velamentum: el AGENTS.md ya fija Three.js directo + `@angular/animations` + IntersectionObserver para este proyecto, y esa decisión se mantiene.
 - **Dependencias nuevas a instalar** (ninguna existe hoy en `package.json`):
   - `three` + `@types/three` — motor 3D, reemplaza el `<script>` CDN del prototipo.
-  - `@ngneat/transloco` — i18n runtime (ES/EN sin recargar).
+  - `@jsverse/transloco` — i18n runtime (ES/EN sin recargar). Nota: `@ngneat/transloco` (nombre usado en AGENTS.md) está deprecado desde su v6; el proyecto se renombró a `@jsverse/transloco`, verificado contra npm — es el paquete que se instala.
   - `@supabase/supabase-js` — cliente backend (preparado desde la fase 1, usado desde la fase 3).
   - `@angular/cdk` — drag&drop de bloques/proyectos en el admin (fase 4) y, opcionalmente, overlay para modales.
 
