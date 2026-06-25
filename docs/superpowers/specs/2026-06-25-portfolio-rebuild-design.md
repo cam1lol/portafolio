@@ -29,6 +29,7 @@ El proyecto es demasiado grande para un solo plan de implementación. Se constru
   - `/admin/**` — feature completa cargada solo al visitarla, protegida por `authGuard`.
   - Componentes pesados (escena 3D del hero, círculo de fondo, modales) vía bloques `@defer` de Angular (ej. `@defer (on viewport)` en el hero) para no bloquear el first paint.
 - Three.js encapsulado: cada efecto 3D vive en su propio componente standalone con su propio ciclo de vida (`ngAfterViewInit` crea el render loop, `ngOnDestroy` lo destruye).
+- **Referencia cruzada con Velamentum** (proyecto hermano del usuario, mismo stack Angular standalone, en `D:\kmilo\Escritorio\VelamentumPage\velamentumstore`): se reutiliza el patrón de **guard de rutas** (`CanActivateFn` + `take(1)` sobre el observable de sesión + `router.createUrlTree` con `returnUrl` si no hay sesión) para `authGuard` en `/admin/**`. Se reutiliza también la simetría de operaciones de un servicio de "secciones dinámicas" (`HomeSectionService`: `getPublicSections` / `getAll` / `create` / `update` / `toggle` / `reorder` / `delete`) como modelo para el `BlocksService` de este proyecto — adaptado a llamadas directas de Supabase (PostgREST) en vez de una API REST propia, porque este proyecto no tiene backend propio. **No** se adopta GSAP, Lenis ni Spline de Velamentum: el AGENTS.md ya fija Three.js directo + `@angular/animations` + IntersectionObserver para este proyecto, y esa decisión se mantiene.
 - **Dependencias nuevas a instalar** (ninguna existe hoy en `package.json`):
   - `three` + `@types/three` — motor 3D, reemplaza el `<script>` CDN del prototipo.
   - `@ngneat/transloco` — i18n runtime (ES/EN sin recargar).
@@ -99,14 +100,29 @@ Sobre la base del AGENTS.md §5 (dashboard, CRUD proyectos/experiencia, visibili
 - Editor simple para descripciones largas (`long_es`/`long_en`): textarea con soporte markdown básico (negrita/listas), sin librería pesada de rich-text.
 - Moderación de comentarios real contra la tabla `comments`, con Realtime para ver comentarios nuevos sin refrescar.
 - Auth: Supabase Auth de un solo usuario admin, sesión persistida, guard en `/admin/**`.
+- **Subida de imágenes**: componente standalone `ImageUploadComponent` con contrato `@Input value` / `@Output valueChange` + estados `uploading`/`uploadError` — mismo patrón ya probado en el `ImageUploadComponent` de Velamentum, pero apuntando al bucket `previews` de Supabase Storage en vez de Cloudinary.
 
-## 9. Datos pendientes de confirmar (heredado de AGENTS.md §9 — NO inventar)
+## 9. Seguridad — validación anti-inyección SQL en el login y formularios
+
+Se revisó el `AuthService`/login de Velamentum como referencia negativa: envía `email`/`password` sin ninguna validación de formato ni límite de longitud antes del `POST`. Para este proyecto se endurece explícitamente, ya que el usuario lo pidió:
+
+- **Por construcción ya hay protección de base**: tanto `supabase.auth.signInWithPassword(...)` como el query builder de PostgREST (`.eq()`, `.select()`, etc.) envían parámetros estructurados, nunca SQL concatenado con texto del usuario — no son vulnerables a inyección SQL clásica por diseño.
+- **Regla dura para todo el proyecto**: si en algún momento se necesita una función RPC de Postgres con SQL dinámico, debe usar parámetros (`$1`, `$2`, `using`/`format` parametrizado), nunca concatenación de strings con input del usuario. Esto aplica también a los formularios del admin (título de proyecto, campos de experiencia, comentarios), que también son input de usuario que llega a la base de datos.
+- **Validación en el formulario de login** (defensa en profundidad, no porque el backend lo necesite, sino para rechazar input malformado antes de gastar una llamada de red):
+  - `FormGroup` con `Validators.required`, un regex estricto de formato de email, y límites de longitud (254 caracteres email, 72 password — bcrypt/Argon2 truncan más allá de eso de todos modos).
+  - Rechazo de caracteres de control / null bytes en ambos campos.
+  - Trim antes de validar y antes de enviar.
+  - Mensaje de error genérico en login fallido ("credenciales inválidas"), nunca distinto si el email existe o no, para no permitir enumeración de usuarios.
+  - Backoff simple en el cliente tras varios intentos fallidos consecutivos (cooldown corto), como primera línea de defensa; Supabase Auth ya aplica rate-limiting del lado del servidor (GoTrue).
+- Estos mismos validadores reutilizables (`emailFormatValidator`, límites de longitud) se aplican también a los campos de los formularios CRUD del admin, no solo al login.
+
+## 10. Datos pendientes de confirmar (heredado de AGENTS.md §9 — NO inventar)
 
 - SIMPLE S.A.: fechas exactas y 2–3 logros reales.
 - Thomas Processing & Systems: confirmar rango de fechas real.
 - Email de contacto real (el prototipo usa un placeholder).
 - Objeto 3D del hero: **resuelto para esta fase** → icosaedro wireframe. El GLB de Velamentum queda como posible swap futuro, sin romper arquitectura.
 
-## 10. Convenciones (heredadas del AGENTS.md §8, sin cambios)
+## 11. Convenciones (heredadas del AGENTS.md §8, sin cambios)
 
 Cero emojis en cualquier parte (UI, comentarios, commits, textos) — iconos siempre SVG (Lucide/Bootstrap Icons). Sin degradados genéricos ni efectos "de IA" por defecto. Nombres de componentes/archivos en inglés, kebab-case. Contenido bilingüe siempre desde datos. Accesibilidad: `prefers-reduced-motion`, foco visible, roles correctos en modales.
