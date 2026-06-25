@@ -1,0 +1,17 @@
+#scene {
+  width: 100%;
+  height: 460px;
+  position: relative;
+}
+
+.scan-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--steel);
+  letter-spacing: .14em;
+  border: 1px solid var(--line);
+  padding: 5px 9px;
+}

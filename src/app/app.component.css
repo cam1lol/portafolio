@@ -1,0 +1,130 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(20px, 4vw, 48px);
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(10, 11, 13, .72);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .glyph {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--bone);
+  display: grid;
+  place-items: center;
+  font-family: "Archivo";
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: -.04em;
+}
+
+.brand .nm {
+  font-family: "Archivo";
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+
+.brand .role {
+  font-size: 10px;
+  letter-spacing: .16em;
+}
+
+nav.links {
+  display: flex;
+  gap: 24px;
+}
+
+nav.links a {
+  color: var(--bone-dim);
+  text-decoration: none;
+  font-size: 13px;
+  font-family: "Space Mono", monospace;
+  letter-spacing: .04em;
+  transition: color .2s;
+}
+
+nav.links a:hover {
+  color: var(--bone);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.seg button {
+  background: transparent;
+  color: var(--steel);
+  border: none;
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  letter-spacing: .08em;
+  padding: 7px 11px;
+  transition: all .18s;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+}
+
+.seg button.on {
+  background: var(--bone);
+  color: var(--ink);
+}
+
+.seg.signal button.on {
+  background: var(--ember);
+  color: var(--ink);
+}
+
+.seg#theme button {
+  padding: 7px 10px;
+}
+
+main {
+  padding-top: 70px;
+}
+
+footer {
+  border-top: 1px solid var(--line-soft);
+  padding: 26px clamp(20px, 4vw, 48px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+footer .mono {
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: .1em;
+}
+
+@media (max-width: 760px) {
+  nav.links {
+    display: none;
+  }
+}
