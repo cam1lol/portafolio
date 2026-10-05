@@ -1,0 +1,211 @@
+.project-form-page .eyebrow {
+  color: var(--ember);
+  display: block;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.sub {
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.1em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px 18px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.form-error {
+  font-size: 11px;
+  color: var(--ember);
+  background: var(--ember-soft);
+  border-left: 2px solid var(--ember);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 900px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.field label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--steel);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field select,
+.field textarea {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  padding: 10px 12px;
+  border-radius: var(--r);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.field textarea {
+  resize: vertical;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--ember);
+}
+
+.checkbox-field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--bone);
+}
+
+.checkbox-field input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ember);
+}
+
+.field-error {
+  display: block;
+  font-size: 10px;
+  color: var(--ember);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.list-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.list-row input {
+  flex: 1;
+}
+
+.remove-btn,
+.add-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.18s;
+  white-space: nowrap;
+}
+
+.remove-btn:hover {
+  color: var(--ember);
+}
+
+.add-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  color: var(--bone-dim);
+}
+
+.add-btn:hover {
+  color: var(--bone);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

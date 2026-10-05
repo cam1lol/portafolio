@@ -1,0 +1,129 @@
+.admin-login {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid var(--line);
+  background: var(--graphite);
+  border-radius: var(--r);
+  padding: 30px 28px;
+}
+
+.login-card .eyebrow {
+  color: var(--ember);
+}
+
+h1 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 4vw, 30px);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+  margin: 8px 0 22px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--steel);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  padding: 10px 12px;
+  border-radius: var(--r);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--ember);
+}
+
+.field-error {
+  display: block;
+  font-size: 10px;
+  color: var(--ember);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.form-error {
+  font-size: 11px;
+  color: var(--ember);
+  background: var(--ember-soft);
+  border-left: 2px solid var(--ember);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.cooldown {
+  font-size: 11px;
+  color: var(--steel);
+  border-left: 2px solid var(--line);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 13px 20px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.btn.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

@@ -1,0 +1,42 @@
+<div class="blocks-page">
+  <div class="page-head">
+    <p class="eyebrow">Bloques</p>
+    <a class="btn primary" routerLink="new">+ NUEVO BLOQUE</a>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-msg">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else if (blocks().length === 0) {
+    <p class="sub">No hay bloques todavía.</p>
+  } @else {
+    <ul class="blocks-list" cdkDropList (cdkDropListDropped)="drop($event)">
+      @for (block of blocks(); track block.id) {
+        <li class="blocks-row" cdkDrag>
+          <span class="drag-handle mono" cdkDragHandle>::</span>
+          <span class="row-type mono">{{ typeLabels[block.type] }}</span>
+          <span class="row-page">{{ block.page }}</span>
+          <span class="row-order mono">#{{ block.sortOrder }}</span>
+
+          <button
+            type="button"
+            class="toggle"
+            [class.on]="block.published"
+            role="switch"
+            [attr.aria-checked]="block.published"
+            aria-label="Publicado"
+            (click)="togglePublished(block)"
+          >
+            <span class="toggle-knob"></span>
+          </button>
+
+          <a class="btn" [routerLink]="[block.id, 'edit']">EDITAR</a>
+          <button type="button" class="btn danger" (click)="remove(block)">BORRAR</button>
+        </li>
+      }
+    </ul>
+  }
+</div>

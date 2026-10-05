@@ -1,0 +1,49 @@
+<section class="comments-admin">
+  <div class="admin-top">
+    <div>
+      <span class="eyebrow mono">PANEL // COMENTARIOS</span>
+      <h2>MODERACIÓN</h2>
+      <span class="sub mono">{{ comments().length }} comentario(s)</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p class="empty mono">Cargando…</p>
+  } @else if (comments().length === 0) {
+    <p class="empty mono">No hay comentarios todavía.</p>
+  } @else {
+    <ul class="comment-list">
+      @for (comment of comments(); track comment.id) {
+        <li class="comment-card" [class.pending]="!comment.approved" [class.is-new]="isNew(comment.id)">
+          <div class="comment-status">
+            @if (isNew(comment.id)) {
+              <span class="badge new mono">NUEVO</span>
+            }
+            @if (comment.approved) {
+              <span class="badge approved mono">APROBADO</span>
+            } @else {
+              <span class="badge pending mono">PENDIENTE</span>
+            }
+          </div>
+
+          <div class="comment-meta mono">
+            <span class="author">{{ comment.author }}</span>
+            <span class="lang">{{ comment.lang }}</span>
+            <span class="date">{{ comment.created_at | date: 'short' }}</span>
+          </div>
+
+          <p class="comment-body">{{ comment.body }}</p>
+
+          <div class="comment-actions">
+            @if (!comment.approved) {
+              <button type="button" class="btn approve" (click)="approve(comment)">Aprobar</button>
+            } @else {
+              <button type="button" class="btn hide" (click)="hide(comment)">Ocultar</button>
+            }
+            <button type="button" class="btn delete" (click)="remove(comment)">Borrar</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

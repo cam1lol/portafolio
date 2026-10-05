@@ -1,0 +1,29 @@
+<div class="iup-wrap">
+  @if (value) {
+    <div class="iup-preview">
+      <img [src]="value" alt="preview" />
+      <button type="button" class="iup-clear" (click)="clear()" aria-label="Quitar imagen">×</button>
+    </div>
+  } @else {
+    <label class="iup-zone" [class.iup-zone--loading]="uploading()">
+      @if (uploading()) {
+        <span class="iup-uploading mono">SUBIENDO…</span>
+      } @else {
+        <span class="iup-zone-text mono">SUBIR IMAGEN</span>
+      }
+      <input type="file" accept="image/*" (change)="onFile($event)" [disabled]="uploading()" />
+    </label>
+  }
+
+  <input
+    class="iup-url mono"
+    type="text"
+    [value]="value"
+    (input)="onUrlInput($event)"
+    placeholder="O pega una URL de imagen…"
+  />
+
+  @if (uploadError()) {
+    <span class="iup-error mono">{{ uploadError() }}</span>
+  }
+</div>

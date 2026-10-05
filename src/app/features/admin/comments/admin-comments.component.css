@@ -1,0 +1,154 @@
+.admin-top h2 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 4vw, 30px);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+  margin: 6px 0 4px;
+}
+
+.eyebrow {
+  color: var(--ember);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.sub {
+  display: block;
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.08em;
+}
+
+.empty {
+  font-size: 12px;
+  color: var(--steel);
+  letter-spacing: 0.04em;
+  padding: 24px 0;
+}
+
+.comment-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.comment-card {
+  border: 1px solid var(--line);
+  background: var(--graphite);
+  border-radius: var(--r);
+  padding: 16px 18px;
+}
+
+.comment-card.pending {
+  border-color: var(--ember);
+}
+
+.comment-card.is-new {
+  box-shadow: 0 0 0 1px var(--ember);
+}
+
+.comment-status {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--steel);
+}
+
+.badge.pending {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.badge.approved {
+  border-color: var(--line);
+  color: var(--bone);
+}
+
+.badge.new {
+  border-color: var(--ember);
+  background: var(--ember-soft);
+  color: var(--ember);
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.comment-meta .author {
+  color: var(--bone);
+  font-weight: 700;
+}
+
+.comment-body {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--bone);
+  line-height: 1.5;
+  margin: 0 0 14px;
+  white-space: pre-wrap;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn.approve {
+  border-color: var(--ember);
+  background: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.approve:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn.delete:hover {
+  border-color: #e5484d;
+  color: #e5484d;
+}

@@ -1,0 +1,53 @@
+<div class="projects-page">
+  <div class="page-head">
+    <p class="eyebrow">Proyectos</p>
+    <a class="btn" routerLink="/admin/projects/new">+ Nuevo proyecto</a>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-msg">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else if (rows().length === 0) {
+    <p class="sub">Todavía no hay proyectos registrados.</p>
+  } @else {
+    <div class="table-head">
+      <span class="col-drag"></span>
+      <span class="col-name">Nombre</span>
+      <span class="col-type">Tipo</span>
+      <span class="col-status">Estado</span>
+      <span class="col-published">Publicado</span>
+      <span class="col-actions">Acciones</span>
+    </div>
+
+    <div class="projects-list" cdkDropList (cdkDropListDropped)="drop($event)">
+      @for (row of rows(); track row.id) {
+        <div class="projects-row" cdkDrag>
+          <span class="col-drag drag-handle" cdkDragHandle>::</span>
+          <span class="col-name">{{ row.name }}</span>
+          <span class="col-type">{{ row.typeLabel }}</span>
+          <span class="col-status">{{ row.status }}</span>
+          <span class="col-published">
+            <button
+              type="button"
+              class="toggle"
+              [class.on]="row.published"
+              role="switch"
+              [attr.aria-checked]="row.published"
+              [attr.aria-label]="'Publicado: ' + row.name"
+              (click)="togglePublished(row)"
+            >
+              <span class="toggle-knob"></span>
+            </button>
+          </span>
+          <span class="col-actions">
+            <a class="link-action" [routerLink]="['/admin/projects', row.id, 'edit']">Editar</a>
+            <button type="button" class="link-action danger" (click)="remove(row)">Borrar</button>
+          </span>
+        </div>
+      }
+    </div>
+  }
+</div>

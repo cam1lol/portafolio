@@ -1,0 +1,134 @@
+<div
+  class="backdrop"
+  [class.open]="!!active()"
+  [attr.inert]="active() ? null : ''"
+  (click)="onBackdropClick($event)"
+>
+  <div class="modal" role="dialog" aria-modal="true">
+    @if (active(); as state) {
+      <div class="mhead">
+        <span class="mt mono">{{ tag() }}</span>
+        <button type="button" class="x" aria-label="Cerrar" (click)="close()">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="mbody">
+        @switch (state.kind) {
+          @case ('project') {
+            @if (state.data.kind === 'back') {
+              <div class="preview">
+                <div class="flow">
+                  <svg viewBox="0 0 480 160">
+                    <g font-family="Space Mono, monospace" font-size="10" fill="#8A93A6" letter-spacing="1">
+                      <rect x="14" y="58" width="92" height="44" fill="none" stroke="#24272F" />
+                      <text x="60" y="84" text-anchor="middle">CLIENT</text>
+                      <rect x="194" y="58" width="92" height="44" fill="none" stroke="#F2541B" />
+                      <text x="240" y="84" text-anchor="middle" fill="#E9EAED">API</text>
+                      <rect x="374" y="58" width="92" height="44" fill="none" stroke="#24272F" />
+                      <text x="420" y="84" text-anchor="middle">DB</text>
+                      <line x1="106" y1="80" x2="194" y2="80" stroke="#24272F" />
+                      <line x1="286" y1="80" x2="374" y2="80" stroke="#24272F" />
+                      <circle class="pq" r="4" cx="106" cy="80">
+                        @if (!reduceMotion) {
+                          <animate attributeName="cx" values="106;194;106" dur="2.4s" repeatCount="indefinite" />
+                        }
+                      </circle>
+                      <circle class="pq" r="4" cx="286" cy="80">
+                        @if (!reduceMotion) {
+                          <animate attributeName="cx" values="286;374;286" dur="2.4s" begin="1.2s" repeatCount="indefinite" />
+                        }
+                      </circle>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            } @else if (state.data.device === 'phone') {
+              <div class="preview">
+                <div class="phone">
+                  <div class="scr">
+                    <div class="sk skbar acc" style="width: 60%"></div>
+                    <div class="sk" style="height: 60px; width: 100%"></div>
+                    <div class="sk skbar" style="width: 90%"></div>
+                    <div class="sk skbar" style="width: 70%"></div>
+                    <div class="sk acc" style="height: 34px; width: 100%; margin-top: auto"></div>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="preview">
+                <div class="browser">
+                  <div class="bar">
+                    <i></i><i></i><i></i>
+                    <span class="url mono">{{ state.data.name.toLowerCase() }}.vercel.app</span>
+                  </div>
+                  <div class="vp">
+                    <div style="flex: 0 0 30%; display: flex; flex-direction: column; gap: 9px">
+                      <div class="sk skbar acc" style="width: 80%"></div>
+                      <div class="sk skbar" style="width: 100%"></div>
+                      <div class="sk skbar" style="width: 60%"></div>
+                      <div class="sk" style="height: 48px; width: 100%"></div>
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 9px">
+                      <div class="sk" style="height: 90px; width: 100%"></div>
+                      <div style="display: flex; gap: 9px">
+                        <div class="sk" style="height: 50px; flex: 1"></div>
+                        <div class="sk" style="height: 50px; flex: 1"></div>
+                        <div class="sk" style="height: 50px; flex: 1"></div>
+                      </div>
+                      <div class="sk skbar" style="width: 70%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div class="mtitle">{{ state.data.name }}</div>
+            <div class="msub">{{ statusLabel(state.data.status) }} · {{ state.data.type.toUpperCase() }}</div>
+            <p class="mtext">{{ summary(state.data) }}</p>
+            <div class="msub2">{{ highlightsLabel() }}</div>
+            <ul class="mlist">
+              @for (item of highlights(state.data); track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+            <div class="msub2">STACK</div>
+            <div class="stack">
+              @for (item of state.data.stack; track item) {
+                <span class="chip">{{ item }}</span>
+              }
+            </div>
+          }
+          @case ('experience') {
+            <div class="mtitle">{{ role(state.data) }}</div>
+            <div class="msub">{{ state.data.company }} · {{ period(state.data) }}</div>
+            <p class="mtext">{{ experienceSummary(state.data) }}</p>
+            <div class="msub2">{{ achievementsLabel() }}</div>
+            <ul class="mlist">
+              @for (item of points(state.data); track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+            @if (state.data.subprojects?.length) {
+              <div class="msub2">{{ subprojectsLabel() }}</div>
+              @for (sub of state.data.subprojects; track sub.name) {
+                <div class="subproj">
+                  <h4>{{ sub.name }}</h4>
+                  <p>{{ subprojectDesc(sub) }}</p>
+                </div>
+              }
+            }
+            <div class="msub2">STACK</div>
+            <div class="stack">
+              @for (item of state.data.stack; track item) {
+                <span class="chip">{{ item }}</span>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

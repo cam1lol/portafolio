@@ -1,0 +1,82 @@
+.admin-shell {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
+.admin-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.admin-top h2 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--bone);
+}
+
+.admin-top .sub {
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.1em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px 18px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.admin-nav {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.admin-nav a {
+  color: var(--steel);
+  text-decoration: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 10px 14px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.18s, border-color 0.18s;
+}
+
+.admin-nav a:hover {
+  color: var(--bone);
+}
+
+.admin-nav a.on {
+  color: var(--ember);
+  border-bottom-color: var(--ember);
+}
+
+.admin-content {
+  min-height: 40vh;
+}

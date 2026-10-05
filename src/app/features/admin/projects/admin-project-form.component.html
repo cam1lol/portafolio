@@ -1,0 +1,188 @@
+<section class="project-form-page">
+  <div class="page-head">
+    <p class="eyebrow">{{ isEditMode() ? 'Editar proyecto' : 'Nuevo proyecto' }}</p>
+    <a class="btn" routerLink="/admin/projects">Volver</a>
+  </div>
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (errorMessage()) {
+        <div class="form-error mono">{{ errorMessage() }}</div>
+      }
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="name">Nombre</label>
+          <input id="name" type="text" formControlName="name" maxlength="120" />
+          @if (hasError('name', 'required')) {
+            <span class="field-error">El nombre es obligatorio.</span>
+          } @else if (hasError('name', 'controlChars')) {
+            <span class="field-error">Contiene caracteres no válidos.</span>
+          }
+        </div>
+
+        <div class="field checkbox-field">
+          <label for="published">
+            <input id="published" type="checkbox" formControlName="published" />
+            Publicado (visible en el sitio público)
+          </label>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label for="type">Tipo</label>
+          <select id="type" formControlName="type">
+            <option value="web">Web</option>
+            <option value="3d">3D</option>
+            <option value="tool">Herramienta</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="kind">Categoría</label>
+          <select id="kind" formControlName="kind">
+            <option value="front">Frontend</option>
+            <option value="back">Backend</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="status">Estado</label>
+          <select id="status" formControlName="status">
+            <option value="live">Live</option>
+            <option value="wip">En progreso</option>
+            <option value="archive">Archivado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label for="device">Dispositivo de preview</label>
+          <select id="device" formControlName="device">
+            <option value="">— Sin definir —</option>
+            <option value="browser">Navegador</option>
+            <option value="phone">Teléfono</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="icon">Icono</label>
+          <input id="icon" type="text" formControlName="icon" maxlength="60" />
+          @if (hasError('icon', 'required')) {
+            <span class="field-error">El icono es obligatorio.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="typeLabel">Etiqueta de tipo</label>
+          <input id="typeLabel" type="text" formControlName="typeLabel" maxlength="60" />
+          @if (hasError('typeLabel', 'required')) {
+            <span class="field-error">La etiqueta de tipo es obligatoria.</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="summaryEs">Resumen (ES)</label>
+          <textarea id="summaryEs" formControlName="summaryEs" maxlength="300" rows="3"></textarea>
+          @if (hasError('summaryEs', 'required')) {
+            <span class="field-error">El resumen en español es obligatorio.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="summaryEn">Resumen (EN)</label>
+          <textarea id="summaryEn" formControlName="summaryEn" maxlength="300" rows="3"></textarea>
+          @if (hasError('summaryEn', 'required')) {
+            <span class="field-error">El resumen en inglés es obligatorio.</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="longEs">Descripción larga (ES)</label>
+          <textarea id="longEs" formControlName="longEs" maxlength="4000" rows="6"></textarea>
+        </div>
+        <div class="field">
+          <label for="longEn">Descripción larga (EN)</label>
+          <textarea id="longEn" formControlName="longEn" maxlength="4000" rows="6"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Imagen de preview</label>
+        <app-image-upload
+          [value]="form.controls.previewImage.value"
+          (valueChange)="onPreviewImageChange($event)"
+        ></app-image-upload>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="repoUrl">URL del repositorio</label>
+          <input id="repoUrl" type="text" formControlName="repoUrl" maxlength="2000" placeholder="https://github.com/..." />
+        </div>
+        <div class="field">
+          <label for="liveUrl">URL en vivo</label>
+          <input id="liveUrl" type="text" formControlName="liveUrl" maxlength="2000" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field list-field">
+          <label>Destacados (ES)</label>
+          @for (item of highlightsEs.controls; track $index) {
+            <div class="list-row">
+              <input type="text" [formControl]="item" maxlength="300" />
+              <button type="button" class="remove-btn" (click)="removeHighlightEs($index)">Quitar</button>
+            </div>
+            @if (listControlErrors(highlightsEs, $index)) {
+              <span class="field-error">Elemento inválido o vacío.</span>
+            }
+          }
+          <button type="button" class="add-btn" (click)="addHighlightEs()">+ Agregar destacado</button>
+        </div>
+
+        <div class="field list-field">
+          <label>Destacados (EN)</label>
+          @for (item of highlightsEn.controls; track $index) {
+            <div class="list-row">
+              <input type="text" [formControl]="item" maxlength="300" />
+              <button type="button" class="remove-btn" (click)="removeHighlightEn($index)">Quitar</button>
+            </div>
+            @if (listControlErrors(highlightsEn, $index)) {
+              <span class="field-error">Elemento inválido o vacío.</span>
+            }
+          }
+          <button type="button" class="add-btn" (click)="addHighlightEn()">+ Agregar destacado</button>
+        </div>
+      </div>
+
+      <div class="field list-field">
+        <label>Stack tecnológico</label>
+        @for (item of stack.controls; track $index) {
+          <div class="list-row">
+            <input type="text" [formControl]="item" maxlength="300" />
+            <button type="button" class="remove-btn" (click)="removeStackItem($index)">Quitar</button>
+          </div>
+          @if (listControlErrors(stack, $index)) {
+            <span class="field-error">Elemento inválido o vacío.</span>
+          }
+        }
+        <button type="button" class="add-btn" (click)="addStackItem()">+ Agregar tecnología</button>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="saving()">
+          @if (saving()) {
+            Guardando…
+          } @else {
+            Guardar
+          }
+        </button>
+        <a class="btn" routerLink="/admin/projects">Cancelar</a>
+      </div>
+    </form>
+  }
+</section>

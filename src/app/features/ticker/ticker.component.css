@@ -1,0 +1,47 @@
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.ticker-track {
+  display: inline-block;
+  padding: 13px 0;
+  will-change: transform;
+  animation: tick 26s linear infinite;
+}
+
+.ticker-track span {
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--steel);
+  padding: 0 4px;
+}
+
+.ticker-track i {
+  color: var(--ember);
+  font-style: normal;
+  padding: 0 18px;
+}
+
+@keyframes tick {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}

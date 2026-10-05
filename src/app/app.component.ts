@@ -1,22 +1,40 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { filter, map, startWith } from 'rxjs';
 import { HudComponent } from './shared/hud/hud.component';
 import { ThemeService } from './core/theme/theme.service';
-import { SummoningCircleComponent } from './core/background/summoning-circle.component';
+import { RingLayerComponent } from './core/background/ring-layer.component';
+import { ModalComponent } from './shared/modal/modal.component';
+import { SupabaseService } from './core/supabase/supabase.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HudComponent, SummoningCircleComponent, TranslocoPipe],
+  imports: [RouterOutlet, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
-  private readonly router = inject(Router);
+export class AppComponent implements OnInit {
+  private readonly router   = inject(Router);
+  private readonly supabase = inject(SupabaseService);
   protected readonly transloco = inject(TranslocoService);
   protected readonly themeService = inject(ThemeService);
+
+  ngOnInit(): void {
+    this.trackVisit();
+  }
+
+  private trackVisit(): void {
+    this.supabase.client
+      .from('visits')
+      .insert({ path: location.pathname })
+      .then(({ error }) => {
+        if (error) {
+          console.error('Failed to record visit', error);
+        }
+      });
+  }
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(

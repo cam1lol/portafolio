@@ -114,8 +114,6 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
     };
 
     if (reduce) {
-      // Render a single initial frame so the canvas is never left black,
-      // then keep the loop running for parallax/scroll without auto-rotation.
       renderer.render(scene, cam);
     }
     this.rafId = requestAnimationFrame(loop);

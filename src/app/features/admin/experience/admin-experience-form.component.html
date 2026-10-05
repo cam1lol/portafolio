@@ -1,0 +1,200 @@
+<section class="experience-form-page">
+  <div class="page-head">
+    <p class="eyebrow">{{ isEditMode() ? 'Editar experiencia' : 'Nueva experiencia' }}</p>
+    <a class="btn" routerLink="/admin/experience">Volver</a>
+  </div>
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (errorMessage()) {
+        <div class="form-error mono">{{ errorMessage() }}</div>
+      }
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="company">Empresa</label>
+          <input id="company" type="text" formControlName="company" maxlength="120" />
+          @if (hasError('company', 'required')) {
+            <span class="field-error">La empresa es obligatoria.</span>
+          } @else if (hasError('company', 'controlChars')) {
+            <span class="field-error">Contiene caracteres no válidos.</span>
+          }
+        </div>
+
+        <div class="field checkbox-field">
+          <label for="isCurrent">
+            <input id="isCurrent" type="checkbox" formControlName="isCurrent" />
+            Posición actual
+          </label>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="roleEs">Rol (ES)</label>
+          <input id="roleEs" type="text" formControlName="roleEs" maxlength="120" />
+          @if (hasError('roleEs', 'required')) {
+            <span class="field-error">El rol en español es obligatorio.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="roleEn">Rol (EN)</label>
+          <input id="roleEn" type="text" formControlName="roleEn" maxlength="120" />
+          @if (hasError('roleEn', 'required')) {
+            <span class="field-error">El rol en inglés es obligatorio.</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="periodEs">Periodo (ES)</label>
+          <input id="periodEs" type="text" formControlName="periodEs" maxlength="60" placeholder="2022 — presente" />
+          @if (hasError('periodEs', 'required')) {
+            <span class="field-error">El periodo en español es obligatorio.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="periodEn">Periodo (EN)</label>
+          <input id="periodEn" type="text" formControlName="periodEn" maxlength="60" placeholder="2022 — present" />
+          @if (hasError('periodEn', 'required')) {
+            <span class="field-error">El periodo en inglés es obligatorio.</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="tagEs">Etiqueta (ES)</label>
+          <input id="tagEs" type="text" formControlName="tagEs" maxlength="60" />
+          @if (hasError('tagEs', 'required')) {
+            <span class="field-error">La etiqueta en español es obligatoria.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="tagEn">Etiqueta (EN)</label>
+          <input id="tagEn" type="text" formControlName="tagEn" maxlength="60" />
+          @if (hasError('tagEn', 'required')) {
+            <span class="field-error">La etiqueta en inglés es obligatoria.</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="summaryEs">Resumen (ES)</label>
+          <textarea id="summaryEs" formControlName="summaryEs" maxlength="600" rows="4"></textarea>
+          @if (hasError('summaryEs', 'required')) {
+            <span class="field-error">El resumen en español es obligatorio.</span>
+          }
+        </div>
+        <div class="field">
+          <label for="summaryEn">Resumen (EN)</label>
+          <textarea id="summaryEn" formControlName="summaryEn" maxlength="600" rows="4"></textarea>
+          @if (hasError('summaryEn', 'required')) {
+            <span class="field-error">El resumen en inglés es obligatorio.</span>
+          }
+        </div>
+      </div>
+
+      <div class="field checkbox-field">
+        <label for="published">
+          <input id="published" type="checkbox" formControlName="published" />
+          Publicado (visible en el sitio público)
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <div class="field list-field">
+          <label>Puntos destacados (ES)</label>
+          <div formArrayName="pointsEs">
+            @for (point of pointsEs.controls; track $index) {
+              <div class="list-row">
+                <input type="text" [formControlName]="$index" maxlength="300" />
+                <button type="button" class="remove-btn" (click)="removePointEs($index)">Quitar</button>
+              </div>
+              @if (listControlErrors(pointsEs, $index)) {
+                <span class="field-error">Punto inválido o vacío.</span>
+              }
+            }
+          </div>
+          <button type="button" class="add-btn" (click)="addPointEs()">+ Agregar punto</button>
+        </div>
+
+        <div class="field list-field">
+          <label>Puntos destacados (EN)</label>
+          <div formArrayName="pointsEn">
+            @for (point of pointsEn.controls; track $index) {
+              <div class="list-row">
+                <input type="text" [formControlName]="$index" maxlength="300" />
+                <button type="button" class="remove-btn" (click)="removePointEn($index)">Quitar</button>
+              </div>
+              @if (listControlErrors(pointsEn, $index)) {
+                <span class="field-error">Punto inválido o vacío.</span>
+              }
+            }
+          </div>
+          <button type="button" class="add-btn" (click)="addPointEn()">+ Agregar punto</button>
+        </div>
+      </div>
+
+      <div class="field list-field">
+        <label>Stack tecnológico</label>
+        <div formArrayName="stack">
+          @for (item of stack.controls; track $index) {
+            <div class="list-row">
+              <input type="text" [formControlName]="$index" maxlength="300" />
+              <button type="button" class="remove-btn" (click)="removeStackItem($index)">Quitar</button>
+            </div>
+            @if (listControlErrors(stack, $index)) {
+              <span class="field-error">Elemento inválido o vacío.</span>
+            }
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addStackItem()">+ Agregar tecnología</button>
+      </div>
+
+      <div class="field subprojects-field">
+        <label>Subproyectos</label>
+        <div formArrayName="subprojects">
+          @for (sub of subprojects.controls; track $index) {
+            <div class="subproject-row" [formGroupName]="$index">
+              <div class="subproject-head">
+                <span class="subproject-index">Subproyecto {{ $index + 1 }}</span>
+                <button type="button" class="remove-btn" (click)="removeSubproject($index)">Quitar</button>
+              </div>
+              <div class="field">
+                <label [for]="'sub-name-' + $index">Nombre</label>
+                <input [id]="'sub-name-' + $index" type="text" formControlName="name" maxlength="120" />
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'sub-desc-es-' + $index">Descripción (ES)</label>
+                  <textarea [id]="'sub-desc-es-' + $index" formControlName="descEs" maxlength="400" rows="3"></textarea>
+                </div>
+                <div class="field">
+                  <label [for]="'sub-desc-en-' + $index">Descripción (EN)</label>
+                  <textarea [id]="'sub-desc-en-' + $index" formControlName="descEn" maxlength="400" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addSubproject()">+ Agregar subproyecto</button>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="saving()">
+          @if (saving()) {
+            Guardando…
+          } @else {
+            Guardar
+          }
+        </button>
+        <a class="btn" routerLink="/admin/experience">Cancelar</a>
+      </div>
+    </form>
+  }
+</section>

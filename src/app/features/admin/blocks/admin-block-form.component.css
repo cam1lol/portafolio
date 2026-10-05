@@ -1,0 +1,143 @@
+.block-form {
+  padding: 40px 0;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 620px;
+  border: 1px solid var(--line);
+  background: var(--graphite);
+  border-radius: var(--r);
+  padding: 30px 28px;
+}
+
+.form-card .eyebrow {
+  color: var(--ember);
+}
+
+h1 {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 900;
+  font-size: clamp(20px, 4vw, 26px);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+  margin: 8px 0 22px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--steel);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field select,
+.field textarea {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  padding: 10px 12px;
+  border-radius: var(--r);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+}
+
+.field textarea {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--ember);
+}
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-inline label {
+  margin-bottom: 0;
+}
+
+.field-error {
+  display: block;
+  font-size: 10px;
+  color: var(--ember);
+  margin-top: 6px;
+  letter-spacing: 0.02em;
+}
+
+.form-error {
+  font-size: 11px;
+  color: var(--ember);
+  background: var(--ember-soft);
+  border-left: 2px solid var(--ember);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 13px 20px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

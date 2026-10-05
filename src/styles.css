@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
 :root {
-  /* Modo noche (default) — portado 1:1 del prototipo aprobado */
   --ink: #0A0B0D;
   --graphite: #101217;
   --graphite-2: #171A21;
@@ -16,10 +15,11 @@
   --r: 2px;
   --maxw: 1240px;
   --ease: cubic-bezier(.2, .7, .2, 1);
+  --scrim: rgba(10, 11, 13, .72);
 }
 
-/* Modo dia — mismo sistema invertido, no un tema generico nuevo.
-   --ember y --ember-soft son la firma de marca: no cambian entre modos. */
+/* Modo dia — mismo sistema invertido.
+   --ember y --ember-soft son la firma de marca. */
 [data-theme="day"] {
   --ink: #F3F1EC;
   --graphite: #E7E3DA;
@@ -32,6 +32,7 @@
   --ember: #F2541B;
   --ember-soft: rgba(242, 84, 27, .10);
   --good: #1F8F5C;
+  --scrim: rgba(243, 241, 236, .72);
 }
 
 * {
@@ -53,6 +54,11 @@ body {
   overflow-x: hidden;
 }
 
+app-root {
+  display: block;
+  isolation: isolate;
+}
+
 ::selection {
   background: var(--ember);
   color: var(--ink);
@@ -60,6 +66,15 @@ body {
 
 .mono {
   font-family: "Space Mono", monospace;
+}
+
+.chip {
+  font-family: "Space Mono", monospace;
+  font-size: 10px;
+  color: var(--steel);
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+  border-radius: var(--r);
 }
 
 .eyebrow {
@@ -80,9 +95,6 @@ body {
   padding: 0 clamp(20px, 4vw, 48px);
 }
 
-/* reveal system — portado del prototipo (camilo-ayala-prototype.html L37-42).
-   Usado por RevealDirective ([appReveal]): el elemento arranca oculto y
-   desplazado, y gana la clase "in" cuando entra en viewport. */
 .reveal {
   opacity: 0;
   transform: translateY(22px);

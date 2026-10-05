@@ -1,0 +1,65 @@
+@switch (block.type) {
+  @case ('hero') {
+    <section class="block hero-block wrap">
+      @if (heroConfig.eyebrow) {
+        <span class="eyebrow mono">{{ heroConfig.eyebrow }}</span>
+      }
+      <h2>{{ heroConfig.title }}</h2>
+      @if (heroConfig.lead) {
+        <p class="lead">{{ heroConfig.lead }}</p>
+      }
+    </section>
+  }
+  @case ('card_grid') {
+    <section class="block wrap">
+      @if (cardGridConfig.title) {
+        <h2>{{ cardGridConfig.title }}</h2>
+      }
+      <div class="svc">
+        @for (item of cardGridConfig.items; track item.title) {
+          <div class="s">
+            @if (item.icon) {
+              <span class="no mono">{{ item.icon }}</span>
+            }
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+  @case ('roadmap') {
+    <section class="block wrap">
+      @if (roadmapConfig.title) {
+        <h2>{{ roadmapConfig.title }}</h2>
+      }
+      <div class="road">
+        @for (item of roadmapConfig.items; track item.title) {
+          <div class="r">
+            <span class="when mono">{{ item.when }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+  @case ('text') {
+    <section class="block wrap">
+      @if (textConfig.title) {
+        <h2>{{ textConfig.title }}</h2>
+      }
+      <p>{{ textConfig.body }}</p>
+    </section>
+  }
+  @case ('gallery_3d') {
+    <section class="block gallery-3d-block wrap">
+      @if (gallery3dConfig.title) {
+        <h2>{{ gallery3dConfig.title }}</h2>
+      }
+      @if (gallery3dConfig.description) {
+        <p>{{ gallery3dConfig.description }}</p>
+      }
+    </section>
+  }
+}

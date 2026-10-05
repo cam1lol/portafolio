@@ -1,0 +1,49 @@
+.block {
+  padding: 96px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.svc {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.svc .s {
+  border: 1px solid var(--line);
+  padding: 26px;
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+
+.svc .s .no {
+  font-family: "Space Mono", monospace;
+  color: var(--ember);
+  font-size: 12px;
+}
+
+.svc .s h3 {
+  font-family: "Archivo";
+  font-weight: 800;
+  font-size: 20px;
+  margin: 14px 0 10px;
+}
+
+.svc .s p {
+  font-size: 13px;
+  color: var(--bone-dim);
+}
+
+.svc .s .price {
+  margin-top: 18px;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  color: var(--steel);
+}
+
+@media (max-width: 900px) {
+
+  .svc {
+    grid-template-columns: 1fr;
+  }
+}

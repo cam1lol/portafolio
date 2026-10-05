@@ -1,0 +1,24 @@
+<div class="stats">
+  <div class="stat">
+    <div class="k">Visitas (30 días)</div>
+    <div class="v">{{ loading() ? '—' : (stats().visits30d ?? '—') }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="k">Comentarios totales</div>
+    <div class="v">{{ loading() ? '—' : (stats().commentsTotal ?? '—') }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="k">Comentarios pendientes</div>
+    <div class="v">{{ loading() ? '—' : (stats().commentsPending ?? '—') }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="k">Proyectos publicados</div>
+    <div class="v">{{ loading() ? '—' : (stats().projectsPublished ?? '—') }}</div>
+    @if (!loading() && stats().projectsTotal !== null) {
+      <div class="d">de {{ stats().projectsTotal }} totales</div>
+    }
+  </div>
+</div>

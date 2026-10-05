@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
 
-/**
- * Single shared IntersectionObserver for all [appReveal] elements on the page.
- * Mirrors the prototype's `observeReveals()` pattern: one observer instance,
- * `threshold: .15`, and each target is unobserved as soon as it reveals once
- * so the animation never repeats.
- */
 @Injectable({ providedIn: 'root' })
 export class RevealObserverService {
   private observer?: IntersectionObserver;

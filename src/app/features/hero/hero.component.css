@@ -1,0 +1,113 @@
+.hero {
+  position: relative;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 56px;
+  width: 100%;
+  align-items: center;
+}
+
+.hero h1 {
+  font-family: "Archivo";
+  font-weight: 900;
+  line-height: .92;
+  font-size: clamp(46px, 7vw, 104px);
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+}
+
+.hero h1 .out {
+  -webkit-text-stroke: 1.4px var(--bone);
+  color: transparent;
+}
+
+.hero .lead {
+  max-width: 440px;
+  color: var(--bone-dim);
+  font-size: 16px;
+  margin: 22px 0 30px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 28px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.meta-row .b .k {
+  font-size: 11px;
+}
+
+.meta-row .b .v {
+  font-family: "Archivo";
+  font-weight: 800;
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 13px 20px;
+  border-radius: var(--r);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all .2s;
+}
+
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn:hover {
+  border-color: var(--bone);
+}
+
+@media (max-width: 900px) {
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-grid > :last-child {
+    order: -1;
+  }
+
+  app-hero-scene {
+    --scene-height: 300px;
+  }
+}

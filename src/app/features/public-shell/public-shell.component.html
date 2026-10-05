@@ -1,9 +1,25 @@
-<section class="hero wrap">
-  <div class="wrap">
-    @defer (on viewport) {
-      <app-hero-scene />
-    } @placeholder {
-      <div style="min-height: 300px"></div>
-    }
-  </div>
-</section>
+@if (visibility()['hero'] !== false) {
+  <app-hero />
+}
+<app-ticker />
+@if (visibility()['manifesto'] !== false) {
+  <app-manifesto />
+}
+@if (visibility()['projects'] !== false) {
+  <app-projects />
+}
+@if (visibility()['experience'] !== false) {
+  <app-experience />
+}
+@if (visibility()['services'] !== false) {
+  <app-services />
+}
+@if (visibility()['roadmap'] !== false) {
+  <app-roadmap />
+}
+@if (visibility()['contact'] !== false) {
+  <app-contact />
+}
+@for (block of homeBlocks(); track block.id) {
+  <app-block-dispatcher [block]="block" />
+}

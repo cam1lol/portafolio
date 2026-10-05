@@ -1,0 +1,58 @@
+.contact {
+  text-align: center;
+  padding: 120px 0;
+}
+
+.contact h2 {
+  font-family: "Archivo";
+  font-weight: 900;
+  font-size: clamp(36px, 6vw, 82px);
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  line-height: .95;
+}
+
+.contact .lead {
+  color: var(--bone-dim);
+  margin: 20px auto 32px;
+  max-width: 420px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: "Space Mono", monospace;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 13px 20px;
+  border-radius: var(--r);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  transition: all .2s;
+}
+
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -8px var(--ember);
+}
+
+.btn:hover {
+  border-color: var(--bone);
+}

@@ -1,0 +1,40 @@
+<section class="block wrap" id="experience">
+  <div class="sec-head">
+    <span class="idx mono reveal" appReveal>03</span>
+    <h2 class="reveal" appReveal>{{ 'xp_h' | transloco }}</h2>
+    <span class="desc reveal" appReveal>{{ 'xp_d' | transloco }}</span>
+  </div>
+
+  <div class="tl" #timeline>
+    <div class="tl-line"></div>
+    <div>
+      @for (x of EXPERIENCE(); track x.id; let i = $index) {
+        <div
+          class="tl-node reveal"
+          [class.now]="x.isCurrent"
+          appReveal
+          [style.transition-delay.ms]="i * 90"
+        >
+          <div class="xp-card" (click)="openExperience(x)">
+            <div class="when">
+              {{ period(x) }}
+              <span class="tagrole">{{ tag(x) }}</span>
+            </div>
+            <h3>{{ role(x) }}</h3>
+            <div class="co">{{ x.company }}</div>
+            <div class="sum">{{ summary(x) }}</div>
+            <div class="stack">
+              @for (s of x.stack; track s) {
+                <span class="chip">{{ s }}</span>
+              }
+            </div>
+            <span class="more mono">
+              {{ detailLabel() }}
+              <app-icon name="arrow" />
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

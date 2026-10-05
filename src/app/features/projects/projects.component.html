@@ -1,0 +1,43 @@
+<section class="block wrap" id="work">
+  <div class="sec-head">
+    <span class="idx mono" appReveal>02</span>
+    <h2 appReveal>{{ 'wk_h' | transloco }}</h2>
+    <span class="desc" appReveal>{{ 'wk_d' | transloco }}</span>
+  </div>
+
+  <div class="tabs" appReveal>
+    <button type="button" [class.on]="filter() === 'all'" (click)="setFilter('all')">
+      {{ 't_all' | transloco }}
+    </button>
+    <button type="button" [class.on]="filter() === 'web'" (click)="setFilter('web')">
+      {{ 't_web' | transloco }}
+    </button>
+    <button type="button" [class.on]="filter() === '3d'" (click)="setFilter('3d')">3D</button>
+    <button type="button" [class.on]="filter() === 'tool'" (click)="setFilter('tool')">
+      {{ 't_tool' | transloco }}
+    </button>
+  </div>
+
+  <div class="grid-cards">
+    @for (p of filtered(); track p.id; let i = $index) {
+      <div class="card" appReveal [style.transition-delay.ms]="i * 60" (click)="openProject(p)">
+        <span class="corner mono">0{{ i + 1 }}</span>
+        <div class="ic">
+          <app-icon [name]="p.icon" />
+        </div>
+        <div class="ptype mono">{{ p.typeLabel }}</div>
+        <h3>{{ p.name }}</h3>
+        <p class="pd">{{ description(p) }}</p>
+        <div class="stack">
+          @for (item of p.stack; track item) {
+            <span class="chip">{{ item }}</span>
+          }
+        </div>
+        <span class="open-hint mono">{{ openHintLabel() }}</span>
+        <div class="st">
+          <span class="dot" [class]="p.status"></span>{{ statusLabel(p.status) }}
+        </div>
+      </div>
+    }
+  </div>
+</section>

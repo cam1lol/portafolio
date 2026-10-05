@@ -1,0 +1,152 @@
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.page-head .eyebrow {
+  color: var(--ember);
+  margin: 0;
+}
+
+.error-msg {
+  font-size: 11px;
+  color: var(--ember);
+  background: var(--ember-soft);
+  border-left: 2px solid var(--ember);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.sub {
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.1em;
+}
+
+.blocks-list {
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+  margin: 0;
+  padding: 0;
+}
+
+.blocks-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--graphite);
+}
+
+.blocks-row:last-child {
+  border-bottom: none;
+}
+
+.blocks-row.cdk-drag-preview {
+  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.6);
+}
+
+.blocks-row.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--steel);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.row-type {
+  font-size: 11px;
+  color: var(--ember);
+  letter-spacing: 0.06em;
+  min-width: 110px;
+}
+
+.row-page {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--bone);
+  flex: 1;
+}
+
+.row-order {
+  font-size: 11px;
+  color: var(--steel);
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--steel);
+  transition: transform 0.2s var(--ease), background-color 0.2s;
+}
+
+.toggle.on {
+  border-color: var(--ember);
+  background: var(--ember-soft);
+}
+
+.toggle.on .toggle-knob {
+  transform: translateX(20px);
+  background: var(--ember);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  color: var(--bone);
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn.primary {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.btn.danger {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}

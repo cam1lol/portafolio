@@ -1,0 +1,53 @@
+<div class="experience-page">
+  <div class="page-head">
+    <p class="eyebrow">Experiencia</p>
+    <a class="btn" routerLink="/admin/experience/new">+ Nueva experiencia</a>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-msg">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else if (rows().length === 0) {
+    <p class="sub">Todavía no hay experiencia registrada.</p>
+  } @else {
+    <div class="table-head">
+      <span class="col-drag"></span>
+      <span class="col-company">Empresa</span>
+      <span class="col-role">Rol</span>
+      <span class="col-period">Periodo</span>
+      <span class="col-published">Publicado</span>
+      <span class="col-actions">Acciones</span>
+    </div>
+
+    <div class="experience-list" cdkDropList (cdkDropListDropped)="drop($event)">
+      @for (row of rows(); track row.id) {
+        <div class="experience-row" cdkDrag>
+          <span class="col-drag drag-handle" cdkDragHandle>::</span>
+          <span class="col-company">{{ row.company }}</span>
+          <span class="col-role">{{ row.roleEs }}</span>
+          <span class="col-period">{{ row.periodEs }}</span>
+          <span class="col-published">
+            <button
+              type="button"
+              class="toggle"
+              [class.on]="row.published"
+              role="switch"
+              [attr.aria-checked]="row.published"
+              [attr.aria-label]="'Publicado: ' + row.company"
+              (click)="togglePublished(row)"
+            >
+              <span class="toggle-knob"></span>
+            </button>
+          </span>
+          <span class="col-actions">
+            <a class="link-action" [routerLink]="['/admin/experience', row.id, 'edit']">Editar</a>
+            <button type="button" class="link-action danger" (click)="remove(row)">Borrar</button>
+          </span>
+        </div>
+      }
+    </div>
+  }
+</div>

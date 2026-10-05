@@ -1,0 +1,38 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+svg {
+  width: min(80vw, 80vh);
+  height: min(80vw, 80vh);
+  opacity: .78;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
+}
+
+/* Independent rotations for each ring layer */
+.l1 { animation: cw  55s  linear infinite; transform-origin: center; }
+.l2 { animation: ccw 40s  linear infinite; transform-origin: center; }
+.l3 { animation: cw  80s  linear infinite; transform-origin: center; }
+.l4 { animation: ccw 100s linear infinite; transform-origin: center; }
+.l5 { animation: cw  70s  linear infinite; transform-origin: center; }
+.l6 { animation: ccw 35s  linear infinite; transform-origin: center; }
+
+@keyframes cw  { to { transform: rotate(360deg);  } }
+@keyframes ccw { to { transform: rotate(-360deg); } }
+
+/* Day mode: multiply reads better on light bg than screen */
+:host-context([data-theme="day"]) svg {
+  mix-blend-mode: multiply;
+  opacity: .25;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .l1, .l2, .l3, .l4, .l5, .l6 { animation: none; }
+}

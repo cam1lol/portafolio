@@ -1,0 +1,42 @@
+<section class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow reveal" style="margin-bottom: 22px" appReveal>{{ 'hero_eyebrow' | transloco }}</div>
+      <h1>
+        <span class="clip-wrap"><span class="clip" appReveal>{{ 'hero_l1' | transloco }}</span></span>
+        <span class="clip-wrap"><span class="clip out" appReveal>{{ 'hero_l2' | transloco }}</span></span>
+        <span class="clip-wrap"><span class="clip" appReveal>{{ 'hero_l3' | transloco }}</span></span>
+      </h1>
+      <p class="lead reveal" appReveal>{{ 'hero_lead' | transloco }}</p>
+      <div class="meta-row reveal" appReveal>
+        <div class="b">
+          <div class="k eyebrow">{{ 'm1k' | transloco }}</div>
+          <div class="v"><span [appCounter]="3">0</span>+ {{ 'm1u' | transloco }}</div>
+        </div>
+        <div class="b">
+          <div class="k eyebrow">{{ 'm2k' | transloco }}</div>
+          <div class="v"><span [appCounter]="11">0</span>+</div>
+        </div>
+        <div class="b">
+          <div class="k eyebrow">{{ 'm3k' | transloco }}</div>
+          <div class="v"><span [appCounter]="14">0</span></div>
+        </div>
+      </div>
+      <div class="cta-row reveal" appReveal>
+        <a class="btn primary mag" href="#work" appMagnetic>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          {{ 'cta1' | transloco }}
+        </a>
+        <a class="btn mag" href="#" appMagnetic>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+          {{ 'cta2' | transloco }}
+        </a>
+      </div>
+    </div>
+    @defer (on viewport) {
+      <app-hero-scene />
+    } @placeholder {
+      <div style="min-height: 300px"></div>
+    }
+  </div>
+</section>

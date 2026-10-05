@@ -1,17 +1,5 @@
 import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 
-/**
- * Ported from the prototype's `magnetics()` (camilo-ayala-prototype.html
- * lines 829-838). Displaces the host element toward the pointer while it
- * hovers, proportional to the pointer's offset from the element's center,
- * and resets on pointer leave.
- *
- * Skipped entirely (no listeners attached) when the user prefers reduced
- * motion or is on a coarse pointer (touch) device, matching the prototype's
- * early-return guards.
- *
- * Usage: `<button appMagnetic>...</button>`.
- */
 @Directive({
   selector: '[appMagnetic]',
   standalone: true,

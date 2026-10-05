@@ -1,0 +1,48 @@
+.block {
+  padding: 96px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.road {
+  display: grid;
+  gap: 0;
+  border-left: 1px solid var(--line);
+  margin-left: 6px;
+}
+
+.road .r {
+  position: relative;
+  padding: 0 0 34px 30px;
+}
+
+.road .r::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--ember);
+  background: var(--ink);
+  border-radius: 50%;
+}
+
+.road .r .when {
+  font-family: "Space Mono", monospace;
+  font-size: 11px;
+  color: var(--ember);
+  letter-spacing: .1em;
+}
+
+.road .r h3 {
+  font-family: "Archivo";
+  font-weight: 800;
+  font-size: 19px;
+  margin: 6px 0 6px;
+}
+
+.road .r p {
+  font-size: 13px;
+  color: var(--bone-dim);
+  max-width: 560px;
+}

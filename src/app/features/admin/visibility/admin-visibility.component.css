@@ -1,0 +1,79 @@
+.visibility-page .eyebrow {
+  color: var(--ember);
+  display: block;
+  margin-bottom: 18px;
+}
+
+.error-msg {
+  font-size: 11px;
+  color: var(--ember);
+  background: var(--ember-soft);
+  border-left: 2px solid var(--ember);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.sub {
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.1em;
+}
+
+.visibility-list {
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+
+.visibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.visibility-row:last-child {
+  border-bottom: none;
+}
+
+.row-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--bone);
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--steel);
+  transition: transform 0.2s var(--ease), background-color 0.2s;
+}
+
+.toggle.on {
+  border-color: var(--ember);
+  background: var(--ember-soft);
+}
+
+.toggle.on .toggle-knob {
+  transform: translateX(20px);
+  background: var(--ember);
+}

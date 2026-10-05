@@ -1,0 +1,30 @@
+<div class="visibility-page">
+  <p class="eyebrow">Visibilidad de secciones</p>
+
+  @if (errorMessage()) {
+    <p class="error-msg">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando...</p>
+  } @else {
+    <ul class="visibility-list">
+      @for (row of rows(); track row.section) {
+        <li class="visibility-row">
+          <span class="row-label">{{ row.label }}</span>
+          <button
+            type="button"
+            class="toggle"
+            [class.on]="row.visible"
+            role="switch"
+            [attr.aria-checked]="row.visible"
+            [attr.aria-label]="row.label"
+            (click)="toggle(row)"
+          >
+            <span class="toggle-knob"></span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

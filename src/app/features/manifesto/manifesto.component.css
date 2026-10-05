@@ -1,0 +1,22 @@
+.block {
+  padding: 96px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.manifesto p {
+  font-family: "Archivo";
+  font-weight: 500;
+  font-size: clamp(20px, 2.6vw, 32px);
+  line-height: 1.32;
+  letter-spacing: -.01em;
+  max-width: 900px;
+}
+
+::ng-deep .manifesto p b {
+  font-weight: 800;
+  color: var(--bone);
+}
+
+::ng-deep .manifesto p .muted {
+  color: var(--steel);
+}

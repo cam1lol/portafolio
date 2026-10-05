@@ -1,0 +1,65 @@
+<section class="block-form wrap">
+  <div class="form-card">
+    <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
+    <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : 'NUEVO BLOQUE' }}</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="type">TIPO</label>
+        <select id="type" formControlName="type">
+          @for (type of types; track type) {
+            <option [value]="type">{{ typeLabels[type] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="page">PÁGINA</label>
+        <input id="page" type="text" formControlName="page" maxlength="100" />
+        @if (form.controls.page.touched && form.controls.page.invalid) {
+          <span class="field-error mono">
+            @if (form.controls.page.hasError('required')) {
+              La página es obligatoria.
+            } @else {
+              La página contiene caracteres no válidos.
+            }
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="config">CONFIG (JSON)</label>
+        <textarea
+          id="config"
+          rows="10"
+          formControlName="config"
+          [placeholder]="configPlaceholder"
+          spellcheck="false"
+        ></textarea>
+        @if (form.controls.config.touched && form.controls.config.invalid) {
+          <span class="field-error mono">El config es obligatorio.</span>
+        }
+      </div>
+
+      <div class="field field-inline">
+        <label for="published">PUBLICADO</label>
+        <input id="published" type="checkbox" formControlName="published" />
+      </div>
+
+      @if (errorMessage()) {
+        <div class="form-error mono">{{ errorMessage() }}</div>
+      }
+
+      <div class="actions">
+        <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
+        <button type="submit" class="btn primary" [disabled]="submitting()">
+          @if (submitting()) {
+            GUARDANDO…
+          } @else {
+            GUARDAR
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

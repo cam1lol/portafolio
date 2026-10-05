@@ -1,0 +1,22 @@
+<div class="admin-shell wrap">
+  <div class="admin-top">
+    <div>
+      <div class="sub mono">DASHBOARD // CONTROL PANEL</div>
+      <h2>PANEL</h2>
+    </div>
+    <button type="button" class="btn" (click)="logout()">CERRAR SESIÓN</button>
+  </div>
+
+  <nav class="admin-nav mono">
+    <a routerLink="dashboard" routerLinkActive="on">DASHBOARD</a>
+    <a routerLink="projects" routerLinkActive="on">PROYECTOS</a>
+    <a routerLink="experience" routerLinkActive="on">EXPERIENCIA</a>
+    <a routerLink="visibility" routerLinkActive="on">VISIBILIDAD</a>
+    <a routerLink="comments" routerLinkActive="on">COMENTARIOS</a>
+    <a routerLink="blocks" routerLinkActive="on">BLOQUES</a>
+  </nav>
+
+  <div class="admin-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
