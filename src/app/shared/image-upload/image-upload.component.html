@@ -11,7 +11,12 @@
       } @else {
         <span class="iup-zone-text mono">SUBIR IMAGEN</span>
       }
-      <input type="file" accept="image/*" (change)="onFile($event)" [disabled]="uploading()" />
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+        (change)="onFile($event)"
+        [disabled]="uploading()"
+      />
     </label>
   }
 

@@ -11,6 +11,7 @@ import { AdminVisibilityComponent } from './visibility/admin-visibility.componen
 import { AdminCommentsComponent } from './comments/admin-comments.component';
 import { AdminBlocksListComponent } from './blocks/admin-blocks-list.component';
 import { AdminBlockFormComponent } from './blocks/admin-block-form.component';
+import { AdminHomeLayoutComponent } from './layout/admin-home-layout.component';
 
 export const ADMIN_ROUTES: Routes = [
   { path: 'login', component: AdminLoginComponent },
@@ -28,6 +29,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'experience/new', component: AdminExperienceFormComponent },
       { path: 'experience/:id/edit', component: AdminExperienceFormComponent },
       { path: 'visibility', component: AdminVisibilityComponent },
+      { path: 'layout', component: AdminHomeLayoutComponent },
       { path: 'comments', component: AdminCommentsComponent },
       { path: 'blocks', component: AdminBlocksListComponent },
       { path: 'blocks/new', component: AdminBlockFormComponent },

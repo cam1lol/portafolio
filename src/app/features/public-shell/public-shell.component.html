@@ -1,25 +1,30 @@
-@if (visibility()['hero'] !== false) {
-  <app-hero />
-}
-<app-ticker />
-@if (visibility()['manifesto'] !== false) {
-  <app-manifesto />
-}
-@if (visibility()['projects'] !== false) {
-  <app-projects />
-}
-@if (visibility()['experience'] !== false) {
-  <app-experience />
-}
-@if (visibility()['services'] !== false) {
-  <app-services />
-}
-@if (visibility()['roadmap'] !== false) {
-  <app-roadmap />
-}
-@if (visibility()['contact'] !== false) {
-  <app-contact />
-}
-@for (block of homeBlocks(); track block.id) {
-  <app-block-dispatcher [block]="block" />
+@for (item of layoutItems(); track item.key) {
+  @if (item.kind === 'block') {
+    <app-block-dispatcher [block]="item.block" />
+  } @else {
+    @switch (item.sectionKey) {
+      @case ('hero') {
+        @if (visibility()['hero'] !== false) { <app-hero /> }
+      }
+      @case ('ticker') { <app-ticker /> }
+      @case ('manifesto') {
+        @if (visibility()['manifesto'] !== false) { <app-manifesto /> }
+      }
+      @case ('projects') {
+        @if (visibility()['projects'] !== false) { <app-projects /> }
+      }
+      @case ('experience') {
+        @if (visibility()['experience'] !== false) { <app-experience /> }
+      }
+      @case ('services') {
+        @if (visibility()['services'] !== false) { <app-services /> }
+      }
+      @case ('roadmap') {
+        @if (visibility()['roadmap'] !== false) { <app-roadmap /> }
+      }
+      @case ('contact') {
+        @if (visibility()['contact'] !== false) { <app-contact /> }
+      }
+    }
+  }
 }

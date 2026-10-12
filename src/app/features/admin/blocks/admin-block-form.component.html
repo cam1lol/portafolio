@@ -1,65 +1,154 @@
 <section class="block-form wrap">
-  <div class="form-card">
-    <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
-    <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : 'NUEVO BLOQUE' }}</h1>
+  <div class="form-heading">
+    <div>
+      <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
+      <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : 'NUEVO BLOQUE' }}</h1>
+    </div>
+    <a class="btn" routerLink="/admin/blocks">VOLVER A BLOQUES</a>
+  </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <div class="field">
-        <label for="type">TIPO</label>
-        <select id="type" formControlName="type">
-          @for (type of types; track type) {
-            <option [value]="type">{{ typeLabels[type] }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="page">PÁGINA</label>
-        <input id="page" type="text" formControlName="page" maxlength="100" />
-        @if (form.controls.page.touched && form.controls.page.invalid) {
-          <span class="field-error mono">
-            @if (form.controls.page.hasError('required')) {
-              La página es obligatoria.
-            } @else {
-              La página contiene caracteres no válidos.
+  <div class="editor-grid">
+    <div class="form-card">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <label for="type">TIPO DE BLOQUE</label>
+          <select id="type" formControlName="type">
+            @for (type of types; track type) {
+              <option [value]="type">{{ typeLabels[type] }}</option>
             }
-          </span>
-        }
-      </div>
+          </select>
+          <span class="hint">Los campos cambian según el tipo elegido.</span>
+        </div>
 
-      <div class="field">
-        <label for="config">CONFIG (JSON)</label>
-        <textarea
-          id="config"
-          rows="10"
-          formControlName="config"
-          [placeholder]="configPlaceholder"
-          spellcheck="false"
-        ></textarea>
-        @if (form.controls.config.touched && form.controls.config.invalid) {
-          <span class="field-error mono">El config es obligatorio.</span>
-        }
-      </div>
-
-      <div class="field field-inline">
-        <label for="published">PUBLICADO</label>
-        <input id="published" type="checkbox" formControlName="published" />
-      </div>
-
-      @if (errorMessage()) {
-        <div class="form-error mono">{{ errorMessage() }}</div>
-      }
-
-      <div class="actions">
-        <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
-        <button type="submit" class="btn primary" [disabled]="submitting()">
-          @if (submitting()) {
-            GUARDANDO…
-          } @else {
-            GUARDAR
+        <div class="field">
+          <label for="page">PÁGINA</label>
+          <input id="page" type="text" formControlName="page" maxlength="100" required />
+          @if (form.controls.page.touched && form.controls.page.invalid) {
+            <span class="field-error mono">Indica una página válida (máximo 100 caracteres).</span>
           }
-        </button>
+        </div>
+
+        @if (form.controls.type.value === 'hero') {
+          <div class="type-fields">
+            <div class="field">
+              <label for="eyebrow">ETIQUETA (OPCIONAL)</label>
+              <input id="eyebrow" type="text" formControlName="eyebrow" maxlength="80" placeholder="DISEÑO // DESARROLLO" />
+            </div>
+            <div class="field">
+              <label for="title">TÍTULO</label>
+              <input id="title" type="text" formControlName="title" maxlength="120" placeholder="Un título destacado" required />
+            </div>
+            <div class="field">
+              <label for="lead">INTRODUCCIÓN (OPCIONAL)</label>
+              <textarea id="lead" rows="3" formControlName="lead" maxlength="300" placeholder="Una frase breve para presentar el bloque."></textarea>
+            </div>
+          </div>
+        } @else if (form.controls.type.value === 'text') {
+          <div class="type-fields">
+            <div class="field">
+              <label for="title">TÍTULO (OPCIONAL)</label>
+              <input id="title" type="text" formControlName="title" maxlength="120" />
+            </div>
+            <div class="field">
+              <label for="body">TEXTO</label>
+              <textarea id="body" rows="6" formControlName="body" maxlength="4000" placeholder="Escribe el contenido del bloque." required></textarea>
+              <span class="hint">Máximo 4.000 caracteres. El contenido se muestra como texto.</span>
+            </div>
+          </div>
+        } @else if (form.controls.type.value === 'gallery_3d') {
+          <div class="type-fields">
+            <div class="field">
+              <label for="title">TÍTULO (OPCIONAL)</label>
+              <input id="title" type="text" formControlName="title" maxlength="120" />
+            </div>
+            <div class="field">
+              <label for="description">DESCRIPCIÓN (OPCIONAL)</label>
+              <textarea id="description" rows="4" formControlName="description" maxlength="1000" placeholder="Describe la galería."></textarea>
+              <span class="hint">Este bloque aún muestra texto; no carga modelos 3D.</span>
+            </div>
+          </div>
+        } @else {
+          <div class="type-fields">
+            <div class="field">
+              <label for="title">TÍTULO</label>
+              <input id="title" type="text" formControlName="title" maxlength="120" placeholder="Título del bloque" required />
+            </div>
+
+            <div class="items-heading">
+              <div>
+                <h2>{{ usesRoadmapItems ? 'Etapas' : 'Tarjetas' }}</h2>
+                <span class="hint">Agrega entre 1 y {{ maxItems }} elementos.</span>
+              </div>
+              <button class="btn" type="button" (click)="addItem()" [disabled]="items.length >= maxItems">AÑADIR</button>
+            </div>
+
+            <div class="items-list" formArrayName="items">
+              @for (item of items.controls; track item; let i = $index) {
+                <fieldset class="item-card" [formGroupName]="i">
+                  <legend class="mono">ELEMENTO {{ i + 1 }}</legend>
+                  @if (usesRoadmapItems) {
+                    <div class="field">
+                      <label [for]="'when-' + i">FECHA O ETAPA</label>
+                      <input [id]="'when-' + i" type="text" formControlName="when" maxlength="80" placeholder="2026 · FASE 1" />
+                    </div>
+                  }
+                  <div class="field">
+                    <label [for]="'item-title-' + i">TÍTULO</label>
+                    <input [id]="'item-title-' + i" type="text" formControlName="title" maxlength="120" placeholder="Título del elemento" />
+                  </div>
+                  <div class="field">
+                    <label [for]="'item-description-' + i">DESCRIPCIÓN</label>
+                    <textarea [id]="'item-description-' + i" rows="3" formControlName="description" maxlength="1000" placeholder="Descripción breve"></textarea>
+                  </div>
+                  @if (!usesRoadmapItems) {
+                    <div class="field">
+                      <label [for]="'item-icon-' + i">ETIQUETA (OPCIONAL)</label>
+                      <input [id]="'item-icon-' + i" type="text" formControlName="icon" maxlength="60" placeholder="01" />
+                    </div>
+                  }
+                  <button class="remove-item" type="button" (click)="removeItem(i)" [attr.aria-label]="'Quitar elemento ' + (i + 1)">QUITAR ELEMENTO</button>
+                </fieldset>
+              } @empty {
+                <p class="empty-items">Todavía no hay elementos. Usa “Añadir” para comenzar.</p>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="field field-inline">
+          <label for="published">PUBLICAR EN EL SITIO</label>
+          <input id="published" type="checkbox" formControlName="published" />
+        </div>
+
+        @if (errorMessage()) {
+          <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
+        }
+
+        <div class="actions">
+          <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
+          <button type="submit" class="btn primary" [disabled]="submitting()">
+            @if (submitting()) {
+              GUARDANDO…
+            } @else {
+              GUARDAR BLOQUE
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="preview-panel" aria-label="Vista previa del bloque">
+      <div class="preview-heading">
+        <div>
+          <span class="eyebrow mono">VISTA PREVIA</span>
+          <h2>Así se verá el bloque</h2>
+        </div>
+        <span class="preview-status mono">{{ form.controls.published.value ? 'PUBLICADO' : 'BORRADOR' }}</span>
       </div>
-    </form>
+      <div class="preview-canvas">
+        <app-block-dispatcher [block]="previewBlock()" />
+      </div>
+      <p class="hint">La vista previa usa el mismo componente que el sitio público.</p>
+    </aside>
   </div>
 </section>

@@ -1,6 +1,13 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { SupabaseService } from '../../core/supabase/supabase.service';
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+};
+
 @Component({
   selector: 'app-image-upload',
   standalone: true,
@@ -24,10 +31,24 @@ export class ImageUploadComponent {
     }
 
     this.uploadError.set('');
+
+    const extension = IMAGE_EXTENSIONS[file.type];
+    if (!extension) {
+      this.uploadError.set('Formato no permitido. Usa JPG, PNG o WebP.');
+      input.value = '';
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_BYTES) {
+      this.uploadError.set('La imagen supera el límite de 5 MB.');
+      input.value = '';
+      return;
+    }
+
     this.uploading.set(true);
 
     try {
-      const path = `${crypto.randomUUID()}-${file.name}`;
+      const path = `${crypto.randomUUID()}.${extension}`;
       const { error } = await this.supabase.client.storage
         .from('previews')
         .upload(path, file, { upsert: true });
