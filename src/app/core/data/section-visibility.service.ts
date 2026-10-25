@@ -7,7 +7,7 @@ interface SectionVisibilityRow {
   visible: boolean;
 }
 
-/** Fixed display order for the 7 known sections — the table has no order column. */
+/** Fixed display order for the known sections — the table has no order column. */
 const SECTION_ORDER = [
   'hero',
   'manifesto',
@@ -15,6 +15,7 @@ const SECTION_ORDER = [
   'experience',
   'services',
   'roadmap',
+  'comments',
   'contact',
 ] as const;
 
@@ -38,7 +39,7 @@ export class SectionVisibilityService {
     );
   }
 
-  /** Admin: fetches all 7 rows, sorted by the fixed `SECTION_ORDER` (table has no order column). */
+  /** Admin: fetches all rows, sorted by the fixed `SECTION_ORDER` (table has no order column). */
   getAll(): Observable<SectionVisibilityRow[]> {
     return from(this.supabase.client.from('section_visibility').select('*')).pipe(
       map(({ data, error }) => {

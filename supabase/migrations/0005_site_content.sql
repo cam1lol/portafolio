@@ -80,7 +80,7 @@ create policy "ticker_items_admin_all" on ticker_items for all using (is_admin()
 -- ---------------------------------------------------------------------------
 -- Seeds: verbatim copy of the current i18n texts and template values.
 -- Rich text uses the inline markup: **bold**, __muted__, newline = line break.
--- contact_email is intentionally not seeded (pending decision, see plan).
+-- contact_email confirmed by Camilo on 2026-10-25.
 -- ---------------------------------------------------------------------------
 
 insert into site_content (key, value_es, value_en) values
@@ -111,7 +111,8 @@ insert into site_content (key, value_es, value_en) values
   ('rd_d', 'Proyectos personales en curso y a futuro.', 'Personal projects in progress and ahead.'),
   ('contact_eyebrow', '// LET''S BUILD', '// LET''S BUILD'),
   ('ct_h', E'TRABAJEMOS\nJUNTOS', E'LET''S BUILD\nTOGETHER'),
-  ('ct_l', 'Disponible para proyectos freelance y roles full-stack. Respuesta en menos de 24h.', 'Available for freelance projects and full-stack roles. Reply within 24h.')
+  ('ct_l', 'Disponible para proyectos freelance y roles full-stack. Respuesta en menos de 24h.', 'Available for freelance projects and full-stack roles. Reply within 24h.'),
+  ('contact_email', 'kmilo0230@gmail.com', 'kmilo0230@gmail.com')
 on conflict (key) do nothing;
 
 insert into services (title_es, title_en, description_es, description_en, price_es, price_en, sort_order)

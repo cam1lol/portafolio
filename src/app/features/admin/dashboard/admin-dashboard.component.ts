@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 
 interface DashboardStats {
@@ -7,6 +7,21 @@ interface DashboardStats {
   commentsPending: number | null;
   projectsPublished: number | null;
   projectsTotal: number | null;
+}
+
+interface LanguageSplit {
+  es: number | null;
+  en: number | null;
+}
+
+interface LanguageRow {
+  label: string;
+  es: number;
+  en: number;
+  esShare: number;
+  enShare: number;
+  /** Rows recorded before migration 0006 (or with no language) are reported apart. */
+  untagged: number;
 }
 
 @Component({
@@ -26,6 +41,20 @@ export class AdminDashboardComponent implements OnInit {
     projectsPublished: null,
     projectsTotal: null,
   });
+  private readonly visitsByLang = signal<LanguageSplit>({ es: null, en: null });
+  private readonly commentsByLang = signal<LanguageSplit>({ es: null, en: null });
+
+  protected readonly languageRows = computed<LanguageRow[]>(() => [
+    this.toRow('Visitas (30 días)', this.visitsByLang(), this.stats().visits30d),
+    this.toRow('Comentarios', this.commentsByLang(), this.stats().commentsTotal),
+  ]);
+
+  /** "ES", "EN" or "—" when there is no tagged data yet. */
+  protected readonly topLanguage = computed(() => {
+    const { es, en } = this.visitsByLang();
+    if (!es && !en) return '—';
+    return (es ?? 0) >= (en ?? 0) ? 'ES' : 'EN';
+  });
 
   ngOnInit(): void {
     this.loadStats();
@@ -33,17 +62,40 @@ export class AdminDashboardComponent implements OnInit {
 
   private async loadStats(): Promise<void> {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const visits = () => this.supabase.client.from('visits').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo);
+    const comments = () => this.supabase.client.from('comments').select('*', { count: 'exact', head: true });
 
-    const [visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal] = await Promise.all([
-      this.count(this.supabase.client.from('visits').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo)),
-      this.count(this.supabase.client.from('comments').select('*', { count: 'exact', head: true })),
-      this.count(this.supabase.client.from('comments').select('*', { count: 'exact', head: true }).eq('approved', false)),
-      this.count(this.supabase.client.from('projects').select('*', { count: 'exact', head: true }).eq('published', true)),
-      this.count(this.supabase.client.from('projects').select('*', { count: 'exact', head: true })),
-    ]);
+    const [visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal, visitsEs, visitsEn, commentsEs, commentsEn] =
+      await Promise.all([
+        this.count(visits()),
+        this.count(comments()),
+        this.count(comments().eq('approved', false)),
+        this.count(this.supabase.client.from('projects').select('*', { count: 'exact', head: true }).eq('published', true)),
+        this.count(this.supabase.client.from('projects').select('*', { count: 'exact', head: true })),
+        this.count(visits().eq('lang', 'es')),
+        this.count(visits().eq('lang', 'en')),
+        this.count(comments().eq('lang', 'es')),
+        this.count(comments().eq('lang', 'en')),
+      ]);
 
     this.stats.set({ visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal });
+    this.visitsByLang.set({ es: visitsEs, en: visitsEn });
+    this.commentsByLang.set({ es: commentsEs, en: commentsEn });
     this.loading.set(false);
+  }
+
+  private toRow(label: string, split: LanguageSplit, total: number | null): LanguageRow {
+    const es = split.es ?? 0;
+    const en = split.en ?? 0;
+    const tagged = es + en;
+    return {
+      label,
+      es,
+      en,
+      esShare: tagged ? Math.round((es / tagged) * 100) : 0,
+      enShare: tagged ? Math.round((en / tagged) * 100) : 0,
+      untagged: Math.max(0, (total ?? 0) - tagged),
+    };
   }
 
   private async count(

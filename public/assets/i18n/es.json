@@ -46,5 +46,17 @@
   "rd3": "Migración de escenas a WebGPU para mayor complejidad visual manteniendo 60fps. Modo mundo navegable.",
   "ct_h": "TRABAJEMOS\nJUNTOS",
   "ct_l": "Disponible para proyectos freelance y roles full-stack. Respuesta en menos de 24h.",
-  "ct_b": "camilo@ejemplo.com"
+  "ct_b": "kmilo0230@gmail.com",
+  "cm_h": "COMENTARIOS",
+  "cm_d": "Deja tu opinión. Se publica después de revisarla.",
+  "cm_name": "Tu nombre",
+  "cm_name_err": "Escribe tu nombre (máximo 80 caracteres).",
+  "cm_body": "Comentario",
+  "cm_body_err": "Escribe un comentario (máximo 2000 caracteres).",
+  "cm_send": "Enviar comentario",
+  "cm_sending": "Enviando…",
+  "cm_ok": "Gracias. Tu comentario se publicará cuando sea revisado.",
+  "cm_err": "No se pudo enviar. Inténtalo de nuevo en un momento.",
+  "cm_wait": "Espera un minuto antes de enviar otro comentario.",
+  "cm_empty": "Todavía no hay comentarios publicados. Sé el primero."
 }

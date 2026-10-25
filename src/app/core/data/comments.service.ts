@@ -40,6 +40,41 @@ export class CommentsService {
     );
   }
 
+  /** Public read: RLS only returns approved rows; newest first. */
+  getApproved(limit = 30): Observable<CommentRow[] | null> {
+    return from(
+      this.supabase.client
+        .from('comments')
+        .select('id, author, lang, body, approved, created_at')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(limit),
+    ).pipe(
+      map(({ data, error }) => {
+        if (error) {
+          console.error('Failed to load approved comments', error);
+          return null;
+        }
+        return (data ?? []) as CommentRow[];
+      }),
+    );
+  }
+
+  /**
+   * Public submit. Only `author`, `lang` and `body` are granted to anon (migration 0002), and the
+   * row always lands pending. No `.select()`: anon cannot read its own pending row back.
+   */
+  submit(author: string, body: string, lang: 'es' | 'en'): Observable<void> {
+    return from(this.supabase.client.from('comments').insert({ author, body, lang })).pipe(
+      map(({ error }) => {
+        if (error) {
+          console.error('Failed to submit comment', error);
+          throw error;
+        }
+      }),
+    );
+  }
+
   approve(id: string): Observable<void> {
     return from(this.supabase.client.from('comments').update({ approved: true }).eq('id', id)).pipe(
       map(({ error }) => {

@@ -2,199 +2,200 @@
   <div class="form-heading">
     <div>
       <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
-      <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : 'NUEVO BLOQUE' }}</h1>
+      <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : (typeChosen() ? 'NUEVO BLOQUE' : 'ELIGE EL TIPO DE BLOQUE') }}</h1>
     </div>
     <a class="btn" routerLink="/admin/structure">VOLVER A ESTRUCTURA</a>
   </div>
 
-  <div class="editor-grid">
-    <div class="form-card">
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <div class="field">
-          <label for="type">TIPO DE BLOQUE</label>
-          <select id="type" formControlName="type">
-            @for (type of types; track type) {
-              <option [value]="type">{{ typeLabels[type] }}</option>
-            }
-          </select>
-          <span class="hint">Los campos cambian según el tipo elegido.</span>
-        </div>
-
-        <div class="field">
-          <label for="page">PÁGINA</label>
-          <select id="page" formControlName="page"><option value="home">Inicio / portada</option>@if (isEditMode() && form.controls.page.value !== 'home') { <option [value]="form.controls.page.value">Página existente: {{ form.controls.page.value }}</option> }</select>
-          <span class="hint">Actualmente el sitio público tiene una página: Inicio / portada. Se pueden habilitar más páginas cuando existan rutas públicas para ellas.</span>
-          @if (form.controls.page.touched && form.controls.page.invalid) {
-            <span class="field-error mono">Indica una página válida (máximo 100 caracteres).</span>
-          }
-        </div>
-
-        <fieldset class="appearance-fields">
-          <legend>POSICIÓN Y APARIENCIA</legend>
-          <p class="hint">Primero elige dónde va. Luego ajusta su ancho, alineación y estilo. En móviles se adapta automáticamente.</p>
-          <div class="field">
-            <label for="placement">DÓNDE APARECE EN LA PÁGINA</label>
-            <select id="placement" formControlName="placement">
-              @if (isEditMode()) { <option value="keep">Mantener ubicación actual</option> }
-              @for (placement of placements; track placement.value) { <option [value]="placement.value">{{ placement.label }}</option> }
-            </select>
-            <span class="hint">Puedes afinar el orden arrastrando el bloque en “Estructura de portada”.</span>
-          </div>
-          <div class="settings-grid">
-            <div class="field"><label for="width">ANCHO DEL BLOQUE</label><select id="width" formControlName="width"><option value="small">Pequeño</option><option value="medium">Mediano</option><option value="wide">Amplio</option><option value="full">Completo</option></select></div>
-            <div class="field"><label for="alignment">ALINEAR A</label><select id="alignment" formControlName="alignment"><option value="left">La izquierda</option><option value="center">El centro</option><option value="right">La derecha</option></select></div>
-            <div class="field"><label for="spacing">ESPACIO VERTICAL</label><select id="spacing" formControlName="spacing"><option value="compact">Reducido</option><option value="normal">Normal</option><option value="spacious">Amplio</option></select></div>
-            <div class="field"><label for="background">FONDO DEL BLOQUE</label><select id="background" formControlName="background"><option value="transparent">Transparente</option><option value="surface">Con fondo</option></select></div>
-          </div>
-          @if (form.controls.background.value === 'surface') {
-            <div class="field"><label for="backgroundOpacity">OPACIDAD DEL FONDO · {{ form.controls.backgroundOpacity.value }}%</label><input id="backgroundOpacity" type="range" min="0" max="100" formControlName="backgroundOpacity" /></div>
-          }
-          <label class="check-row"><input type="checkbox" formControlName="borderless" /> Sin bordes</label>
-        </fieldset>
-
-        @if (form.controls.type.value === 'hero') {
-          <div class="type-fields">
-            <div class="field">
-              <label for="eyebrow">ETIQUETA (OPCIONAL)</label>
-              <input id="eyebrow" type="text" formControlName="eyebrow" maxlength="80" placeholder="DISEÑO // DESARROLLO" />
-            </div>
-            <div class="field">
-              <label for="title">TÍTULO</label>
-              <input id="title" type="text" formControlName="title" maxlength="120" placeholder="Un título destacado" required />
-            </div>
-            <div class="field">
-              <label for="lead">INTRODUCCIÓN (OPCIONAL)</label>
-              <textarea id="lead" rows="3" formControlName="lead" maxlength="300" placeholder="Una frase breve para presentar el bloque."></textarea>
-            </div>
-          </div>
-        } @else if (form.controls.type.value === 'text') {
-          <div class="type-fields">
-            <div class="field">
-              <label for="title">TÍTULO (OPCIONAL)</label>
-              <input id="title" type="text" formControlName="title" maxlength="120" />
-            </div>
-            <div class="field">
-              <label for="body">TEXTO</label>
-              <textarea id="body" rows="6" formControlName="body" maxlength="4000" placeholder="Escribe el contenido del bloque." required></textarea>
-              <span class="hint">Máximo 4.000 caracteres. El contenido se muestra como texto.</span>
-            </div>
-          </div>
-        } @else if (form.controls.type.value === 'gallery_3d') {
-          <div class="type-fields">
-            <div class="field">
-              <label for="title">TÍTULO (OPCIONAL)</label>
-              <input id="title" type="text" formControlName="title" maxlength="120" />
-            </div>
-            <div class="field">
-              <label for="description">DESCRIPCIÓN (OPCIONAL)</label>
-              <textarea id="description" rows="4" formControlName="description" maxlength="1000" placeholder="Describe la galería."></textarea>
-            </div>
-            <div class="field">
-              <label for="modelAuthor">AUTOR DEL MODELO (OPCIONAL)</label>
-              <input id="modelAuthor" type="text" formControlName="modelAuthor" maxlength="120" placeholder="Nombre del autor" />
-            </div>
-            <div class="field">
-              <label for="modelLicense">LICENCIA O ATRIBUCIÓN (OPCIONAL)</label>
-              <input id="modelLicense" type="text" formControlName="modelLicense" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" />
-              <span class="hint">Anota aquí las condiciones del modelo descargado para conservar su atribución.</span>
-            </div>
-            <app-model-upload
-              [value]="form.controls.modelPath.value"
-              [metadata]="modelMetadata()"
-              (valueChange)="form.controls.modelPath.setValue($event)"
-              (assetSelected)="onAssetSelected($event)"
-            />
-            <div class="field">
-              <label for="modelHeight">ALTURA DEL VISOR</label>
-              <select id="modelHeight" formControlName="modelHeight">
-                <option value="compact">Compacta</option><option value="standard">Normal</option><option value="tall">Alta</option>
-              </select>
-            </div>
-            <label class="check-row"><input type="checkbox" formControlName="autoRotate" /> Rotar modelo automáticamente</label>
-            <label class="check-row"><input type="checkbox" formControlName="zoomEnabled" /> Permitir zoom</label>
-          </div>
-        } @else {
-          <div class="type-fields">
-            <div class="field">
-              <label for="title">TÍTULO</label>
-              <input id="title" type="text" formControlName="title" maxlength="120" placeholder="Título del bloque" required />
-            </div>
-
-            <div class="items-heading">
-              <div>
-                <h2>{{ usesRoadmapItems ? 'Etapas' : 'Tarjetas' }}</h2>
-                <span class="hint">Agrega entre 1 y {{ maxItems }} elementos.</span>
-              </div>
-              <button class="btn" type="button" (click)="addItem()" [disabled]="items.length >= maxItems">AÑADIR</button>
-            </div>
-
-            <div class="items-list" formArrayName="items">
-              @for (item of items.controls; track item; let i = $index) {
-                <fieldset class="item-card" [formGroupName]="i">
-                  <legend class="mono">ELEMENTO {{ i + 1 }}</legend>
-                  @if (usesRoadmapItems) {
-                    <div class="field">
-                      <label [for]="'when-' + i">FECHA O ETAPA</label>
-                      <input [id]="'when-' + i" type="text" formControlName="when" maxlength="80" placeholder="2026 · FASE 1" />
-                    </div>
-                  }
-                  <div class="field">
-                    <label [for]="'item-title-' + i">TÍTULO</label>
-                    <input [id]="'item-title-' + i" type="text" formControlName="title" maxlength="120" placeholder="Título del elemento" />
-                  </div>
-                  <div class="field">
-                    <label [for]="'item-description-' + i">DESCRIPCIÓN</label>
-                    <textarea [id]="'item-description-' + i" rows="3" formControlName="description" maxlength="1000" placeholder="Descripción breve"></textarea>
-                  </div>
-                  @if (!usesRoadmapItems) {
-                    <div class="field">
-                      <label [for]="'item-icon-' + i">ETIQUETA (OPCIONAL)</label>
-                      <input [id]="'item-icon-' + i" type="text" formControlName="icon" maxlength="60" placeholder="01" />
-                    </div>
-                  }
-                  <button class="remove-item" type="button" (click)="removeItem(i)" [attr.aria-label]="'Quitar elemento ' + (i + 1)">QUITAR ELEMENTO</button>
-                </fieldset>
-              } @empty {
-                <p class="empty-items">Todavía no hay elementos. Usa “Añadir” para comenzar.</p>
-              }
-            </div>
-          </div>
-        }
-
-        <div class="field field-inline">
-          <label for="published">PUBLICAR EN EL SITIO</label>
-          <input id="published" type="checkbox" formControlName="published" />
-        </div>
-
-        @if (errorMessage()) {
-          <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
-        }
-
-        <div class="actions">
-          <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
-          <button type="submit" class="btn primary" [disabled]="submitting()">
-            @if (submitting()) {
-              GUARDANDO…
-            } @else {
-              GUARDAR BLOQUE
-            }
-          </button>
-        </div>
-      </form>
+  @if (!typeChosen()) {
+    <!-- Step 1: type catalog -->
+    <p class="hint step-hint">Paso 1 de 2. Elige qué tipo de contenido vas a agregar. Después del primer guardado el tipo ya no se puede cambiar.</p>
+    <div class="type-catalog">
+      @for (type of types; track type) {
+        <button type="button" class="type-card" (click)="chooseType(type)">
+          <span class="type-name">{{ typeLabels[type] }}</span>
+          <span class="type-what">{{ typeCatalog[type].what }}</span>
+          <span class="type-when mono">{{ typeCatalog[type].when }}</span>
+        </button>
+      }
     </div>
+  } @else {
+    <div class="editor-grid">
+      <div class="form-card">
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="type-badge-row">
+            <span class="type-badge mono">TIPO · {{ typeLabels[form.controls.type.value] | uppercase }}</span>
+            @if (isEditMode()) {
+              <span class="hint inline-hint">El tipo de un bloque guardado no se puede cambiar.</span>
+            } @else {
+              <button type="button" class="link-action" (click)="changeType()">CAMBIAR TIPO</button>
+            }
+          </div>
 
-    <aside class="preview-panel" aria-label="Vista previa del bloque">
-      <div class="preview-heading">
-        <div>
-          <span class="eyebrow mono">VISTA PREVIA</span>
-          <h2>Así se verá el bloque</h2>
+          <fieldset class="form-step">
+            <legend class="mono">1 · CONTENIDO</legend>
+            <p class="hint">Español obligatorio donde se indica. El inglés es opcional: si queda vacío se muestra el español.</p>
+
+            @switch (form.controls.type.value) {
+              @case ('hero') {
+                <div class="pair">
+                  <div class="field"><label for="eyebrow">ETIQUETA <span class="lang">ES</span></label><input id="eyebrow" type="text" formControlName="eyebrow" maxlength="80" placeholder="DISEÑO // DESARROLLO" /></div>
+                  <div class="field"><label for="eyebrowEn">ETIQUETA <span class="lang">EN</span></label><input id="eyebrowEn" type="text" formControlName="eyebrowEn" maxlength="80" placeholder="DESIGN // DEVELOPMENT" /></div>
+                </div>
+                <div class="pair">
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                </div>
+                <div class="pair">
+                  <div class="field"><label for="lead">INTRODUCCIÓN <span class="lang">ES</span></label><textarea id="lead" rows="3" formControlName="lead" maxlength="300"></textarea></div>
+                  <div class="field"><label for="leadEn">INTRODUCCIÓN <span class="lang">EN</span></label><textarea id="leadEn" rows="3" formControlName="leadEn" maxlength="300"></textarea></div>
+                </div>
+              }
+              @case ('text') {
+                <div class="pair">
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                </div>
+                <div class="pair">
+                  <div class="field"><label for="body">TEXTO <span class="lang">ES</span> <span class="req">obligatorio</span></label><textarea id="body" rows="7" formControlName="body" maxlength="4000"></textarea></div>
+                  <div class="field"><label for="bodyEn">TEXTO <span class="lang">EN</span></label><textarea id="bodyEn" rows="7" formControlName="bodyEn" maxlength="4000"></textarea></div>
+                </div>
+                <span class="hint">Máximo 4.000 caracteres por idioma.</span>
+              }
+              @case ('gallery_3d') {
+                <div class="pair">
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                </div>
+                <div class="pair">
+                  <div class="field"><label for="description">DESCRIPCIÓN <span class="lang">ES</span></label><textarea id="description" rows="4" formControlName="description" maxlength="1000"></textarea></div>
+                  <div class="field"><label for="descriptionEn">DESCRIPCIÓN <span class="lang">EN</span></label><textarea id="descriptionEn" rows="4" formControlName="descriptionEn" maxlength="1000"></textarea></div>
+                </div>
+                <app-model-upload
+                  [value]="form.controls.modelPath.value"
+                  [metadata]="modelMetadata()"
+                  (valueChange)="form.controls.modelPath.setValue($event)"
+                  (assetSelected)="onAssetSelected($event)"
+                />
+                <div class="pair">
+                  <div class="field"><label for="modelAuthor">AUTOR DEL MODELO</label><input id="modelAuthor" type="text" formControlName="modelAuthor" maxlength="120" /></div>
+                  <div class="field"><label for="modelLicense">LICENCIA O ATRIBUCIÓN</label><input id="modelLicense" type="text" formControlName="modelLicense" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" /></div>
+                </div>
+                <div class="field"><label for="modelHeight">ALTURA DEL VISOR</label>
+                  <select id="modelHeight" formControlName="modelHeight"><option value="compact">Compacta</option><option value="standard">Normal</option><option value="tall">Alta</option></select>
+                </div>
+                <label class="check-row"><input type="checkbox" formControlName="autoRotate" /> Rotar modelo automáticamente</label>
+                <label class="check-row"><input type="checkbox" formControlName="zoomEnabled" /> Permitir zoom</label>
+              }
+              @default {
+                <div class="pair">
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                </div>
+
+                <div class="items-heading">
+                  <div>
+                    <h2>{{ usesRoadmapItems ? 'Etapas' : 'Tarjetas' }}</h2>
+                    <span class="hint">Entre 1 y {{ maxItems }} elementos.</span>
+                  </div>
+                  <button class="btn" type="button" (click)="addItem()" [disabled]="items.length >= maxItems">AÑADIR</button>
+                </div>
+
+                <div class="items-list" formArrayName="items">
+                  @for (item of items.controls; track item; let i = $index) {
+                    <fieldset class="item-card" [formGroupName]="i">
+                      <legend class="mono">ELEMENTO {{ i + 1 }}</legend>
+                      @if (usesRoadmapItems) {
+                        <div class="pair">
+                          <div class="field"><label [for]="'when-' + i">FECHA O ETAPA <span class="lang">ES</span> <span class="req">obligatorio</span></label><input [id]="'when-' + i" type="text" formControlName="when" maxlength="80" placeholder="2026 · FASE 1" /></div>
+                          <div class="field"><label [for]="'whenEn-' + i">FECHA O ETAPA <span class="lang">EN</span></label><input [id]="'whenEn-' + i" type="text" formControlName="whenEn" maxlength="80" placeholder="2026 · PHASE 1" /></div>
+                        </div>
+                      }
+                      <div class="pair">
+                        <div class="field"><label [for]="'item-title-' + i">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input [id]="'item-title-' + i" type="text" formControlName="title" maxlength="120" /></div>
+                        <div class="field"><label [for]="'item-titleEn-' + i">TÍTULO <span class="lang">EN</span></label><input [id]="'item-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" /></div>
+                      </div>
+                      <div class="pair">
+                        <div class="field"><label [for]="'item-description-' + i">DESCRIPCIÓN <span class="lang">ES</span> <span class="req">obligatorio</span></label><textarea [id]="'item-description-' + i" rows="3" formControlName="description" maxlength="1000"></textarea></div>
+                        <div class="field"><label [for]="'item-descriptionEn-' + i">DESCRIPCIÓN <span class="lang">EN</span></label><textarea [id]="'item-descriptionEn-' + i" rows="3" formControlName="descriptionEn" maxlength="1000"></textarea></div>
+                      </div>
+                      @if (!usesRoadmapItems) {
+                        <div class="field narrow"><label [for]="'item-icon-' + i">ETIQUETA (MISMA EN AMBOS IDIOMAS)</label><input [id]="'item-icon-' + i" type="text" formControlName="icon" maxlength="60" placeholder="01" /></div>
+                      }
+                      <button class="remove-item" type="button" (click)="removeItem(i)" [attr.aria-label]="'Quitar elemento ' + (i + 1)">QUITAR ELEMENTO</button>
+                    </fieldset>
+                  } @empty {
+                    <p class="empty-items">Todavía no hay elementos. Usa "Añadir" para comenzar.</p>
+                  }
+                </div>
+              }
+            }
+          </fieldset>
+
+          <fieldset class="form-step">
+            <legend class="mono">2 · UBICACIÓN Y APARIENCIA</legend>
+            <div class="field">
+              <label for="placement">DÓNDE APARECE EN LA PÁGINA</label>
+              <select id="placement" formControlName="placement">
+                @if (isEditMode()) { <option value="keep">Mantener ubicación actual</option> }
+                @for (placement of placements; track placement.value) { <option [value]="placement.value">{{ placement.label }}</option> }
+              </select>
+              <span class="hint">Puedes afinar el orden arrastrando el bloque en "Estructura de portada".</span>
+            </div>
+            <div class="field">
+              <label for="page">PÁGINA</label>
+              <select id="page" formControlName="page"><option value="home">Inicio / portada</option>@if (isEditMode() && form.controls.page.value !== 'home') { <option [value]="form.controls.page.value">Página existente: {{ form.controls.page.value }}</option> }</select>
+            </div>
+            <div class="settings-grid">
+              <div class="field"><label for="width">ANCHO</label><select id="width" formControlName="width"><option value="small">Pequeño</option><option value="medium">Mediano</option><option value="wide">Amplio</option><option value="full">Completo</option></select></div>
+              <div class="field"><label for="alignment">ALINEAR A</label><select id="alignment" formControlName="alignment"><option value="left">La izquierda</option><option value="center">El centro</option><option value="right">La derecha</option></select></div>
+              <div class="field"><label for="spacing">ESPACIO VERTICAL</label><select id="spacing" formControlName="spacing"><option value="compact">Reducido</option><option value="normal">Normal</option><option value="spacious">Amplio</option></select></div>
+              <div class="field"><label for="background">FONDO</label><select id="background" formControlName="background"><option value="transparent">Transparente</option><option value="surface">Con fondo</option></select></div>
+            </div>
+            @if (form.controls.background.value === 'surface') {
+              <div class="field"><label for="backgroundOpacity">OPACIDAD DEL FONDO · {{ form.controls.backgroundOpacity.value }}%</label><input id="backgroundOpacity" type="range" min="0" max="100" formControlName="backgroundOpacity" /></div>
+            }
+            <label class="check-row"><input type="checkbox" formControlName="borderless" /> Sin bordes</label>
+          </fieldset>
+
+          <fieldset class="form-step">
+            <legend class="mono">3 · PUBLICACIÓN</legend>
+            <label class="check-row"><input id="published" type="checkbox" formControlName="published" /> Mostrar en el sitio público</label>
+            <span class="hint">Si lo desmarcas queda como borrador y no aparece en la portada.</span>
+          </fieldset>
+
+          @if (errorMessage()) {
+            <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
+          }
+
+          <div class="actions">
+            <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
+            <button type="submit" class="btn primary" [disabled]="submitting()">
+              {{ submitting() ? 'GUARDANDO…' : 'GUARDAR BLOQUE' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="preview-panel" aria-label="Vista previa del bloque">
+        <div class="preview-heading">
+          <div>
+            <span class="eyebrow mono">VISTA PREVIA</span>
+            <h2>Así se verá el bloque</h2>
+          </div>
+          <div class="preview-tools">
+            <div class="lang-switch mono" role="group" aria-label="Idioma de la vista previa">
+              <button type="button" [class.on]="previewLang() === 'es'" [attr.aria-pressed]="previewLang() === 'es'" (click)="previewLang.set('es')">ES</button>
+              <button type="button" [class.on]="previewLang() === 'en'" [attr.aria-pressed]="previewLang() === 'en'" (click)="previewLang.set('en')">EN</button>
+            </div>
+            <span class="preview-status mono">{{ form.controls.published.value ? 'PUBLICADO' : 'BORRADOR' }}</span>
+          </div>
         </div>
-        <span class="preview-status mono">{{ form.controls.published.value ? 'PUBLICADO' : 'BORRADOR' }}</span>
-      </div>
-      <div class="preview-canvas">
-        <app-block-dispatcher [block]="previewBlock()" />
-      </div>
-      <p class="hint">La vista previa usa el mismo componente que el sitio público.</p>
-    </aside>
-  </div>
+        <div class="preview-canvas">
+          <app-block-dispatcher [block]="previewBlock()" [lang]="previewLang()" />
+        </div>
+        <p class="hint">La vista previa usa el mismo componente que el sitio público.</p>
+      </aside>
+    </div>
+  }
 </section>

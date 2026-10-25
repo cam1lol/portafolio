@@ -1,4 +1,5 @@
 <div class="model-field">
+  @if (mode === 'block') {
   <div class="field">
     <label for="existing-model">MODELO EN LA BIBLIOTECA</label>
     <select id="existing-model" [value]="value" (change)="selectExisting($event)">
@@ -18,6 +19,7 @@
       <span class="hint">La biblioteca todavía está vacía.</span>
     }
   </div>
+  }
 
   <label for="model-file">MODELO 3D (.GLB)</label>
   <input
@@ -31,6 +33,8 @@
 
   @if (uploading()) {
     <p class="status" role="status">Validando y subiendo modelo…</p>
+  } @else if (mode === 'library') {
+    @if (lastUploaded()) { <p class="status" role="status">Subido: {{ lastUploaded() }}</p> }
   } @else if (value) {
     <div class="current-model">
       <span class="mono">{{ value }}</span>

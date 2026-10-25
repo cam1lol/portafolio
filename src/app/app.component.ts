@@ -26,13 +26,21 @@ export class AppComponent implements OnInit {
   }
 
   private trackVisit(): void {
+    const path = location.pathname;
+    const lang = this.transloco.getActiveLang() === 'en' ? 'en' : 'es';
     this.supabase.client
       .from('visits')
-      .insert({ path: location.pathname })
+      .insert({ path, lang })
       .then(({ error }) => {
-        if (error) {
-          console.error('Failed to record visit', error);
+        if (!error) return;
+        // PGRST204: `visits.lang` does not exist yet (migration 0006 pending); keep counting visits.
+        if (error.code === 'PGRST204') {
+          this.supabase.client.from('visits').insert({ path }).then(({ error: retryError }) => {
+            if (retryError) console.error('Failed to record visit', retryError);
+          });
+          return;
         }
+        console.error('Failed to record visit', error);
       });
   }
 

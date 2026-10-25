@@ -46,5 +46,17 @@
   "rd3": "Migrating scenes to WebGPU for more visual complexity while keeping 60fps. Navigable world mode.",
   "ct_h": "LET'S BUILD\nTOGETHER",
   "ct_l": "Available for freelance projects and full-stack roles. Reply within 24h.",
-  "ct_b": "kmilo0230@gmail.com"
+  "ct_b": "kmilo0230@gmail.com",
+  "cm_h": "COMMENTS",
+  "cm_d": "Leave your thoughts. Published after review.",
+  "cm_name": "Your name",
+  "cm_name_err": "Enter your name (80 characters max).",
+  "cm_body": "Comment",
+  "cm_body_err": "Write a comment (2000 characters max).",
+  "cm_send": "Send comment",
+  "cm_sending": "Sending…",
+  "cm_ok": "Thanks. Your comment will be published once reviewed.",
+  "cm_err": "Could not send. Please try again in a moment.",
+  "cm_wait": "Please wait a minute before sending another comment.",
+  "cm_empty": "No published comments yet. Be the first."
 }

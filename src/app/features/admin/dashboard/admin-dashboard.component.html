@@ -22,3 +22,26 @@
     }
   </div>
 </div>
+
+<section class="lang-panel" aria-labelledby="lang-title">
+  <div class="lang-head">
+    <h3 id="lang-title" class="mono">IDIOMAS</h3>
+    <span class="lang-top mono">IDIOMA PRINCIPAL · <strong>{{ loading() ? '—' : topLanguage() }}</strong></span>
+  </div>
+  <table class="lang-table">
+    <thead class="mono">
+      <tr><th scope="col"></th><th scope="col">ES</th><th scope="col">EN</th><th scope="col">SIN IDIOMA</th></tr>
+    </thead>
+    <tbody>
+      @for (row of languageRows(); track row.label) {
+        <tr>
+          <th scope="row">{{ row.label }}</th>
+          <td>{{ loading() ? '—' : row.es }} <span class="share mono">{{ loading() ? '' : row.esShare + '%' }}</span></td>
+          <td>{{ loading() ? '—' : row.en }} <span class="share mono">{{ loading() ? '' : row.enShare + '%' }}</span></td>
+          <td class="muted">{{ loading() ? '—' : row.untagged }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <p class="lang-note">Las visitas registradas antes de activar el idioma aparecen en "sin idioma". El porcentaje se calcula solo sobre las que tienen idioma.</p>
+</section>

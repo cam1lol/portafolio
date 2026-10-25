@@ -13,8 +13,8 @@ const LIST_ITEM_MAX = 300;
 const SUBPROJECT_NAME_MAX = 120;
 const SUBPROJECT_DESC_MAX = 400;
 
-function requiredTextValidators(maxLength: number) {
-  return [Validators.required, Validators.maxLength(maxLength), noControlCharsValidator()];
+function requiredTextValidators(maxLength: number, multiline = false) {
+  return [Validators.required, Validators.maxLength(maxLength), noControlCharsValidator({ allowNewlines: multiline })];
 }
 
 type SubprojectGroup = FormGroup<{
@@ -31,11 +31,11 @@ function subprojectGroup(name = '', descEs = '', descEn = ''): SubprojectGroup {
     }),
     descEs: new FormControl(descEs, {
       nonNullable: true,
-      validators: [Validators.maxLength(SUBPROJECT_DESC_MAX), noControlCharsValidator()],
+      validators: [Validators.maxLength(SUBPROJECT_DESC_MAX), noControlCharsValidator({ allowNewlines: true })],
     }),
     descEn: new FormControl(descEn, {
       nonNullable: true,
-      validators: [Validators.maxLength(SUBPROJECT_DESC_MAX), noControlCharsValidator()],
+      validators: [Validators.maxLength(SUBPROJECT_DESC_MAX), noControlCharsValidator({ allowNewlines: true })],
     }),
   });
 }
@@ -68,8 +68,8 @@ export class AdminExperienceFormComponent implements OnInit {
     tagEs: new FormControl('', { nonNullable: true, validators: requiredTextValidators(TAG_MAX) }),
     tagEn: new FormControl('', { nonNullable: true, validators: requiredTextValidators(TAG_MAX) }),
     isCurrent: new FormControl(false, { nonNullable: true }),
-    summaryEs: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX) }),
-    summaryEn: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX) }),
+    summaryEs: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX, true) }),
+    summaryEn: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX, true) }),
     published: new FormControl(false, { nonNullable: true }),
     pointsEs: new FormArray<FormControl<string>>([]),
     pointsEn: new FormArray<FormControl<string>>([]),

@@ -17,17 +17,21 @@ export class ModelUploadComponent implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly modelAssets = inject(ModelAssetsService);
 
+  /** `library`: upload only (Modelos 3D page), no picker and no "remove from block". */
+  @Input() mode: 'block' | 'library' = 'block';
   @Input() value = '';
   @Input() metadata: ModelAssetMetadata = { title: '', author: '', license: '' };
   @Output() valueChange = new EventEmitter<string>();
   @Output() assetSelected = new EventEmitter<ModelAsset | null>();
 
   protected readonly uploading = signal(false);
+  protected readonly lastUploaded = signal('');
   protected readonly uploadError = signal('');
   protected readonly loadingModels = signal(true);
   protected readonly models = signal<ModelAsset[]>([]);
 
   ngOnInit(): void {
+    if (this.mode === 'library') return;
     this.refreshModels();
   }
 
@@ -81,6 +85,7 @@ export class ModelUploadComponent implements OnInit {
         updatedAt: new Date().toISOString(),
       };
       this.models.update((models) => [uploaded, ...models.filter((model) => model.path !== path)]);
+      this.lastUploaded.set(uploaded.title);
       this.assetSelected.emit(uploaded);
     } catch (error) {
       console.error('Failed to upload GLB model to Supabase Storage', error);

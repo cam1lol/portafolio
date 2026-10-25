@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { UpperCasePipe } from '@angular/common';
 import {
   FormArray,
   FormControl,
@@ -16,7 +17,7 @@ import { switchMap } from 'rxjs';
 import { PageBlockPlacement, PageItemsService } from '../../../core/data/page-items.service';
 import { ModelAsset, ModelAssetMetadata } from '../../../core/data/model-asset.model';
 
-const BLOCK_TYPES: Block['type'][] = ['hero', 'card_grid', 'roadmap', 'text', 'gallery_3d'];
+const BLOCK_TYPES: Block['type'][] = ['hero', 'text', 'card_grid', 'roadmap', 'gallery_3d'];
 const MAX_ITEMS = 12;
 
 const TYPE_LABELS: Record<Block['type'], string> = {
@@ -27,32 +28,44 @@ const TYPE_LABELS: Record<Block['type'], string> = {
   gallery_3d: 'Galería 3D',
 };
 
+/** Shown in the type catalog (step 1) so the choice is made by purpose, not by name. */
+const TYPE_CATALOG: Record<Block['type'], { what: string; when: string }> = {
+  hero: { what: 'Etiqueta, título grande y una introducción.', when: 'Para abrir un tema nuevo o destacar un mensaje.' },
+  text: { what: 'Título opcional y un párrafo de texto.', when: 'Para explicar algo con calma.' },
+  card_grid: { what: 'Título y de 1 a 12 tarjetas con título, descripción y etiqueta.', when: 'Para listar beneficios, pasos o capacidades.' },
+  roadmap: { what: 'Título y de 1 a 12 etapas con fecha o estado.', when: 'Para planes, hitos o una línea de tiempo.' },
+  gallery_3d: { what: 'Visor 3D interactivo con un modelo GLB y su atribución.', when: 'Para mostrar un objeto 3D que el visitante puede girar.' },
+};
+
 const AFTER_ITEM_PATTERN = /^after-item:(section:[a-z_]+|block:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i;
 
-const GLB_PATH_PATTERN =/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.glb$/i;
+const GLB_PATH_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.glb$/i;
 
 type BlockItemForm = FormGroup<{
   when: FormControl<string>;
+  whenEn: FormControl<string>;
   title: FormControl<string>;
+  titleEn: FormControl<string>;
   description: FormControl<string>;
+  descriptionEn: FormControl<string>;
   icon: FormControl<string>;
 }>;
 
-interface BlockItemValue {
-  when?: string;
-  title?: string;
-  description?: string;
-  icon?: string;
-}
+type BlockItemValue = Record<string, unknown>;
 
 interface BlockEditorValue {
   type: Block['type'];
   page: string;
   title: string;
+  titleEn: string;
   eyebrow: string;
+  eyebrowEn: string;
   lead: string;
+  leadEn: string;
   body: string;
+  bodyEn: string;
   description: string;
+  descriptionEn: string;
   modelPath: string;
   modelAuthor: string;
   modelLicense: string;
@@ -67,13 +80,28 @@ interface BlockEditorValue {
   spacing: 'compact' | 'normal' | 'spacious';
   placement: PageBlockPlacement;
   published: boolean;
-  items: Array<{ when: string; title: string; description: string; icon: string }>;
+  items: Array<{
+    when: string;
+    whenEn: string;
+    title: string;
+    titleEn: string;
+    description: string;
+    descriptionEn: string;
+    icon: string;
+  }>;
+}
+
+function textControl(maxLength: number, multiline = false, value = ''): FormControl<string> {
+  return new FormControl(value, {
+    nonNullable: true,
+    validators: [Validators.maxLength(maxLength), noControlCharsValidator({ allowNewlines: multiline })],
+  });
 }
 
 @Component({
   selector: 'app-admin-block-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent],
+  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent, UpperCasePipe],
   templateUrl: './admin-block-form.component.html',
   styleUrl: './admin-block-form.component.css',
 })
@@ -85,6 +113,7 @@ export class AdminBlockFormComponent implements OnInit {
 
   protected readonly types = BLOCK_TYPES;
   protected readonly typeLabels = TYPE_LABELS;
+  protected readonly typeCatalog = TYPE_CATALOG;
   protected readonly maxItems = MAX_ITEMS;
   protected readonly placements: Array<{ value: PageBlockPlacement; label: string }> = [
     { value: 'end', label: 'Al final de la página' },
@@ -95,6 +124,7 @@ export class AdminBlockFormComponent implements OnInit {
     { value: 'before:experience', label: 'Antes de experiencia' }, { value: 'after:experience', label: 'Después de experiencia' },
     { value: 'before:services', label: 'Antes de servicios' }, { value: 'after:services', label: 'Después de servicios' },
     { value: 'before:roadmap', label: 'Antes del roadmap' }, { value: 'after:roadmap', label: 'Después del roadmap' },
+    { value: 'before:comments', label: 'Antes de comentarios' }, { value: 'after:comments', label: 'Después de comentarios' },
     { value: 'before:contact', label: 'Antes de contacto' },
   ];
 
@@ -104,35 +134,27 @@ export class AdminBlockFormComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(100), noControlCharsValidator()],
     }),
-    title: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(120), noControlCharsValidator()],
-    }),
-    eyebrow: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(80), noControlCharsValidator()],
-    }),
-    lead: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(300), noControlCharsValidator()],
-    }),
-    body: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(4000), noControlCharsValidator()],
-    }),
-    description: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(1000), noControlCharsValidator()],
-    }),
+    title: textControl(120),
+    titleEn: textControl(120),
+    eyebrow: textControl(80),
+    eyebrowEn: textControl(80),
+    lead: textControl(300, true),
+    leadEn: textControl(300, true),
+    body: textControl(4000, true),
+    bodyEn: textControl(4000, true),
+    description: textControl(1000, true),
+    descriptionEn: textControl(1000, true),
     modelPath: new FormControl('', { nonNullable: true }),
-    modelAuthor: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(120), noControlCharsValidator()] }),
-    modelLicense: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(160), noControlCharsValidator()] }),
+    modelAuthor: textControl(120),
+    modelLicense: textControl(160),
     modelHeight: new FormControl<'compact' | 'standard' | 'tall'>('standard', { nonNullable: true }),
-    autoRotate: new FormControl(true, { nonNullable: true }), zoomEnabled: new FormControl(true, { nonNullable: true }),
+    autoRotate: new FormControl(true, { nonNullable: true }),
+    zoomEnabled: new FormControl(true, { nonNullable: true }),
     width: new FormControl<'small' | 'medium' | 'wide' | 'full'>('medium', { nonNullable: true }),
     alignment: new FormControl<'left' | 'center' | 'right'>('left', { nonNullable: true }),
     background: new FormControl<'transparent' | 'surface'>('transparent', { nonNullable: true }),
-    backgroundOpacity: new FormControl(35, { nonNullable: true }), borderless: new FormControl(true, { nonNullable: true }),
+    backgroundOpacity: new FormControl(35, { nonNullable: true }),
+    borderless: new FormControl(true, { nonNullable: true }),
     spacing: new FormControl<'compact' | 'normal' | 'spacious'>('normal', { nonNullable: true }),
     placement: new FormControl<PageBlockPlacement>('end', { nonNullable: true }),
     published: new FormControl(false, { nonNullable: true }),
@@ -142,6 +164,9 @@ export class AdminBlockFormComponent implements OnInit {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly isEditMode = signal(false);
+  /** Step 1 (catalog) until a type is picked; skipped when editing or when `?type=` is given. */
+  protected readonly typeChosen = signal(false);
+  protected readonly previewLang = signal<'es' | 'en'>('es');
 
   private blockId: string | null = null;
 
@@ -165,6 +190,7 @@ export class AdminBlockFormComponent implements OnInit {
     }
 
     this.isEditMode.set(true);
+    this.typeChosen.set(true);
     this.blocksService.getAll().subscribe({
       next: (blocks) => {
         const block = blocks.find((candidate) => candidate.id === this.blockId);
@@ -178,6 +204,21 @@ export class AdminBlockFormComponent implements OnInit {
         this.errorMessage.set('No se pudo cargar el bloque.');
       },
     });
+  }
+
+  chooseType(type: Block['type']): void {
+    this.form.controls.type.setValue(type);
+    if ((type === 'card_grid' || type === 'roadmap') && this.items.length === 0) {
+      this.items.push(this.createItem());
+    }
+    this.typeChosen.set(true);
+    this.errorMessage.set('');
+  }
+
+  /** Only before the first save: the type of a stored block is locked. */
+  changeType(): void {
+    if (this.isEditMode()) return;
+    this.typeChosen.set(false);
   }
 
   addItem(): void {
@@ -226,8 +267,9 @@ export class AdminBlockFormComponent implements OnInit {
     this.submitting.set(true);
 
     if (this.blockId) {
+      // The type is locked after creation, so it is never part of the update.
       this.blocksService
-        .update(this.blockId, { type: value.type, page, config, published: value.published })
+        .update(this.blockId, { page, config, published: value.published })
         .pipe(switchMap(() => this.pageItems.placeBlock(page, this.blockId!, value.placement)))
         .subscribe({
           next: () => {
@@ -270,7 +312,7 @@ export class AdminBlockFormComponent implements OnInit {
     const params = this.route.snapshot.queryParamMap;
     const type = params.get('type');
     if (type && (BLOCK_TYPES as string[]).includes(type)) {
-      this.form.controls.type.setValue(type as Block['type']);
+      this.chooseType(type as Block['type']);
     }
 
     const placement = params.get('placement');
@@ -293,10 +335,15 @@ export class AdminBlockFormComponent implements OnInit {
       type: block.type,
       page: block.page,
       title: this.stringValue(config['title']),
+      titleEn: this.stringValue(config['title_en']),
       eyebrow: this.stringValue(config['eyebrow']),
+      eyebrowEn: this.stringValue(config['eyebrow_en']),
       lead: this.stringValue(config['lead']),
+      leadEn: this.stringValue(config['lead_en']),
       body: this.stringValue(config['body']),
+      bodyEn: this.stringValue(config['body_en']),
       description: this.stringValue(config['description']),
+      descriptionEn: this.stringValue(config['description_en']),
       modelPath: this.stringValue(config['modelPath']),
       modelAuthor: this.stringValue(config['modelAuthor']),
       modelLicense: this.stringValue(config['modelLicense']),
@@ -322,23 +369,15 @@ export class AdminBlockFormComponent implements OnInit {
   }
 
   private createItem(item: BlockItemValue = {}): BlockItemForm {
+    const value = (key: string): string => this.stringValue(item[key]);
     return new FormGroup({
-      when: new FormControl(this.stringValue(item.when), {
-        nonNullable: true,
-        validators: [Validators.maxLength(80), noControlCharsValidator()],
-      }),
-      title: new FormControl(this.stringValue(item.title), {
-        nonNullable: true,
-        validators: [Validators.maxLength(120), noControlCharsValidator()],
-      }),
-      description: new FormControl(this.stringValue(item.description), {
-        nonNullable: true,
-        validators: [Validators.maxLength(1000), noControlCharsValidator()],
-      }),
-      icon: new FormControl(this.stringValue(item.icon), {
-        nonNullable: true,
-        validators: [Validators.maxLength(60), noControlCharsValidator()],
-      }),
+      when: textControl(80, false, value('when')),
+      whenEn: textControl(80, false, value('when_en')),
+      title: textControl(120, false, value('title')),
+      titleEn: textControl(120, false, value('title_en')),
+      description: textControl(1000, true, value('description')),
+      descriptionEn: textControl(1000, true, value('description_en')),
+      icon: textControl(60, false, value('icon')),
     });
   }
 
@@ -348,10 +387,10 @@ export class AdminBlockFormComponent implements OnInit {
     const body = value.body.trim();
 
     if ((value.type === 'hero' || value.type === 'card_grid' || value.type === 'roadmap') && !title) {
-      return 'Este bloque necesita un título.';
+      return 'Este bloque necesita un título en español.';
     }
     if (value.type === 'text' && !body) {
-      return 'El bloque de texto necesita un cuerpo.';
+      return 'El bloque de texto necesita un texto en español.';
     }
     if (value.type === 'gallery_3d') {
       const modelPath = value.modelPath.trim();
@@ -373,10 +412,10 @@ export class AdminBlockFormComponent implements OnInit {
       for (let index = 0; index < value.items.length; index += 1) {
         const item = value.items[index];
         if (!item.title.trim() || !item.description.trim()) {
-          return `Completa el título y la descripción del elemento ${index + 1}.`;
+          return `Completa el título y la descripción en español del elemento ${index + 1}.`;
         }
         if (value.type === 'roadmap' && !item.when.trim()) {
-          return `Completa la fecha o etapa del elemento ${index + 1}.`;
+          return `Completa la fecha o etapa en español del elemento ${index + 1}.`;
         }
       }
     }
@@ -385,38 +424,43 @@ export class AdminBlockFormComponent implements OnInit {
 
   private invalidVisibleFields(): string[] {
     const invalidFields: string[] = [];
+    const controls = this.form.controls;
     const check = (label: string, control: { invalid: boolean; markAsTouched: () => void }): void => {
       control.markAsTouched();
       if (control.invalid) invalidFields.push(label);
     };
+    const checkPair = (label: string, es: FormControl<string>, en: FormControl<string>): void => {
+      check(`${label} (ES)`, es);
+      check(`${label} (EN)`, en);
+    };
 
-    check('la página', this.form.controls.page);
+    check('la página', controls.page);
 
-    switch (this.form.controls.type.value) {
+    switch (controls.type.value) {
       case 'hero':
-        check('la etiqueta', this.form.controls.eyebrow);
-        check('el título', this.form.controls.title);
-        check('la introducción', this.form.controls.lead);
+        checkPair('la etiqueta', controls.eyebrow, controls.eyebrowEn);
+        checkPair('el título', controls.title, controls.titleEn);
+        checkPair('la introducción', controls.lead, controls.leadEn);
         break;
       case 'text':
-        check('el título', this.form.controls.title);
-        check('el texto', this.form.controls.body);
+        checkPair('el título', controls.title, controls.titleEn);
+        checkPair('el texto', controls.body, controls.bodyEn);
         break;
       case 'gallery_3d':
-        check('el título', this.form.controls.title);
-        check('la descripción', this.form.controls.description);
-        check('el autor', this.form.controls.modelAuthor);
-        check('la licencia', this.form.controls.modelLicense);
+        checkPair('el título', controls.title, controls.titleEn);
+        checkPair('la descripción', controls.description, controls.descriptionEn);
+        check('el autor', controls.modelAuthor);
+        check('la licencia', controls.modelLicense);
         break;
       case 'card_grid':
       case 'roadmap':
-        check('el título', this.form.controls.title);
-        this.items.markAllAsTouched();
+        checkPair('el título', controls.title, controls.titleEn);
         this.items.controls.forEach((item, index) => {
-          if (this.usesRoadmapItems) check(`la etapa ${index + 1}`, item.controls.when);
-          check(`el título del elemento ${index + 1}`, item.controls.title);
-          check(`la descripción del elemento ${index + 1}`, item.controls.description);
-          if (!this.usesRoadmapItems) check(`la etiqueta del elemento ${index + 1}`, item.controls.icon);
+          const n = index + 1;
+          if (this.usesRoadmapItems) checkPair(`la etapa ${n}`, item.controls.when, item.controls.whenEn);
+          checkPair(`el título del elemento ${n}`, item.controls.title, item.controls.titleEn);
+          checkPair(`la descripción del elemento ${n}`, item.controls.description, item.controls.descriptionEn);
+          if (!this.usesRoadmapItems) check(`la etiqueta del elemento ${n}`, item.controls.icon);
         });
         break;
     }
@@ -424,12 +468,12 @@ export class AdminBlockFormComponent implements OnInit {
     return invalidFields;
   }
 
+  /** Base keys hold Spanish; `_en` keys are only written when filled (see BlockDispatcherComponent). */
   private toConfig(value: BlockEditorValue): Record<string, unknown> {
-    const title = value.title.trim();
-    const eyebrow = value.eyebrow.trim();
-    const lead = value.lead.trim();
-    const body = value.body.trim();
-    const description = value.description.trim();
+    const pair = (key: string, es: string, en: string): Record<string, string> => {
+      const english = en.trim();
+      return english ? { [key]: es.trim(), [`${key}_en`]: english } : { [key]: es.trim() };
+    };
 
     const layout = {
       width: value.width,
@@ -440,33 +484,38 @@ export class AdminBlockFormComponent implements OnInit {
       spacing: value.spacing,
     };
     const withLayout = (config: Record<string, unknown>) => ({ ...config, layout });
+    const title = pair('title', value.title, value.titleEn);
+
     switch (value.type) {
       case 'hero':
-        return withLayout({ eyebrow, title, lead });
+        return withLayout({ ...pair('eyebrow', value.eyebrow, value.eyebrowEn), ...title, ...pair('lead', value.lead, value.leadEn) });
       case 'card_grid':
         return withLayout({
-          title,
+          ...title,
           items: value.items.map((item) => ({
-            title: item.title.trim(),
-            description: item.description.trim(),
+            ...pair('title', item.title, item.titleEn),
+            ...pair('description', item.description, item.descriptionEn),
             ...(item.icon.trim() ? { icon: item.icon.trim() } : {}),
           })),
         });
       case 'roadmap':
         return withLayout({
-          title,
+          ...title,
           items: value.items.map((item) => ({
-            when: item.when.trim(),
-            title: item.title.trim(),
-            description: item.description.trim(),
+            ...pair('when', item.when, item.whenEn),
+            ...pair('title', item.title, item.titleEn),
+            ...pair('description', item.description, item.descriptionEn),
           })),
         });
       case 'text':
-        return withLayout({ title, body });
+        return withLayout({ ...title, ...pair('body', value.body, value.bodyEn) });
       case 'gallery_3d':
         return withLayout({
-          title, description, modelPath: value.modelPath.trim(),
-          modelAuthor: value.modelAuthor.trim(), modelLicense: value.modelLicense.trim(),
+          ...title,
+          ...pair('description', value.description, value.descriptionEn),
+          modelPath: value.modelPath.trim(),
+          modelAuthor: value.modelAuthor.trim(),
+          modelLicense: value.modelLicense.trim(),
           viewer: { height: value.modelHeight, autoRotate: value.autoRotate, zoomEnabled: value.zoomEnabled },
         });
     }

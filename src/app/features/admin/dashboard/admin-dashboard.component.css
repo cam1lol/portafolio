@@ -47,3 +47,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.lang-panel {
+  border: 1px solid var(--line);
+  background: var(--graphite);
+  border-radius: var(--r);
+  padding: 20px;
+}
+
+.lang-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.lang-head h3 { margin: 0; color: var(--ember); font-size: 10px; letter-spacing: 0.12em; }
+.lang-top { color: var(--steel); font-size: 10px; letter-spacing: 0.1em; }
+.lang-top strong { color: var(--bone); font-size: 13px; }
+
+.lang-table { width: 100%; border-collapse: collapse; }
+.lang-table th,
+.lang-table td { padding: 10px 8px; border-bottom: 1px solid var(--line-soft); text-align: right; color: var(--bone); font-size: 13px; }
+.lang-table thead th { color: var(--steel); font-size: 10px; letter-spacing: 0.1em; font-weight: 400; }
+.lang-table tbody th { text-align: left; font-weight: 500; color: var(--bone-dim); }
+.lang-table td { font-variant-numeric: tabular-nums; }
+.lang-table .share { margin-left: 6px; color: var(--steel); font-size: 10px; }
+.lang-table .muted { color: var(--steel); }
+.lang-note { margin: 12px 0 0; color: var(--steel); font-size: 11px; line-height: 1.5; }

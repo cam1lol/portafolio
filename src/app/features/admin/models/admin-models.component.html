@@ -2,13 +2,24 @@
   <div class="page-head">
     <div>
       <p class="eyebrow">Biblioteca 3D</p>
-      <p class="help">Modelos GLB guardados en Storage. Los modelos usados por un bloque no se pueden eliminar desde aquí.</p>
+      <p class="help">Modelos GLB guardados en Storage. Súbelos aquí y úsalos en cualquier Galería 3D. Los modelos en uso no se pueden eliminar.</p>
     </div>
     <div class="page-actions">
       <button type="button" class="btn" (click)="refresh()" [disabled]="loading()">ACTUALIZAR</button>
       <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">CREAR BLOQUE 3D</a>
     </div>
   </div>
+
+  <section class="upload-card" aria-labelledby="upload-title">
+    <h3 id="upload-title" class="eyebrow">Subir modelo</h3>
+    <p class="hint">Agrega un GLB a la biblioteca sin crear un bloque. Luego podrás usarlo en cualquier Galería 3D.</p>
+    <div class="upload-meta">
+      <label class="meta-field">TÍTULO<input type="text" maxlength="120" [value]="uploadMeta().title" (input)="setMeta('title', $event)" /></label>
+      <label class="meta-field">AUTOR<input type="text" maxlength="120" [value]="uploadMeta().author" (input)="setMeta('author', $event)" /></label>
+      <label class="meta-field">LICENCIA O ATRIBUCIÓN<input type="text" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" [value]="uploadMeta().license" (input)="setMeta('license', $event)" /></label>
+    </div>
+    <app-model-upload mode="library" [metadata]="uploadMeta()" (assetSelected)="onUploaded($event)" />
+  </section>
 
   @if (errorMessage()) { <p class="message error-msg" role="alert">{{ errorMessage() }}</p> }
   @if (successMessage()) { <p class="message success-msg" role="status">{{ successMessage() }}</p> }
@@ -17,8 +28,8 @@
     <p class="sub">Cargando modelos…</p>
   } @else if (models().length === 0) {
     <div class="empty-state">
-      <p class="sub">Todavía no hay modelos en el bucket.</p>
-      <a class="btn" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">Subir el primer modelo</a>
+      <p class="sub">Todavía no hay modelos. Usa "Subir modelo" de arriba para agregar el primero.</p>
+      <a class="btn" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">O crea un bloque 3D directamente</a>
     </div>
   } @else {
     <ul class="model-list">

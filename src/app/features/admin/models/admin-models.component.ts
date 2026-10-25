@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Block } from '../../../core/data/block.model';
-import { ModelAsset } from '../../../core/data/model-asset.model';
+import { ModelAsset, ModelAssetMetadata } from '../../../core/data/model-asset.model';
 import { BlocksService } from '../../../core/data/blocks.service';
 import { ModelAssetsService } from '../../../core/data/model-assets.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
+import { ModelUploadComponent } from '../../../shared/model-upload/model-upload.component';
 
 interface ModelAssetRow extends ModelAsset {
   usedBy: string[];
@@ -14,7 +15,7 @@ interface ModelAssetRow extends ModelAsset {
 @Component({
   selector: 'app-admin-models',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ModelUploadComponent],
   templateUrl: './admin-models.component.html',
   styleUrl: './admin-models.component.css',
 })
@@ -27,6 +28,20 @@ export class AdminModelsComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
+  /** Metadata typed in the "Subir modelo" card, stored with the GLB in Storage. */
+  protected readonly uploadMeta = signal<ModelAssetMetadata>({ title: '', author: '', license: '' });
+
+  setMeta(field: keyof ModelAssetMetadata, event: Event): void {
+    const value = (event.target as HTMLInputElement).value.slice(0, field === 'license' ? 160 : 120);
+    this.uploadMeta.update((meta) => ({ ...meta, [field]: value }));
+  }
+
+  onUploaded(asset: ModelAsset | null): void {
+    if (!asset) return;
+    this.successMessage.set(`"${asset.title}" se agregó a la biblioteca.`);
+    this.uploadMeta.set({ title: '', author: '', license: '' });
+    this.load();
+  }
 
   ngOnInit(): void {
     this.load();

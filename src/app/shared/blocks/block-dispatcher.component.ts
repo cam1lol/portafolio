@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Block } from '../../core/data/block.model';
 import { Gallery3dComponent } from '../gallery-3d/gallery-3d.component';
 
@@ -61,7 +62,29 @@ interface BlockLayout {
   styleUrl: './block-dispatcher.component.css',
 })
 export class BlockDispatcherComponent {
+  private readonly transloco = inject(TranslocoService);
+
   @Input({ required: true }) block!: Block;
+  /** Forces a language (admin preview); defaults to the active site language. */
+  @Input() lang: 'es' | 'en' | null = null;
+
+  /**
+   * Bilingual config: the base key holds Spanish, `<key>_en` holds English.
+   * Blocks created before the bilingual form only have the base key, so English falls back to it.
+   */
+  private text(source: Record<string, unknown> | undefined, key: string): string {
+    if (!source) return '';
+    const base = typeof source[key] === 'string' ? (source[key] as string) : '';
+    const lang = this.lang ?? (this.transloco.activeLang() === 'en' ? 'en' : 'es');
+    if (lang !== 'en') return base;
+    const english = source[`${key}_en`];
+    return typeof english === 'string' && english.trim() ? english : base;
+  }
+
+  private items(): Array<Record<string, unknown>> {
+    const raw = this.block.config['items'];
+    return Array.isArray(raw) ? raw.filter((item): item is Record<string, unknown> => !!item && typeof item === 'object') : [];
+  }
 
   protected get layout(): BlockLayout {
     const raw = (this.block.config['layout'] ?? {}) as Record<string, unknown>;
@@ -84,24 +107,42 @@ export class BlockDispatcherComponent {
   }
 
   protected get heroConfig(): HeroConfig {
-    return this.block.config as unknown as HeroConfig;
+    const config = this.block.config;
+    return { eyebrow: this.text(config, 'eyebrow'), title: this.text(config, 'title'), lead: this.text(config, 'lead') };
   }
 
   protected get cardGridConfig(): CardGridConfig {
-    const config = this.block.config as unknown as CardGridConfig;
-    return { title: config.title, items: config.items ?? [] };
+    return {
+      title: this.text(this.block.config, 'title'),
+      items: this.items().map((item) => ({
+        title: this.text(item, 'title'),
+        description: this.text(item, 'description'),
+        icon: typeof item['icon'] === 'string' ? (item['icon'] as string) : undefined,
+      })),
+    };
   }
 
   protected get roadmapConfig(): RoadmapConfig {
-    const config = this.block.config as unknown as RoadmapConfig;
-    return { title: config.title, items: config.items ?? [] };
+    return {
+      title: this.text(this.block.config, 'title'),
+      items: this.items().map((item) => ({
+        when: this.text(item, 'when'),
+        title: this.text(item, 'title'),
+        description: this.text(item, 'description'),
+      })),
+    };
   }
 
   protected get textConfig(): TextConfig {
-    return this.block.config as unknown as TextConfig;
+    return { title: this.text(this.block.config, 'title'), body: this.text(this.block.config, 'body') };
   }
 
   protected get gallery3dConfig(): Gallery3dConfig {
-    return this.block.config as unknown as Gallery3dConfig;
+    const config = this.block.config as unknown as Gallery3dConfig;
+    return {
+      ...config,
+      title: this.text(this.block.config, 'title'),
+      description: this.text(this.block.config, 'description'),
+    };
   }
 }

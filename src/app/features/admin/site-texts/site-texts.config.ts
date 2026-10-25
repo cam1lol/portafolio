@@ -57,7 +57,7 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
   {
     id: 'heads',
     title: 'Encabezados de sección',
-    help: 'Título y descripción corta que acompañan a Proyectos, Experiencia, Servicios y Roadmap.',
+    help: 'Título y descripción corta que acompañan a Proyectos, Experiencia, Servicios, Roadmap y Comentarios.',
     fields: [
       { key: 'wk_h', label: 'Proyectos · título', bilingual: true, maxLength: 60 },
       { key: 'wk_d', label: 'Proyectos · descripción', bilingual: true, maxLength: 160 },
@@ -67,6 +67,8 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
       { key: 'sv_d', label: 'Servicios · descripción', bilingual: true, maxLength: 160 },
       { key: 'rd_h', label: 'Roadmap · título', bilingual: true, maxLength: 60 },
       { key: 'rd_d', label: 'Roadmap · descripción', bilingual: true, maxLength: 160 },
+      { key: 'cm_h', label: 'Comentarios · título', bilingual: true, maxLength: 60 },
+      { key: 'cm_d', label: 'Comentarios · descripción', bilingual: true, maxLength: 160 },
     ],
   },
   {

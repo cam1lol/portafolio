@@ -20,12 +20,12 @@ const LONG_MAX = 4000;
 const LIST_ITEM_MAX = 300;
 const URL_MAX = 2000;
 
-function requiredTextValidators(maxLength: number) {
-  return [Validators.required, Validators.maxLength(maxLength), noControlCharsValidator()];
+function requiredTextValidators(maxLength: number, multiline = false) {
+  return [Validators.required, Validators.maxLength(maxLength), noControlCharsValidator({ allowNewlines: multiline })];
 }
 
-function optionalTextValidators(maxLength: number) {
-  return [Validators.maxLength(maxLength), noControlCharsValidator()];
+function optionalTextValidators(maxLength: number, multiline = false) {
+  return [Validators.maxLength(maxLength), noControlCharsValidator({ allowNewlines: multiline })];
 }
 
 function listItemControl(value = ''): FormControl<string> {
@@ -55,10 +55,10 @@ export class AdminProjectFormComponent implements OnInit {
     status: new FormControl<'live' | 'wip' | 'archive'>('wip', { nonNullable: true, validators: [Validators.required] }),
     icon: new FormControl('', { nonNullable: true, validators: requiredTextValidators(ICON_MAX) }),
     typeLabel: new FormControl('', { nonNullable: true, validators: requiredTextValidators(TYPE_LABEL_MAX) }),
-    summaryEs: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX) }),
-    summaryEn: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX) }),
-    longEs: new FormControl('', { nonNullable: true, validators: optionalTextValidators(LONG_MAX) }),
-    longEn: new FormControl('', { nonNullable: true, validators: optionalTextValidators(LONG_MAX) }),
+    summaryEs: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX, true) }),
+    summaryEn: new FormControl('', { nonNullable: true, validators: requiredTextValidators(SUMMARY_MAX, true) }),
+    longEs: new FormControl('', { nonNullable: true, validators: optionalTextValidators(LONG_MAX, true) }),
+    longEn: new FormControl('', { nonNullable: true, validators: optionalTextValidators(LONG_MAX, true) }),
     previewImage: new FormControl('', { nonNullable: true, validators: optionalTextValidators(URL_MAX) }),
     repoUrl: new FormControl('', { nonNullable: true, validators: optionalTextValidators(URL_MAX) }),
     liveUrl: new FormControl('', { nonNullable: true, validators: optionalTextValidators(URL_MAX) }),

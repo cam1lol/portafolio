@@ -22,6 +22,9 @@
       @case ('roadmap') {
         @if (visibility()['roadmap'] !== false) { <app-roadmap /> }
       }
+      @case ('comments') {
+        @if (visibility()['comments'] !== false) { <app-comments /> }
+      }
       @case ('contact') {
         @if (visibility()['contact'] !== false) { <app-contact /> }
       }
