@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AdminProject, ProjectsService } from '../../../core/data/projects.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 
 @Component({
   selector: 'app-admin-projects-list',
@@ -12,6 +13,7 @@ import { AdminProject, ProjectsService } from '../../../core/data/projects.servi
 })
 export class AdminProjectsListComponent implements OnInit {
   private readonly projectsService = inject(ProjectsService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly rows = signal<AdminProject[]>([]);
   protected readonly loading = signal(true);
@@ -67,10 +69,12 @@ export class AdminProjectsListComponent implements OnInit {
     });
   }
 
-  remove(row: AdminProject): void {
-    if (!confirm(`¿Borrar el proyecto "${row.name}"? Esta acción no se puede deshacer.`)) {
-      return;
-    }
+  async remove(row: AdminProject): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Eliminar proyecto',
+      message: `Se eliminará el proyecto "${row.name}" con sus textos en ES/EN. Esta acción no se puede deshacer.`,
+    });
+    if (!confirmed) return;
     this.projectsService.delete(row.id).subscribe({
       next: () => {
         this.rows.update((rows) => rows.filter((r) => r.id !== row.id));

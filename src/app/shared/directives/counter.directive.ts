@@ -1,16 +1,22 @@
-import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, inject } from '@angular/core';
 
 @Directive({
   selector: '[appCounter]',
   standalone: true,
 })
-export class CounterDirective implements OnInit, OnDestroy {
+export class CounterDirective implements OnChanges, OnDestroy {
   @Input({ required: true }) appCounter!: number;
 
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   private intervalId?: ReturnType<typeof setInterval>;
 
-  ngOnInit(): void {
+  /** Re-runs when the target changes (the value can arrive later from Supabase). */
+  ngOnChanges(): void {
+    if (this.intervalId !== undefined) {
+      clearInterval(this.intervalId);
+      this.intervalId = undefined;
+    }
+
     const host = this.elementRef.nativeElement;
     const to = this.appCounter;
 

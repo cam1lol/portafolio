@@ -13,8 +13,18 @@
   } @else if (blocks().length === 0) {
     <p class="sub">No hay bloques todavía.</p>
   } @else {
-    <ul class="blocks-list" cdkDropList (cdkDropListDropped)="drop($event)">
-      @for (block of blocks(); track block.id) {
+    <div class="filters" aria-label="Filtrar bloques">
+      <label class="filter-field">BUSCAR<input type="search" placeholder="Título o tipo" [value]="search()" (input)="setSearch($event)" /></label>
+      <label class="filter-field">TIPO<select [value]="typeFilter()" (change)="setTypeFilter($event)"><option value="all">Todos</option>@for (type of types; track type) { <option [value]="type">{{ typeLabels[type] }}</option> }</select></label>
+      <label class="filter-field">ESTADO<select [value]="statusFilter()" (change)="setStatusFilter($event)"><option value="all">Todos</option><option value="published">Publicados</option><option value="draft">Borradores</option></select></label>
+      @if (hasActiveFilters()) { <button class="btn" type="button" (click)="clearFilters()">LIMPIAR FILTROS</button> }
+    </div>
+    @if (hasActiveFilters()) { <p class="sub filter-help">Los filtros son solo para encontrar bloques; el orden se ajusta en “Orden portada”.</p> }
+    @if (filteredBlocks().length === 0) {
+      <p class="sub">No hay bloques que coincidan con estos filtros.</p>
+    } @else {
+    <ul class="blocks-list" cdkDropList [cdkDropListDisabled]="hasActiveFilters()" (cdkDropListDropped)="drop($event)">
+      @for (block of filteredBlocks(); track block.id) {
         <li class="blocks-row" cdkDrag>
           <span class="drag-handle mono" cdkDragHandle>::</span>
           <span class="row-type mono">{{ typeLabels[block.type] }}</span>
@@ -38,5 +48,6 @@
         </li>
       }
     </ul>
+    }
   }
 </div>

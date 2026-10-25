@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { SiteTextPipe } from '../../shared/site-text/site-text.pipe';
 import { ProjectsService } from '../../core/data/projects.service';
 import { Project } from '../../core/data/project.model';
 import { ModalService } from '../../core/modal/modal.service';
@@ -12,7 +13,7 @@ type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [TranslocoPipe, IconComponent, RevealDirective],
+  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })

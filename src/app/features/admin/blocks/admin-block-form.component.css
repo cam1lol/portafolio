@@ -89,6 +89,13 @@ form {
   resize: vertical;
 }
 
+.field input[type='range'] { width: 100%; accent-color: var(--ember); }
+.appearance-fields { min-width: 0; margin: 18px 0; padding: 18px; border: 1px solid var(--line); border-radius: var(--r); }
+.appearance-fields legend { padding: 0 7px; color: var(--ember); font: 10px 'Space Mono', monospace; letter-spacing: .1em; }
+.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; }
+.check-row { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; color: var(--bone-dim); font-size: 12px; }
+.check-row input { accent-color: var(--ember); }
+
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
@@ -245,6 +252,9 @@ form {
 }
 
 .preview-canvas ::ng-deep .block {
+  --block-width: 100%;
+  width: calc(100% - 1rem);
+  margin-inline: auto;
   padding: 30px 20px;
 }
 
@@ -278,4 +288,6 @@ form {
   .preview-panel {
     padding: 18px;
   }
+
+  .settings-grid { grid-template-columns: 1fr; }
 }

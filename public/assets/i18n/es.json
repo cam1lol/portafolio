@@ -19,7 +19,7 @@
   "cta2": "DESCARGAR CV",
   "ab_h": "MANIFIESTO",
   "ab_d": "El criterio detrás de cada decisión técnica y visual.",
-  "ab_body": "Diseño y construyo como una sola disciplina. <b>Cada milisegundo de carga, cada transición y cada componente</b> existe por una razón. <span class=\"muted\">Nada decorativo, nada genérico —</span> sistemas que se sienten rápidos, precisos y deliberados.",
+  "ab_body": "Diseño y construyo como una sola disciplina. **Cada milisegundo de carga, cada transición y cada componente** existe por una razón. __Nada decorativo, nada genérico —__ sistemas que se sienten rápidos, precisos y deliberados.",
   "wk_h": "PROYECTOS",
   "wk_d": "Filtra por disciplina. Toca una card para el detalle.",
   "t_all": "TODOS",
@@ -44,7 +44,7 @@
   "rd2": "Marca de ropa con visualización 3D interactiva. Blender exportado a GLB para configurador web en Three.js.",
   "rd3h": "Portfolio v2 · WebGPU",
   "rd3": "Migración de escenas a WebGPU para mayor complejidad visual manteniendo 60fps. Modo mundo navegable.",
-  "ct_h": "TRABAJEMOS<br>JUNTOS",
+  "ct_h": "TRABAJEMOS\nJUNTOS",
   "ct_l": "Disponible para proyectos freelance y roles full-stack. Respuesta en menos de 24h.",
   "ct_b": "camilo@ejemplo.com"
 }

@@ -1,0 +1,81 @@
+<section class="site-texts-page">
+  <div class="page-head">
+    <p class="eyebrow">Textos del sitio</p>
+    <p class="help">Los textos fijos de la portada. Cada bloque se guarda por separado. Si dejas un campo vacío, se muestra el texto original del archivo de traducciones.</p>
+  </div>
+
+  <nav class="group-index mono" aria-label="Ir a un grupo">
+    @for (group of groups; track group.id) {
+      <button type="button" (click)="scrollTo(group.id)">{{ group.title }}</button>
+    }
+  </nav>
+
+  @if (errorMessage()) {
+    <p class="error-msg" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando textos…</p>
+  } @else {
+    @for (group of groups; track group.id; let groupIndex = $index) {
+      <form class="group-card" [id]="'group-' + group.id" [formGroup]="forms[group.id]" (ngSubmit)="save(group)" novalidate>
+        <div class="group-head">
+          <div>
+            <span class="group-index-no mono">{{ (groupIndex + 1).toString().padStart(2, '0') }}</span>
+            <h2>{{ group.title }}</h2>
+            <p class="help">{{ group.help }}</p>
+          </div>
+        </div>
+
+        @for (field of group.fields; track field.key) {
+          <div class="field-row" [class.bilingual]="field.bilingual">
+            @for (column of columnsOf(field); track column) {
+              <div class="field">
+                <label [for]="column">
+                  {{ field.label }}
+                  @if (field.bilingual) {
+                    <span class="lang mono">{{ column.endsWith('_en') ? 'EN' : 'ES' }}</span>
+                  } @else {
+                    <span class="lang mono">ES + EN</span>
+                  }
+                </label>
+                @if (field.multiline) {
+                  <textarea [id]="column" [rows]="field.markup ? 5 : 3" [formControlName]="column" [attr.maxlength]="field.maxLength"></textarea>
+                } @else {
+                  <input
+                    [id]="column"
+                    [type]="field.kind === 'email' ? 'email' : 'text'"
+                    [attr.inputmode]="field.kind === 'number' ? 'numeric' : null"
+                    [formControlName]="column"
+                    [attr.maxlength]="field.maxLength"
+                    [placeholder]="field.kind === 'email' ? 'tu@email.com' : ''"
+                  />
+                }
+                @if (hasError(group.id, column)) {
+                  <span class="field-error mono" role="alert">{{ errorText(field, group.id, column) }}</span>
+                }
+              </div>
+            }
+          </div>
+          @if (field.markup) {
+            <span class="hint">Formato: **negrita**, __atenuado__. Enter crea un salto de línea.</span>
+          }
+          @if (field.hint) { <span class="hint">{{ field.hint }}</span> }
+          @if (reference(field)) { <span class="hint">Ahora se muestra: {{ reference(field) }}</span> }
+        }
+
+        <div class="group-actions">
+          @switch (saveState()[group.id]) {
+            @case ('saved') {
+              @if (forms[group.id].pristine) { <span class="state ok mono" role="status">GUARDADO</span> }
+            }
+            @case ('error') { <span class="state err mono" role="alert">REVISA LOS CAMPOS O TU SESIÓN</span> }
+          }
+          <button type="submit" class="btn primary" [disabled]="saveState()[group.id] === 'saving' || forms[group.id].pristine">
+            {{ saveState()[group.id] === 'saving' ? 'GUARDANDO…' : 'GUARDAR ' + (group.title | uppercase) }}
+          </button>
+        </div>
+      </form>
+    }
+  }
+</section>

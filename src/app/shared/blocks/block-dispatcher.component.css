@@ -1,6 +1,31 @@
 .block {
-  padding: 96px 0;
-  border-top: 1px solid var(--line-soft);
+  box-sizing: border-box;
+  width: min(var(--block-width, 100%), calc(100% - 2rem));
+  margin-inline: auto;
+  padding: var(--block-space, 56px) clamp(14px, 2vw, 28px);
+  border: 0;
+  border-radius: var(--r);
+  background: transparent;
+}
+
+.block--width-small { --block-width: 420px; }
+.block--width-medium { --block-width: 680px; }
+.block--width-wide { --block-width: 980px; }
+.block--width-full { --block-width: 1200px; }
+.block--align-left { margin-left: max(1rem, calc((100vw - 1200px) / 2)); margin-right: auto; }
+.block--align-center { margin-inline: auto; }
+.block--align-right { margin-left: auto; margin-right: max(1rem, calc((100vw - 1200px) / 2)); }
+.block--spacing-compact { --block-space: 22px; }
+.block--spacing-normal { --block-space: 56px; }
+.block--spacing-spacious { --block-space: 92px; }
+.block--surface { background: color-mix(in srgb, var(--graphite) var(--surface-opacity, 35%), transparent); }
+.block--border { border: 1px solid var(--line-soft); }
+.block-content { width: 100%; }
+
+@media (max-width: 640px) {
+  .block--align-left, .block--align-right { margin-inline: auto; }
+  .block--spacing-normal { --block-space: 34px; }
+  .block--spacing-spacious { --block-space: 54px; }
 }
 
 .block h2 {
@@ -35,7 +60,7 @@
 
 .svc {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 14px;
 }
 
@@ -43,8 +68,11 @@
   border: 1px solid var(--line);
   padding: 26px;
   border-radius: var(--r);
-  background: var(--graphite);
+  background: transparent;
 }
+
+.block:not(.block--border) .svc .s { border-color: transparent; }
+.block--surface .svc .s { background: transparent; }
 
 .svc .s .no {
   font-family: 'Space Mono', monospace;
@@ -111,4 +139,24 @@
 
 .gallery-3d-block p {
   font-style: italic;
+}
+.block .model-attribution { margin: 10px 0 0; color: var(--steel); font-size: 11px; font-style: normal; line-height: 1.5; }
+.gallery-placeholder,
+.gallery-note {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  border: 1px solid var(--line);
+  color: var(--steel);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.gallery-note {
+  min-height: auto;
+  place-items: start;
+  padding: 12px;
+  border: 0;
+  font-size: 12px;
+  letter-spacing: normal;
 }

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, map, of } from 'rxjs';
+import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
 export interface PageItem {
@@ -9,6 +9,20 @@ export interface PageItem {
   blockId?: string;
   sortOrder: number;
 }
+
+/**
+ * `before:`/`after:` take a section key; `after-item:` takes any `page_items.item_key`
+ * (`section:<key>` or `block:<uuid>`), used by "+ DEBAJO" in the admin structure page.
+ */
+export type PageBlockPlacement =
+  | 'keep'
+  | 'start'
+  | 'end'
+  | `before:${string}`
+  | `after:${string}`
+  | `after-item:${string}`;
+
+const HOME_SECTIONS = ['hero', 'ticker', 'manifesto', 'projects', 'experience', 'services', 'roadmap', 'contact'];
 
 interface PageItemRow {
   item_key: string;
@@ -63,6 +77,66 @@ export class PageItemsService {
           console.error('Failed to save page item order', error);
           throw error;
         }
+      }),
+    );
+  }
+
+  placeBlock(page: string, blockId: string, placement: PageBlockPlacement): Observable<void> {
+    if (placement === 'keep') return of(undefined);
+
+    return forkJoin({
+      items: this.getPageItems(page),
+      blocks: from(
+        this.supabase.client.from('blocks').select('id, page, sort_order').eq('page', page).order('sort_order'),
+      ),
+    }).pipe(
+      switchMap(({ items, blocks }) => {
+        if (blocks.error) throw blocks.error;
+
+        const ordered = [...items];
+        const existingKeys = new Set(ordered.map((item) => item.key));
+        if (page === 'home') {
+          for (const sectionKey of HOME_SECTIONS) {
+            const key = `section:${sectionKey}`;
+            if (!existingKeys.has(key)) {
+              ordered.push({ key, kind: 'section', sectionKey, sortOrder: ordered.length });
+              existingKeys.add(key);
+            }
+          }
+        }
+
+        for (const row of (blocks.data ?? []) as Array<{ id: string; page: string; sort_order: number }>) {
+          const key = `block:${row.id}`;
+          if (!existingKeys.has(key)) {
+            ordered.push({ key, kind: 'block', blockId: row.id, sortOrder: row.sort_order });
+            existingKeys.add(key);
+          }
+        }
+
+        const blockKey = `block:${blockId}`;
+        const withoutTarget = ordered.filter((item) => item.key !== blockKey);
+        let targetIndex = withoutTarget.length;
+        if (placement === 'start') {
+          targetIndex = 0;
+        } else if (placement.startsWith('after-item:')) {
+          const itemKey = placement.slice('after-item:'.length);
+          const itemIndex = withoutTarget.findIndex((item) => item.key === itemKey);
+          if (itemIndex >= 0) targetIndex = itemIndex + 1;
+        } else if (placement !== 'end') {
+          const [position, sectionKey] = placement.split(':');
+          const sectionIndex = withoutTarget.findIndex(
+            (item) => item.kind === 'section' && item.sectionKey === sectionKey,
+          );
+          if (sectionIndex >= 0) targetIndex = sectionIndex + (position === 'after' ? 1 : 0);
+        }
+
+        withoutTarget.splice(targetIndex, 0, {
+          key: blockKey,
+          kind: 'block',
+          blockId,
+          sortOrder: targetIndex,
+        });
+        return this.savePageOrder(page, withoutTarget);
       }),
     );
   }

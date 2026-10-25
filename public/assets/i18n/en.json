@@ -19,7 +19,7 @@
   "cta2": "DOWNLOAD CV",
   "ab_h": "MANIFESTO",
   "ab_d": "The reasoning behind every technical and visual decision.",
-  "ab_body": "I design and build as one discipline. <b>Every millisecond of load, every transition and every component</b> exists for a reason. <span class=\"muted\">Nothing decorative, nothing generic —</span> systems that feel fast, precise and deliberate.",
+  "ab_body": "I design and build as one discipline. **Every millisecond of load, every transition and every component** exists for a reason. __Nothing decorative, nothing generic —__ systems that feel fast, precise and deliberate.",
   "wk_h": "WORK",
   "wk_d": "Filter by discipline. Tap a card for detail.",
   "t_all": "ALL",
@@ -44,7 +44,7 @@
   "rd2": "Clothing brand with interactive 3D visualization. Blender exported to GLB for a web configurator in Three.js.",
   "rd3h": "Portfolio v2 · WebGPU",
   "rd3": "Migrating scenes to WebGPU for more visual complexity while keeping 60fps. Navigable world mode.",
-  "ct_h": "LET'S BUILD<br>TOGETHER",
+  "ct_h": "LET'S BUILD\nTOGETHER",
   "ct_l": "Available for freelance projects and full-stack roles. Reply within 24h.",
   "ct_b": "kmilo0230@gmail.com"
 }

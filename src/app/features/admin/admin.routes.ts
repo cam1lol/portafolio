@@ -7,11 +7,22 @@ import { AdminProjectsListComponent } from './projects/admin-projects-list.compo
 import { AdminProjectFormComponent } from './projects/admin-project-form.component';
 import { AdminExperienceListComponent } from './experience/admin-experience-list.component';
 import { AdminExperienceFormComponent } from './experience/admin-experience-form.component';
-import { AdminVisibilityComponent } from './visibility/admin-visibility.component';
 import { AdminCommentsComponent } from './comments/admin-comments.component';
-import { AdminBlocksListComponent } from './blocks/admin-blocks-list.component';
 import { AdminBlockFormComponent } from './blocks/admin-block-form.component';
-import { AdminHomeLayoutComponent } from './layout/admin-home-layout.component';
+import { AdminStructureComponent } from './structure/admin-structure.component';
+import { AdminCollectionListComponent } from './collections/admin-collection-list.component';
+import { AdminCollectionFormComponent } from './collections/admin-collection-form.component';
+import { AdminSiteTextsComponent } from './site-texts/admin-site-texts.component';
+
+/** List + create + edit routes for one simple collection (see collections/collection.config.ts). */
+function collectionRoutes(collection: string): Routes {
+  return [
+    { path: collection, component: AdminCollectionListComponent, data: { collection } },
+    { path: `${collection}/new`, component: AdminCollectionFormComponent, data: { collection } },
+    { path: `${collection}/:id/edit`, component: AdminCollectionFormComponent, data: { collection } },
+  ];
+}
+import { AdminModelsComponent } from './models/admin-models.component';
 
 export const ADMIN_ROUTES: Routes = [
   { path: 'login', component: AdminLoginComponent },
@@ -28,12 +39,19 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'experience', component: AdminExperienceListComponent },
       { path: 'experience/new', component: AdminExperienceFormComponent },
       { path: 'experience/:id/edit', component: AdminExperienceFormComponent },
-      { path: 'visibility', component: AdminVisibilityComponent },
-      { path: 'layout', component: AdminHomeLayoutComponent },
+      ...collectionRoutes('services'),
+      ...collectionRoutes('roadmap'),
+      ...collectionRoutes('ticker'),
+      { path: 'site-texts', component: AdminSiteTextsComponent },
+      { path: 'structure', component: AdminStructureComponent },
+      // Visibility, home order and the blocks list now live together in "structure".
+      { path: 'visibility', redirectTo: 'structure', pathMatch: 'full' },
+      { path: 'layout', redirectTo: 'structure', pathMatch: 'full' },
+      { path: 'blocks', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'comments', component: AdminCommentsComponent },
-      { path: 'blocks', component: AdminBlocksListComponent },
       { path: 'blocks/new', component: AdminBlockFormComponent },
       { path: 'blocks/:id/edit', component: AdminBlockFormComponent },
+      { path: 'models', component: AdminModelsComponent },
     ],
   },
 ];

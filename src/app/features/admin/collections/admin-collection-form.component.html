@@ -1,0 +1,61 @@
+<section class="collection-form">
+  <div class="form-heading">
+    <div>
+      <span class="eyebrow mono">{{ config.title | uppercase }} // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
+      <h1>{{ isEditMode() ? 'Editar ' : 'Nuevo: ' }}{{ config.singular }}</h1>
+    </div>
+    <a class="btn" [routerLink]="['/admin', config.path]">VOLVER A {{ config.title | uppercase }}</a>
+  </div>
+
+  @if (loading()) {
+    <p class="sub">Cargando…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <fieldset class="form-step">
+        <legend class="mono">1 · CONTENIDO</legend>
+        @for (field of config.fields; track field.name) {
+          <div class="field-row" [class.bilingual]="field.bilingual">
+            @for (column of columnsOf(field); track column) {
+              <div class="field">
+                <label [for]="column">
+                  {{ field.label }}
+                  @if (field.bilingual) { <span class="lang mono">{{ column.endsWith('_en') ? 'EN' : 'ES' }}</span> }
+                  @if (!field.required) { <span class="optional">opcional</span> }
+                </label>
+                @if (field.multiline) {
+                  <textarea [id]="column" rows="4" [formControlName]="column" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
+                } @else {
+                  <input [id]="column" type="text" [formControlName]="column" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''" />
+                }
+                @if (hasError(column)) {
+                  <span class="field-error mono" role="alert">{{ errorText(field, column) }}</span>
+                }
+              </div>
+            }
+          </div>
+          @if (field.hint) { <span class="hint">{{ field.hint }}</span> }
+        }
+      </fieldset>
+
+      <fieldset class="form-step">
+        <legend class="mono">2 · PUBLICACIÓN</legend>
+        <label class="check-row">
+          <input type="checkbox" [formControl]="published" />
+          Mostrar en el sitio público
+        </label>
+        <span class="hint">Si lo desmarcas queda guardado como borrador y no aparece en la portada.</span>
+      </fieldset>
+
+      @if (errorMessage()) {
+        <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <div class="actions">
+        <a class="btn" [routerLink]="['/admin', config.path]">CANCELAR</a>
+        <button type="submit" class="btn primary" [disabled]="submitting()">
+          {{ submitting() ? 'GUARDANDO…' : 'GUARDAR' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

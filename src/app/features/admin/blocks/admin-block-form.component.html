@@ -4,7 +4,7 @@
       <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
       <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : 'NUEVO BLOQUE' }}</h1>
     </div>
-    <a class="btn" routerLink="/admin/blocks">VOLVER A BLOQUES</a>
+    <a class="btn" routerLink="/admin/structure">VOLVER A ESTRUCTURA</a>
   </div>
 
   <div class="editor-grid">
@@ -22,11 +22,35 @@
 
         <div class="field">
           <label for="page">PÁGINA</label>
-          <input id="page" type="text" formControlName="page" maxlength="100" required />
+          <select id="page" formControlName="page"><option value="home">Inicio / portada</option>@if (isEditMode() && form.controls.page.value !== 'home') { <option [value]="form.controls.page.value">Página existente: {{ form.controls.page.value }}</option> }</select>
+          <span class="hint">Actualmente el sitio público tiene una página: Inicio / portada. Se pueden habilitar más páginas cuando existan rutas públicas para ellas.</span>
           @if (form.controls.page.touched && form.controls.page.invalid) {
             <span class="field-error mono">Indica una página válida (máximo 100 caracteres).</span>
           }
         </div>
+
+        <fieldset class="appearance-fields">
+          <legend>POSICIÓN Y APARIENCIA</legend>
+          <p class="hint">Primero elige dónde va. Luego ajusta su ancho, alineación y estilo. En móviles se adapta automáticamente.</p>
+          <div class="field">
+            <label for="placement">DÓNDE APARECE EN LA PÁGINA</label>
+            <select id="placement" formControlName="placement">
+              @if (isEditMode()) { <option value="keep">Mantener ubicación actual</option> }
+              @for (placement of placements; track placement.value) { <option [value]="placement.value">{{ placement.label }}</option> }
+            </select>
+            <span class="hint">Puedes afinar el orden arrastrando el bloque en “Estructura de portada”.</span>
+          </div>
+          <div class="settings-grid">
+            <div class="field"><label for="width">ANCHO DEL BLOQUE</label><select id="width" formControlName="width"><option value="small">Pequeño</option><option value="medium">Mediano</option><option value="wide">Amplio</option><option value="full">Completo</option></select></div>
+            <div class="field"><label for="alignment">ALINEAR A</label><select id="alignment" formControlName="alignment"><option value="left">La izquierda</option><option value="center">El centro</option><option value="right">La derecha</option></select></div>
+            <div class="field"><label for="spacing">ESPACIO VERTICAL</label><select id="spacing" formControlName="spacing"><option value="compact">Reducido</option><option value="normal">Normal</option><option value="spacious">Amplio</option></select></div>
+            <div class="field"><label for="background">FONDO DEL BLOQUE</label><select id="background" formControlName="background"><option value="transparent">Transparente</option><option value="surface">Con fondo</option></select></div>
+          </div>
+          @if (form.controls.background.value === 'surface') {
+            <div class="field"><label for="backgroundOpacity">OPACIDAD DEL FONDO · {{ form.controls.backgroundOpacity.value }}%</label><input id="backgroundOpacity" type="range" min="0" max="100" formControlName="backgroundOpacity" /></div>
+          }
+          <label class="check-row"><input type="checkbox" formControlName="borderless" /> Sin bordes</label>
+        </fieldset>
 
         @if (form.controls.type.value === 'hero') {
           <div class="type-fields">
@@ -64,8 +88,30 @@
             <div class="field">
               <label for="description">DESCRIPCIÓN (OPCIONAL)</label>
               <textarea id="description" rows="4" formControlName="description" maxlength="1000" placeholder="Describe la galería."></textarea>
-              <span class="hint">Este bloque aún muestra texto; no carga modelos 3D.</span>
             </div>
+            <div class="field">
+              <label for="modelAuthor">AUTOR DEL MODELO (OPCIONAL)</label>
+              <input id="modelAuthor" type="text" formControlName="modelAuthor" maxlength="120" placeholder="Nombre del autor" />
+            </div>
+            <div class="field">
+              <label for="modelLicense">LICENCIA O ATRIBUCIÓN (OPCIONAL)</label>
+              <input id="modelLicense" type="text" formControlName="modelLicense" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" />
+              <span class="hint">Anota aquí las condiciones del modelo descargado para conservar su atribución.</span>
+            </div>
+            <app-model-upload
+              [value]="form.controls.modelPath.value"
+              [metadata]="modelMetadata()"
+              (valueChange)="form.controls.modelPath.setValue($event)"
+              (assetSelected)="onAssetSelected($event)"
+            />
+            <div class="field">
+              <label for="modelHeight">ALTURA DEL VISOR</label>
+              <select id="modelHeight" formControlName="modelHeight">
+                <option value="compact">Compacta</option><option value="standard">Normal</option><option value="tall">Alta</option>
+              </select>
+            </div>
+            <label class="check-row"><input type="checkbox" formControlName="autoRotate" /> Rotar modelo automáticamente</label>
+            <label class="check-row"><input type="checkbox" formControlName="zoomEnabled" /> Permitir zoom</label>
           </div>
         } @else {
           <div class="type-fields">

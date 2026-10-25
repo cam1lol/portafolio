@@ -26,6 +26,39 @@
   letter-spacing: 0.1em;
 }
 
+.filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+
+.filter-field {
+  display: grid;
+  gap: 6px;
+  color: var(--steel);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+.filter-field input, .filter-field select {
+  min-width: 150px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--bone);
+  font: 12px 'Space Grotesk', sans-serif;
+}
+
+.filter-help { margin: 8px 0 12px; }
+
 .blocks-list {
   list-style: none;
   border: 1px solid var(--line);
@@ -42,6 +75,13 @@
   padding: 14px 20px;
   border-bottom: 1px solid var(--line-soft);
   background: var(--graphite);
+}
+
+@media (max-width: 760px) {
+  .blocks-row { flex-wrap: wrap; gap: 9px; padding: 12px; }
+  .row-page { flex-basis: calc(100% - 140px); }
+  .row-type { min-width: 0; }
+  .row-order { margin-left: auto; }
 }
 
 .blocks-row:last-child {

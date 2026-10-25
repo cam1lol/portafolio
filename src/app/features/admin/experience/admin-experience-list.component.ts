@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AdminExperience, ExperienceService } from '../../../core/data/experience.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 
 @Component({
   selector: 'app-admin-experience-list',
@@ -12,6 +13,7 @@ import { AdminExperience, ExperienceService } from '../../../core/data/experienc
 })
 export class AdminExperienceListComponent implements OnInit {
   private readonly experienceService = inject(ExperienceService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly rows = signal<AdminExperience[]>([]);
   protected readonly loading = signal(true);
@@ -67,10 +69,12 @@ export class AdminExperienceListComponent implements OnInit {
     });
   }
 
-  remove(row: AdminExperience): void {
-    if (!confirm(`¿Borrar la experiencia en "${row.company}"? Esta acción no se puede deshacer.`)) {
-      return;
-    }
+  async remove(row: AdminExperience): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Eliminar experiencia',
+      message: `Se eliminará la experiencia en "${row.company}" con sus logros y subproyectos. Esta acción no se puede deshacer.`,
+    });
+    if (!confirmed) return;
     this.experienceService.delete(row.id).subscribe({
       next: () => {
         this.rows.update((rows) => rows.filter((r) => r.id !== row.id));

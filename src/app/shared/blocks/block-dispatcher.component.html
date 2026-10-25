@@ -1,65 +1,47 @@
-@switch (block.type) {
-  @case ('hero') {
-    <section class="block hero-block wrap">
-      @if (heroConfig.eyebrow) {
-        <span class="eyebrow mono">{{ heroConfig.eyebrow }}</span>
-      }
-      <h2>{{ heroConfig.title }}</h2>
-      @if (heroConfig.lead) {
-        <p class="lead">{{ heroConfig.lead }}</p>
-      }
-    </section>
-  }
-  @case ('card_grid') {
-    <section class="block wrap">
-      @if (cardGridConfig.title) {
-        <h2>{{ cardGridConfig.title }}</h2>
-      }
-      <div class="svc">
-        @for (item of cardGridConfig.items; track item.title) {
-          <div class="s">
-            @if (item.icon) {
-              <span class="no mono">{{ item.icon }}</span>
-            }
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.description }}</p>
-          </div>
-        }
+<section class="block" [class]="layoutClasses" [style.--surface-opacity]="layout.surfaceOpacity">
+  @switch (block.type) {
+    @case ('hero') {
+      <div class="block-content hero-block">
+        @if (heroConfig.eyebrow) { <span class="eyebrow mono">{{ heroConfig.eyebrow }}</span> }
+        <h2>{{ heroConfig.title }}</h2>
+        @if (heroConfig.lead) { <p class="lead">{{ heroConfig.lead }}</p> }
       </div>
-    </section>
-  }
-  @case ('roadmap') {
-    <section class="block wrap">
-      @if (roadmapConfig.title) {
-        <h2>{{ roadmapConfig.title }}</h2>
-      }
-      <div class="road">
-        @for (item of roadmapConfig.items; track item.title) {
-          <div class="r">
-            <span class="when mono">{{ item.when }}</span>
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.description }}</p>
-          </div>
-        }
+    }
+    @case ('card_grid') {
+      <div class="block-content">
+        @if (cardGridConfig.title) { <h2>{{ cardGridConfig.title }}</h2> }
+        <div class="svc">@for (item of cardGridConfig.items; track item.title) {
+          <div class="s">@if (item.icon) { <span class="no mono">{{ item.icon }}</span> }<h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
+        }</div>
       </div>
-    </section>
+    }
+    @case ('roadmap') {
+      <div class="block-content">
+        @if (roadmapConfig.title) { <h2>{{ roadmapConfig.title }}</h2> }
+        <div class="road">@for (item of roadmapConfig.items; track item.title) {
+          <div class="r"><span class="when mono">{{ item.when }}</span><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
+        }</div>
+      </div>
+    }
+    @case ('text') {
+      <div class="block-content">@if (textConfig.title) { <h2>{{ textConfig.title }}</h2> }<p>{{ textConfig.body }}</p></div>
+    }
+    @case ('gallery_3d') {
+      <div class="block-content gallery-3d-block">
+        @if (gallery3dConfig.title) { <h2>{{ gallery3dConfig.title }}</h2> }
+        @if (gallery3dConfig.description) { <p>{{ gallery3dConfig.description }}</p> }
+        @if (gallery3dConfig.modelPath) {
+          @defer (on viewport; prefetch on idle) {
+            <app-gallery-3d [modelPath]="gallery3dConfig.modelPath!" [label]="gallery3dConfig.title || 'Galería 3D'"
+              [height]="gallery3dConfig.viewer?.height || 'standard'" [autoRotate]="gallery3dConfig.viewer?.autoRotate !== false"
+              [zoomEnabled]="gallery3dConfig.viewer?.zoomEnabled !== false" [showBorder]="false"
+              [surface]="layout.background === 'surface'" [surfaceOpacity]="layout.surfaceOpacity" />
+          } @placeholder { <div class="gallery-placeholder mono" aria-label="Visor 3D pendiente de cargar">CARGANDO VISOR 3D…</div> }
+          @if (gallery3dConfig.modelAuthor || gallery3dConfig.modelLicense) {
+            <p class="model-attribution">Modelo 3D: {{ gallery3dConfig.modelAuthor || 'autor no indicado' }}{{ gallery3dConfig.modelLicense ? ' · ' + gallery3dConfig.modelLicense : '' }}</p>
+          }
+        } @else { <p class="gallery-note">Esta galería todavía no tiene un modelo asignado.</p> }
+      </div>
+    }
   }
-  @case ('text') {
-    <section class="block wrap">
-      @if (textConfig.title) {
-        <h2>{{ textConfig.title }}</h2>
-      }
-      <p>{{ textConfig.body }}</p>
-    </section>
-  }
-  @case ('gallery_3d') {
-    <section class="block gallery-3d-block wrap">
-      @if (gallery3dConfig.title) {
-        <h2>{{ gallery3dConfig.title }}</h2>
-      }
-      @if (gallery3dConfig.description) {
-        <p>{{ gallery3dConfig.description }}</p>
-      }
-    </section>
-  }
-}
+</section>

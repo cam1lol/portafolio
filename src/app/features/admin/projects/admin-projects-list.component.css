@@ -35,6 +35,25 @@
   color: var(--ember);
 }
 
+.btn.primary {
+  color: var(--ink);
+  background: var(--ember);
+  border-color: var(--ember);
+  font-weight: 700;
+}
+
+.btn.primary:hover {
+  color: var(--ink);
+  opacity: 0.88;
+}
+
+.help {
+  margin: 8px 0 0;
+  color: var(--steel);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 .error-msg {
   font-size: 11px;
   color: var(--ember);

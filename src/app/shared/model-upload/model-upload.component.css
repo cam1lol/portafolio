@@ -1,0 +1,10 @@
+.model-field { margin: 0 0 16px; }
+.field { margin-bottom: 16px; }
+label { display: block; margin-bottom: 6px; color: var(--steel); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: .1em; }
+select, input[type='file'] { width: 100%; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); color: var(--bone); padding: 9px; font: 12px 'Space Grotesk', sans-serif; }
+input[type='file']:focus-visible, button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.hint, .status { display: block; margin: 6px 0 0; color: var(--steel); font-size: 11px; line-height: 1.5; }
+.current-model { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding: 9px 10px; border: 1px solid var(--line); color: var(--bone); font-size: 11px; }
+.current-model span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clear-model { flex: 0 0 auto; border: 0; background: transparent; color: var(--ember); cursor: pointer; font: 10px 'Space Mono', monospace; letter-spacing: .06em; }
+.upload-error { margin: 8px 0 0; color: var(--ember); font-size: 11px; line-height: 1.5; }

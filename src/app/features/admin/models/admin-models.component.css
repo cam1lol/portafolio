@@ -1,0 +1,27 @@
+.models-page { color: var(--bone); }
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.eyebrow { margin: 0 0 6px; color: var(--ember); font: 10px 'Space Mono', monospace; letter-spacing: .1em; text-transform: uppercase; }
+.help, .hint, .sub { color: var(--steel); font-size: 12px; line-height: 1.6; }
+.help { max-width: 680px; margin: 0; }
+.page-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--r); background: transparent; color: var(--bone); cursor: pointer; font: 10px 'Space Mono', monospace; letter-spacing: .06em; text-decoration: none; }
+.btn:hover:not(:disabled) { border-color: var(--ember); color: var(--ember); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn.primary { border-color: var(--ember); color: var(--ember); }
+.btn.danger { color: var(--ember); }
+.model-list { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
+.model-row { display: grid; grid-template-columns: minmax(180px, 1.2fr) minmax(160px, .8fr) minmax(180px, 1fr); gap: 18px; align-items: center; padding: 16px; border-bottom: 1px solid var(--line-soft); }
+.model-row:last-child { border-bottom: 0; }
+.model-main, .model-meta, .model-use { display: grid; gap: 5px; min-width: 0; }
+.model-main strong { font: 700 14px 'Space Grotesk', sans-serif; overflow-wrap: anywhere; }
+.model-file, .model-path { color: var(--steel); font-size: 10px; overflow-wrap: anywhere; }
+.model-meta { color: var(--bone-dim); font-size: 11px; }
+.model-use { justify-items: start; }
+.model-use small { color: var(--steel); font-size: 10px; line-height: 1.5; }
+.used-status, .unused-status { color: var(--good); font: 10px 'Space Mono', monospace; letter-spacing: .06em; }
+.unused-status { color: var(--steel); }
+.message { margin: 0 0 14px; padding: 10px 12px; border-left: 2px solid; font-size: 12px; }
+.error-msg { border-color: var(--ember); color: var(--ember); background: var(--ember-soft); }
+.success-msg { border-color: var(--good); color: var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); }
+.empty-state { display: grid; justify-items: start; gap: 10px; padding: 24px; border: 1px solid var(--line); background: var(--graphite); }
+@media (max-width: 760px) { .page-head { flex-direction: column; } .model-row { grid-template-columns: 1fr; gap: 12px; } }

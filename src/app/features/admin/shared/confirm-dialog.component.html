@@ -1,0 +1,19 @@
+@if (dialog.state(); as state) {
+  <div class="confirm-backdrop" (click)="onBackdropClick($event)">
+    <div
+      class="confirm-box"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-message"
+    >
+      <span class="confirm-tag mono">CONFIRMAR // ACCIÓN IRREVERSIBLE</span>
+      <h2 id="confirm-title">{{ state.title }}</h2>
+      <p id="confirm-message">{{ state.message }}</p>
+      <div class="confirm-actions">
+        <button #cancelButton type="button" class="btn" (click)="dialog.close(false)">CANCELAR</button>
+        <button type="button" class="btn danger" (click)="dialog.close(true)">{{ state.confirmLabel }}</button>
+      </div>
+    </div>
+  </div>
+}

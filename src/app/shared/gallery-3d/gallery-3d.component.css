@@ -1,0 +1,18 @@
+.viewer-shell { position: relative; min-height: 0; overflow: hidden; border: 0; border-radius: var(--r); background: transparent; }
+.viewer-shell--border { border: 1px solid var(--line-soft); }
+.viewer-shell--surface { background: color-mix(in srgb, var(--graphite) var(--viewer-surface-opacity, 35%), transparent); }
+.viewer { width: 100%; height: clamp(280px, 42vw, 520px); touch-action: pan-y; }
+.viewer--compact { height: clamp(180px, 24vw, 280px); }
+.viewer--tall { height: clamp(360px, 55vw, 680px); }
+.viewer canvas { display: block; width: 100%; height: 100%; }
+.viewer-status, .viewer-error, .viewer-help { position: absolute; z-index: 1; margin: 0; padding: 7px 10px; background: rgba(10, 11, 13, .82); font-size: 10px; }
+.viewer-status { top: 12px; left: 12px; color: var(--steel); }
+.viewer-error { inset: auto 12px 40px; border-left: 2px solid var(--ember); color: var(--bone); font-size: 12px; line-height: 1.5; }
+.viewer-help { right: 12px; bottom: 12px; color: var(--steel); letter-spacing: .08em; }
+
+@media (max-width: 640px) {
+  .viewer { height: 300px; }
+  .viewer--compact { height: 200px; }
+  .viewer--tall { height: 380px; }
+  .viewer-help { font-size: 9px; }
+}

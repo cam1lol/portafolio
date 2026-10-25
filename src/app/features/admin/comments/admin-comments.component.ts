@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy, inject, signal } from '@angular/co
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { CommentRow, CommentsService } from '../../../core/data/comments.service';
+import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 
 @Component({
   selector: 'app-admin-comments',
@@ -12,6 +13,7 @@ import { CommentRow, CommentsService } from '../../../core/data/comments.service
 })
 export class AdminCommentsComponent implements AfterViewInit, OnDestroy {
   private readonly commentsService = inject(CommentsService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly comments = signal<CommentRow[]>([]);
   protected readonly loading = signal(true);
@@ -53,10 +55,12 @@ export class AdminCommentsComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  remove(comment: CommentRow): void {
-    if (!confirm('¿Borrar este comentario? Esta acción no se puede deshacer.')) {
-      return;
-    }
+  async remove(comment: CommentRow): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Eliminar comentario',
+      message: `Se eliminará el comentario de "${comment.author}". Esta acción no se puede deshacer.`,
+    });
+    if (!confirmed) return;
     this.commentsService.delete(comment.id).subscribe(() => {
       this.comments.update((current) => current.filter((c) => c.id !== comment.id));
       this.clearNew(comment.id);

@@ -7,7 +7,7 @@
  * - `card_grid`: { title?, items: { title, description, icon? }[] }
  * - `roadmap`: { title?, items: { when, title, description }[] }
  * - `hero`: { eyebrow?, title, lead? }
- * - `gallery_3d`: { title?, description? } (placeholder de texto, sin geometría 3D)
+ * - `gallery_3d`: { title?, description?, modelPath } (ruta de un GLB autocontenido en Storage)
  */
 export interface Block {
   id: string;

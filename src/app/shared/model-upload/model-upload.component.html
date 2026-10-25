@@ -1,0 +1,46 @@
+<div class="model-field">
+  <div class="field">
+    <label for="existing-model">MODELO EN LA BIBLIOTECA</label>
+    <select id="existing-model" [value]="value" (change)="selectExisting($event)">
+      <option value="">Subir un modelo nuevo</option>
+      @for (model of models(); track model.path) {
+        <option [value]="model.path">
+          {{ model.title }} · {{ formatSize(model.size) }}
+          {{ model.author ? ' · ' + model.author : '' }}
+        </option>
+      }
+    </select>
+    @if (loadingModels()) {
+      <span class="hint">Cargando modelos guardados…</span>
+    } @else if (models().length > 0) {
+      <span class="hint">Elige un modelo ya cargado para reutilizarlo.</span>
+    } @else {
+      <span class="hint">La biblioteca todavía está vacía.</span>
+    }
+  </div>
+
+  <label for="model-file">MODELO 3D (.GLB)</label>
+  <input
+    id="model-file"
+    type="file"
+    accept=".glb,model/gltf-binary,application/octet-stream"
+    [disabled]="uploading()"
+    (change)="onFile($event)"
+  />
+  <span class="hint">Selecciona un archivo nuevo o elige uno de la biblioteca. Máximo 20 MB, con texturas incluidas.</span>
+
+  @if (uploading()) {
+    <p class="status" role="status">Validando y subiendo modelo…</p>
+  } @else if (value) {
+    <div class="current-model">
+      <span class="mono">{{ value }}</span>
+      <button type="button" class="clear-model" (click)="clear()">QUITAR DEL BLOQUE</button>
+    </div>
+  } @else {
+    <p class="status">Todavía no hay un modelo cargado.</p>
+  }
+
+  @if (uploadError()) {
+    <p class="upload-error" role="alert">{{ uploadError() }}</p>
+  }
+</div>

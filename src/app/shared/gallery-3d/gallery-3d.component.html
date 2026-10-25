@@ -1,0 +1,12 @@
+<div class="viewer-shell" [class.viewer-shell--border]="showBorder" [class.viewer-shell--surface]="surface" [style.--viewer-surface-opacity]="surfaceOpacity">
+  <div #viewer class="viewer" [class.viewer--compact]="height === 'compact'" [class.viewer--tall]="height === 'tall'" role="region" [attr.aria-label]="label"></div>
+  @if (loading()) {
+    <p class="viewer-status mono" role="status">CARGANDO MODELO…</p>
+  }
+  @if (errorMessage()) {
+    <p class="viewer-error" role="alert">{{ errorMessage() }}</p>
+  }
+  @if (!errorMessage() && !loading()) {
+    <p class="viewer-help mono">ARRASTRA PARA ROTAR{{ zoomEnabled ? ' · RUEDA PARA ZOOM' : '' }}</p>
+  }
+</div>

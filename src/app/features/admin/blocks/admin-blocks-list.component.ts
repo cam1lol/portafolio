@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlocksService } from '../../../core/data/blocks.service';
@@ -25,8 +25,43 @@ export class AdminBlocksListComponent implements OnInit {
   protected readonly blocks = signal<Block[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
+  protected readonly search = signal('');
+  protected readonly typeFilter = signal('all');
+  protected readonly statusFilter = signal('all');
 
   protected readonly typeLabels = TYPE_LABELS;
+  protected readonly types = Object.keys(TYPE_LABELS) as Block['type'][];
+  protected readonly filteredBlocks = computed(() => {
+    const query = this.search().trim().toLocaleLowerCase();
+    return this.blocks().filter((block) => {
+      const title = typeof block.config['title'] === 'string' ? block.config['title'] : '';
+      const matchesSearch = !query || `${title} ${block.page} ${this.typeLabels[block.type]}`.toLocaleLowerCase().includes(query);
+      const matchesType = this.typeFilter() === 'all' || block.type === this.typeFilter();
+      const matchesStatus = this.statusFilter() === 'all' || (this.statusFilter() === 'published' ? block.published : !block.published);
+      return matchesSearch && matchesType && matchesStatus;
+    });
+  });
+  protected readonly hasActiveFilters = computed(() =>
+    !!this.search().trim() || this.typeFilter() !== 'all' || this.statusFilter() !== 'all',
+  );
+
+  setSearch(event: Event): void {
+    this.search.set((event.target as HTMLInputElement).value);
+  }
+
+  setTypeFilter(event: Event): void {
+    this.typeFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  setStatusFilter(event: Event): void {
+    this.statusFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  clearFilters(): void {
+    this.search.set('');
+    this.typeFilter.set('all');
+    this.statusFilter.set('all');
+  }
 
   ngOnInit(): void {
     this.load();

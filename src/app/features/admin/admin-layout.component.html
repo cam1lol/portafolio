@@ -7,17 +7,22 @@
     <button type="button" class="btn" (click)="logout()">CERRAR SESIÓN</button>
   </div>
 
-  <nav class="admin-nav mono">
-    <a routerLink="dashboard" routerLinkActive="on">DASHBOARD</a>
-    <a routerLink="projects" routerLinkActive="on">PROYECTOS</a>
-    <a routerLink="experience" routerLinkActive="on">EXPERIENCIA</a>
-    <a routerLink="visibility" routerLinkActive="on">VISIBILIDAD</a>
-    <a routerLink="layout" routerLinkActive="on">ORDEN PORTADA</a>
-    <a routerLink="comments" routerLinkActive="on">COMENTARIOS</a>
-    <a routerLink="blocks" routerLinkActive="on">BLOQUES</a>
-  </nav>
+  <div class="admin-body">
+    <nav class="admin-nav" aria-label="Secciones del panel">
+      @for (group of navGroups; track group.label) {
+        <div class="nav-group">
+          <span class="nav-group-label mono">{{ group.label }}</span>
+          @for (link of group.links; track link.path) {
+            <a [routerLink]="link.path" routerLinkActive="on">{{ link.label }}</a>
+          }
+        </div>
+      }
+    </nav>
 
-  <div class="admin-content">
-    <router-outlet></router-outlet>
+    <div class="admin-content">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>
+
+<app-confirm-dialog />

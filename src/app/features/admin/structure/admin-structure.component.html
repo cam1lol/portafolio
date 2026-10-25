@@ -1,0 +1,80 @@
+<section class="structure-page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Estructura de portada</p>
+      <p class="help">Todo lo que aparece en la página principal, en el mismo orden en que se ve.</p>
+    </div>
+    <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ placement: 'end' }">NUEVO BLOQUE</a>
+  </div>
+
+  <dl class="how-to">
+    <div><dt class="mono">AGREGAR</dt><dd>"Nuevo bloque" lo pone al final. "+ Debajo" lo pone justo después de esa fila.</dd></div>
+    <div><dt class="mono">EDITAR</dt><dd>Abre el contenido de esa fila: el bloque o el módulo de la sección.</dd></div>
+    <div><dt class="mono">ELIMINAR</dt><dd>Solo bloques. Las secciones fijas no se borran, se ocultan con el interruptor.</dd></div>
+    <div><dt class="mono">ORDENAR</dt><dd>Arrastra desde el asa de la izquierda. El orden se guarda solo.</dd></div>
+  </dl>
+
+  @if (errorMessage()) { <p class="message error-msg" role="alert">{{ errorMessage() }}</p> }
+  @if (successMessage()) { <p class="message success-msg" role="status">{{ successMessage() }}</p> }
+
+  @if (loading()) {
+    <p class="sub">Cargando estructura…</p>
+  } @else {
+    <div class="table-head mono" aria-hidden="true">
+      <span></span><span>#</span><span>TIPO</span><span>CONTENIDO</span><span>EN EL SITIO</span><span>ACCIONES</span>
+    </div>
+    <ol class="structure-list" cdkDropList [cdkDropListDisabled]="saving()" (cdkDropListDropped)="drop($event)">
+      @for (row of rows(); track row.key; let index = $index) {
+        <li class="structure-row" cdkDrag [class.is-hidden]="row.visible === false || (row.block && !row.block.published)">
+          <button type="button" class="drag-handle mono" cdkDragHandle [attr.aria-label]="'Arrastrar ' + row.label">⠿</button>
+          <span class="position mono">{{ position(index) }}</span>
+          <span class="kind mono" [class.block-kind]="row.kind === 'block'">{{ row.kind === 'section' ? 'SECCIÓN' : 'BLOQUE' }}</span>
+          <span class="row-copy">
+            <strong>{{ row.kind === 'section' ? row.label : row.description }}</strong>
+            <small>{{ row.kind === 'section' ? row.description : row.label }}</small>
+          </span>
+
+          <span class="row-state">
+            @if (row.block) {
+              <button
+                type="button"
+                class="toggle"
+                [class.on]="row.block.published"
+                role="switch"
+                [attr.aria-checked]="row.block.published"
+                [attr.aria-label]="'Publicar ' + row.description"
+                (click)="toggleBlock(row)"
+              ><span class="toggle-knob"></span></button>
+              <span class="state-label mono">{{ row.block.published ? 'PUBLICADO' : 'BORRADOR' }}</span>
+            } @else if (row.visible !== null) {
+              <button
+                type="button"
+                class="toggle"
+                [class.on]="row.visible"
+                role="switch"
+                [attr.aria-checked]="row.visible"
+                [attr.aria-label]="'Mostrar ' + row.label"
+                (click)="toggleSection(row)"
+              ><span class="toggle-knob"></span></button>
+              <span class="state-label mono">{{ row.visible ? 'VISIBLE' : 'OCULTA' }}</span>
+            } @else {
+              <span class="state-label mono">SIEMPRE VISIBLE</span>
+            }
+          </span>
+
+          <span class="row-actions">
+            @if (row.editLink) {
+              <a class="link-action" [routerLink]="row.editLink" [fragment]="row.editFragment">EDITAR</a>
+            } @else {
+              <span class="link-action is-disabled" title="La edición de esta sección llega en la próxima fase">EDICIÓN PRÓXIMAMENTE</span>
+            }
+            <a class="link-action" routerLink="/admin/blocks/new" [queryParams]="{ placement: 'after-item:' + row.key }">+ DEBAJO</a>
+            @if (row.block) {
+              <button type="button" class="link-action danger" (click)="removeBlock(row)">ELIMINAR</button>
+            }
+          </span>
+        </li>
+      }
+    </ol>
+  }
+</section>

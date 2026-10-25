@@ -1,9 +1,9 @@
 <div class="ticker">
   <div class="ticker-track">
-    @for (tech of technologies; track tech + '-a-' + $index) {
+    @for (tech of technologies(); track tech + '-a-' + $index) {
       <span>{{ tech }}</span><i>/</i>
     }
-    @for (tech of technologies; track tech + '-b-' + $index) {
+    @for (tech of technologies(); track tech + '-b-' + $index) {
       <span>{{ tech }}</span><i>/</i>
     }
   </div>

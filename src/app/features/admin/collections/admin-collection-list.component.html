@@ -1,0 +1,50 @@
+<section class="collection-page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">{{ config.title }}</p>
+      <p class="help">{{ config.help }}</p>
+    </div>
+    <a class="btn primary" [routerLink]="['/admin', config.path, 'new']">{{ config.newLabel }}</a>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-msg" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="sub">Cargando…</p>
+  } @else if (rows().length === 0) {
+    <p class="sub">Todavía no hay elementos. Usa "{{ config.newLabel }}" para crear el primero.</p>
+  } @else {
+    <div class="table-head mono" aria-hidden="true">
+      <span></span><span>#</span><span>CONTENIDO</span><span>PUBLICADO</span><span>ACCIONES</span>
+    </div>
+    <ol class="collection-list" cdkDropList (cdkDropListDropped)="drop($event)">
+      @for (row of rows(); track row.id; let index = $index) {
+        <li class="collection-row" cdkDrag [class.is-hidden]="!row.published">
+          <button type="button" class="drag-handle mono" cdkDragHandle [attr.aria-label]="'Arrastrar ' + title(row)">⠿</button>
+          <span class="position mono">{{ (index + 1).toString().padStart(2, '0') }}</span>
+          <span class="row-copy">
+            <strong>{{ title(row) }}</strong>
+            @if (detail(row)) { <small>{{ detail(row) }}</small> }
+          </span>
+          <span class="row-state">
+            <button
+              type="button"
+              class="toggle"
+              [class.on]="row.published"
+              role="switch"
+              [attr.aria-checked]="row.published"
+              [attr.aria-label]="'Publicar ' + title(row)"
+              (click)="togglePublished(row)"
+            ><span class="toggle-knob"></span></button>
+          </span>
+          <span class="row-actions">
+            <a class="link-action" [routerLink]="['/admin', config.path, row.id, 'edit']">EDITAR</a>
+            <button type="button" class="link-action danger" (click)="remove(row)">ELIMINAR</button>
+          </span>
+        </li>
+      }
+    </ol>
+  }
+</section>

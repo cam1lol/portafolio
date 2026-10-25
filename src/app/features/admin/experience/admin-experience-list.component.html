@@ -1,7 +1,10 @@
 <div class="experience-page">
   <div class="page-head">
-    <p class="eyebrow">Experiencia</p>
-    <a class="btn" routerLink="/admin/experience/new">+ Nueva experiencia</a>
+    <div>
+      <p class="eyebrow">Experiencia</p>
+      <p class="help">Las entradas del timeline. Arrastra para ordenar; el interruptor publica u oculta cada una.</p>
+    </div>
+    <a class="btn primary" routerLink="/admin/experience/new">NUEVA EXPERIENCIA</a>
   </div>
 
   @if (errorMessage()) {

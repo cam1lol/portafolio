@@ -1,0 +1,53 @@
+<section class="models-page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">Biblioteca 3D</p>
+      <p class="help">Modelos GLB guardados en Storage. Los modelos usados por un bloque no se pueden eliminar desde aquí.</p>
+    </div>
+    <div class="page-actions">
+      <button type="button" class="btn" (click)="refresh()" [disabled]="loading()">ACTUALIZAR</button>
+      <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">CREAR BLOQUE 3D</a>
+    </div>
+  </div>
+
+  @if (errorMessage()) { <p class="message error-msg" role="alert">{{ errorMessage() }}</p> }
+  @if (successMessage()) { <p class="message success-msg" role="status">{{ successMessage() }}</p> }
+
+  @if (loading()) {
+    <p class="sub">Cargando modelos…</p>
+  } @else if (models().length === 0) {
+    <div class="empty-state">
+      <p class="sub">Todavía no hay modelos en el bucket.</p>
+      <a class="btn" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">Subir el primer modelo</a>
+    </div>
+  } @else {
+    <ul class="model-list">
+      @for (model of models(); track model.path) {
+        <li class="model-row">
+          <div class="model-main">
+            <strong>{{ model.title }}</strong>
+            <span class="model-file mono">{{ model.originalName }}</span>
+            <span class="model-path mono">{{ model.path }}</span>
+          </div>
+          <div class="model-meta">
+            <span>{{ formatSize(model.size) }}</span>
+            <span>{{ model.author || 'Crédito sin registrar' }}</span>
+            <span>{{ model.license || 'Licencia sin registrar' }}</span>
+          </div>
+          <div class="model-use">
+            @if (model.usedBy.length > 0) {
+              <span class="used-status">USADO EN {{ model.usedBy.length }} BLOQUE(S)</span>
+              <small>{{ model.usedBy.join(' · ') }}</small>
+            } @else {
+              <span class="unused-status">SIN BLOQUES</span>
+              <button type="button" class="btn danger" (click)="remove(model)">ELIMINAR</button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+    @if (models().length >= 100) {
+      <p class="hint">Se muestran los primeros 100 modelos. Archiva o elimina los que no utilices para mantener la biblioteca clara.</p>
+    }
+  }
+</section>

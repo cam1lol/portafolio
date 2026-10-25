@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, computed, inject, viewChild, } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoService } from '@jsverse/transloco';
+import { SiteTextPipe } from '../../shared/site-text/site-text.pipe';
 import { ExperienceService } from '../../core/data/experience.service';
 import { Experience } from '../../core/data/experience.model';
 import { ModalService } from '../../core/modal/modal.service';
@@ -10,7 +11,7 @@ import { IconComponent } from '../../shared/icons/icon.component';
 @Component({
   selector: 'app-experience',
   standalone: true,
-  imports: [TranslocoPipe, RevealDirective, IconComponent],
+  imports: [RevealDirective, IconComponent, SiteTextPipe],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.css',
 })
