@@ -8,6 +8,8 @@ import { AdminProjectFormComponent } from './projects/admin-project-form.compone
 import { AdminExperienceListComponent } from './experience/admin-experience-list.component';
 import { AdminExperienceFormComponent } from './experience/admin-experience-form.component';
 import { AdminCommentsComponent } from './comments/admin-comments.component';
+import { AdminInboxListComponent } from './inbox/admin-inbox-list.component';
+import { AdminInboxThreadComponent } from './inbox/admin-inbox-thread.component';
 import { AdminBlockFormComponent } from './blocks/admin-block-form.component';
 import { AdminStructureComponent } from './structure/admin-structure.component';
 import { AdminCollectionListComponent } from './collections/admin-collection-list.component';
@@ -48,6 +50,8 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'visibility', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'layout', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'blocks', redirectTo: 'structure', pathMatch: 'full' },
+      { path: 'inbox', component: AdminInboxListComponent },
+      { path: 'inbox/:id', component: AdminInboxThreadComponent },
       { path: 'comments', component: AdminCommentsComponent },
       { path: 'blocks/new', component: AdminBlockFormComponent },
       { path: 'blocks/:id/edit', component: AdminBlockFormComponent },

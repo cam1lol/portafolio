@@ -1,4 +1,10 @@
 <div class="stats">
+  <a class="stat stat-link" routerLink="/admin/inbox">
+    <div class="k">Mensajes nuevos</div>
+    <div class="v">{{ loading() ? '—' : (stats().messagesNew ?? '—') }}</div>
+    <div class="d">Abrir bandeja</div>
+  </a>
+
   <div class="stat">
     <div class="k">Visitas (30 días)</div>
     <div class="v">{{ loading() ? '—' : (stats().visits30d ?? '—') }}</div>

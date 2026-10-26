@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { InboxService } from '../../core/data/inbox.service';
 import { ConfirmDialogComponent } from './shared/confirm-dialog.component';
 
 interface NavGroup {
   label: string;
-  links: Array<{ path: string; label: string }>;
+  links: Array<{ path: string; label: string; badge?: 'inbox' }>;
 }
 
 /** Grouped by intent: one obvious place for each kind of task. */
@@ -24,7 +25,13 @@ const NAV_GROUPS: NavGroup[] = [
   },
   { label: 'PÁGINA', links: [{ path: 'structure', label: 'Estructura de portada' }] },
   { label: 'BIBLIOTECA', links: [{ path: 'models', label: 'Modelos 3D' }] },
-  { label: 'COMUNIDAD', links: [{ path: 'comments', label: 'Comentarios' }] },
+  {
+    label: 'COMUNIDAD',
+    links: [
+      { path: 'inbox', label: 'Mensajes', badge: 'inbox' },
+      { path: 'comments', label: 'Comentarios' },
+    ],
+  },
 ];
 
 @Component({
@@ -34,11 +41,20 @@ const NAV_GROUPS: NavGroup[] = [
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  protected readonly inbox = inject(InboxService);
 
   protected readonly navGroups = NAV_GROUPS;
+
+  ngOnInit(): void {
+    this.inbox.startUnreadWatch();
+  }
+
+  ngOnDestroy(): void {
+    this.inbox.stopUnreadWatch();
+  }
 
   logout(): void {
     this.authService.logout().subscribe({

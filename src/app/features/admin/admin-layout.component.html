@@ -13,7 +13,12 @@
         <div class="nav-group">
           <span class="nav-group-label mono">{{ group.label }}</span>
           @for (link of group.links; track link.path) {
-            <a [routerLink]="link.path" routerLinkActive="on">{{ link.label }}</a>
+            <a [routerLink]="link.path" routerLinkActive="on">
+              {{ link.label }}
+              @if (link.badge === 'inbox' && inbox.unreadCount() > 0) {
+                <span class="nav-badge mono" [attr.aria-label]="inbox.unreadCount() + ' mensajes nuevos'">{{ inbox.unreadCount() }}</span>
+              }
+            </a>
           }
         </div>
       }

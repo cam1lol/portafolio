@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 
 interface DashboardStats {
@@ -7,6 +8,7 @@ interface DashboardStats {
   commentsPending: number | null;
   projectsPublished: number | null;
   projectsTotal: number | null;
+  messagesNew: number | null;
 }
 
 interface LanguageSplit {
@@ -27,6 +29,7 @@ interface LanguageRow {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })
@@ -40,6 +43,7 @@ export class AdminDashboardComponent implements OnInit {
     commentsPending: null,
     projectsPublished: null,
     projectsTotal: null,
+    messagesNew: null,
   });
   private readonly visitsByLang = signal<LanguageSplit>({ es: null, en: null });
   private readonly commentsByLang = signal<LanguageSplit>({ es: null, en: null });
@@ -65,7 +69,7 @@ export class AdminDashboardComponent implements OnInit {
     const visits = () => this.supabase.client.from('visits').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo);
     const comments = () => this.supabase.client.from('comments').select('*', { count: 'exact', head: true });
 
-    const [visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal, visitsEs, visitsEn, commentsEs, commentsEn] =
+    const [visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal, visitsEs, visitsEn, commentsEs, commentsEn, messagesNew] =
       await Promise.all([
         this.count(visits()),
         this.count(comments()),
@@ -76,9 +80,10 @@ export class AdminDashboardComponent implements OnInit {
         this.count(visits().eq('lang', 'en')),
         this.count(comments().eq('lang', 'es')),
         this.count(comments().eq('lang', 'en')),
+        this.count(this.supabase.client.from('contact_threads').select('id', { count: 'exact', head: true }).eq('status', 'new')),
       ]);
 
-    this.stats.set({ visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal });
+    this.stats.set({ visits30d, commentsTotal, commentsPending, projectsPublished, projectsTotal, messagesNew });
     this.visitsByLang.set({ es: visitsEs, en: visitsEn });
     this.commentsByLang.set({ es: commentsEs, en: commentsEn });
     this.loading.set(false);
