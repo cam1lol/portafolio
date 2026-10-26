@@ -9,8 +9,9 @@
 
 .rings {
   position: relative;
-  width: min(80vw, 80vh);
-  height: min(80vw, 80vh);
+  /* Slightly larger than the short side: the outer ring bleeds past the edges. */
+  width: 108vmin;
+  height: 108vmin;
   opacity: .78;
   /* The glow is applied once to the whole stack; the layers below only rotate,
      so the browser composites them on the GPU without repainting. */
@@ -43,6 +44,11 @@
 
 @keyframes cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+/* Portrait phones: size by width so the circle does not shrink to a small badge. */
+@media (max-aspect-ratio: 3/4) {
+  .rings { width: 150vw; height: 150vw; }
+}
 
 /* Day mode: softer on a light background */
 :host-context([data-theme="day"]) .rings {

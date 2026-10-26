@@ -59,73 +59,73 @@ function tickPath(rIn: number, rOut: number, every: number): string {
       </radialGradient>
     </defs>
     <circle r="290" fill="url(#ring-glow)"/>
-    <circle r="34" fill="none" stroke="#e85525" stroke-width="1" stroke-opacity=".6"/>
-    <circle r="26" fill="none" stroke="#e85525" stroke-width=".5" stroke-opacity=".35"/>
+    <circle r="34" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".6"/>
+    <circle r="26" fill="none" stroke="#e85525" stroke-width="0.85" stroke-opacity=".35"/>
     <circle r="5"  fill="#e85525" fill-opacity=".8"/>
   </svg>
 
   <!-- Layer 1: outer measurement ring, very slow CW -->
   <svg class="layer l1" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
-    <circle r="308" fill="none" stroke="#e85525" stroke-width="2.2" stroke-opacity=".95"/>
-    <circle r="298" fill="none" stroke="#e85525" stroke-width=".7" stroke-opacity=".55"/>
-    <path [attr.d]="majTicks"  fill="none" stroke="#e85525" stroke-width="1.6" stroke-opacity=".9"/>
-    <path [attr.d]="minTicks"  fill="none" stroke="#e85525" stroke-width=".8"  stroke-opacity=".5"/>
-    <path [attr.d]="microTicks" fill="none" stroke="#e85525" stroke-width=".5" stroke-opacity=".3"/>
+    <circle r="308" fill="none" stroke="#e85525" stroke-width="3.74" stroke-opacity=".95"/>
+    <circle r="298" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".55"/>
+    <path [attr.d]="majTicks"  fill="none" stroke="#e85525" stroke-width="2.72" stroke-opacity=".9"/>
+    <path [attr.d]="minTicks"  fill="none" stroke="#e85525" stroke-width="1.36"  stroke-opacity=".5"/>
+    <path [attr.d]="microTicks" fill="none" stroke="#e85525" stroke-width="0.85" stroke-opacity=".3"/>
     @for (angle of [0,90,180,270]; track angle) {
       <polygon [attr.transform]="'rotate(' + angle + ')'" points="0,-293 6,-302 0,-311 -6,-302"
-               fill="none" stroke="#e85525" stroke-width="1.2" stroke-opacity=".9"/>
+               fill="none" stroke="#e85525" stroke-width="2.04" stroke-opacity=".9"/>
     }
   </svg>
 
   <!-- Layer 2: outer rune text ring, slow CCW -->
   <svg class="layer l2" viewBox="-320 -320 640 640">
     <defs><path id="ring-text-outer" d="M 0,-268 A 268,268 0 1,1 -0.01,-268"/></defs>
-    <text font-size="9" fill="#e85525" fill-opacity=".7" font-family="monospace" letter-spacing="3.5">
+    <text font-size="11" fill="#e85525" fill-opacity=".7" font-family="monospace" letter-spacing="3.5">
       <textPath href="#ring-text-outer">{{ runeOuter }}</textPath>
     </text>
   </svg>
 
   <!-- Layer 3: second ring with ornaments, medium CW -->
   <svg class="layer l3" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
-    <circle r="228" fill="none" stroke="#e85525" stroke-width="1.8" stroke-opacity=".85"/>
-    <circle r="220" fill="none" stroke="#e85525" stroke-width=".7" stroke-opacity=".45"/>
+    <circle r="228" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
+    <circle r="220" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".45"/>
     @for (angle of [0,90,180,270]; track angle) {
       <g [attr.transform]="'rotate(' + angle + ')'">
-        <line x1="0" y1="-220" x2="0" y2="-240" stroke="#e85525" stroke-width="1.2" stroke-opacity=".7"/>
-        <polygon points="0,-228 5,-238 -5,-238" fill="none" stroke="#e85525" stroke-width="1" stroke-opacity=".8"/>
+        <line x1="0" y1="-220" x2="0" y2="-240" stroke="#e85525" stroke-width="2.04" stroke-opacity=".7"/>
+        <polygon points="0,-228 5,-238 -5,-238" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".8"/>
       </g>
     }
     @for (angle of [45,135,225,315]; track angle) {
       <line [attr.transform]="'rotate(' + angle + ')'" x1="0" y1="-222" x2="0" y2="-226"
-            stroke="#e85525" stroke-width=".8" stroke-opacity=".5"/>
+            stroke="#e85525" stroke-width="1.36" stroke-opacity=".5"/>
     }
   </svg>
 
   <!-- Layer 4: hexagram ring, slow CCW -->
   <svg class="layer l4" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
-    <circle r="170" fill="none" stroke="#e85525" stroke-width="1.6" stroke-opacity=".75"/>
-    <circle r="162" fill="none" stroke="#e85525" stroke-width=".7" stroke-opacity=".4"/>
-    <polygon [attr.points]="triUp" fill="none" stroke="#e85525" stroke-width="1.5" stroke-opacity=".8"/>
-    <polygon [attr.points]="triDown" fill="none" stroke="#e85525" stroke-width="1.5" stroke-opacity=".8"/>
+    <circle r="170" fill="none" stroke="#e85525" stroke-width="2.72" stroke-opacity=".75"/>
+    <circle r="162" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".4"/>
+    <polygon [attr.points]="triUp" fill="none" stroke="#e85525" stroke-width="2.55" stroke-opacity=".8"/>
+    <polygon [attr.points]="triDown" fill="none" stroke="#e85525" stroke-width="2.55" stroke-opacity=".8"/>
     @for (v of hexVerts; track $index) {
-      <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="4" fill="none" stroke="#e85525" stroke-width="1" stroke-opacity=".8"/>
+      <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="4" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".8"/>
     }
   </svg>
 
   <!-- Layer 5: pentagram ring, medium CW -->
   <svg class="layer l5" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
-    <circle r="108" fill="none" stroke="#e85525" stroke-width="1.8" stroke-opacity=".85"/>
-    <circle r="100" fill="none" stroke="#e85525" stroke-width=".7" stroke-opacity=".45"/>
-    <path [attr.d]="penta" fill="none" stroke="#e85525" stroke-width="2" stroke-opacity=".95"/>
+    <circle r="108" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
+    <circle r="100" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".45"/>
+    <path [attr.d]="penta" fill="none" stroke="#e85525" stroke-width="3.4" stroke-opacity=".95"/>
     @for (v of pentaVerts; track $index) {
-      <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="3.5" fill="none" stroke="#e85525" stroke-width="1" stroke-opacity=".85"/>
+      <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="3.5" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".85"/>
     }
   </svg>
 
   <!-- Layer 6: inner rune ring, CCW -->
   <svg class="layer l6" viewBox="-320 -320 640 640">
     <defs><path id="ring-text-inner" d="M 0,-118 A 118,118 0 1,1 -0.01,-118"/></defs>
-    <text font-size="7.5" fill="#e85525" fill-opacity=".6" font-family="monospace" letter-spacing="2.5">
+    <text font-size="9" fill="#e85525" fill-opacity=".6" font-family="monospace" letter-spacing="2.5">
       <textPath href="#ring-text-inner">{{ runeInner }}</textPath>
     </text>
   </svg>
