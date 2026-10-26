@@ -1,11 +1,7 @@
 <section class="collection-page">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">{{ config.title }}</p>
-      <p class="help">{{ config.help }}</p>
-    </div>
+  <app-admin-page-header [icon]="config.icon" [title]="config.title" [description]="config.help" [count]="rows().length" countLabel="elementos">
     <a class="btn primary" [routerLink]="['/admin', config.path, 'new']">{{ config.newLabel }}</a>
-  </div>
+  </app-admin-page-header>
 
   @if (errorMessage()) {
     <p class="error-msg" role="alert">{{ errorMessage() }}</p>

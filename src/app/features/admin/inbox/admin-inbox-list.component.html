@@ -1,10 +1,6 @@
 <section class="inbox-page">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">Mensajes</p>
-      <p class="help">Lo que llega por el formulario de contacto. Cada mensaje también te llega a Gmail; aquí queda el respaldo por si cae en spam.</p>
-    </div>
-  </div>
+  <app-admin-page-header icon="mail" title="Mensajes" [count]="threads().length" countLabel="en este filtro" description="Lo que llega por el formulario de contacto. Cada mensaje también te llega a Gmail; aquí queda el respaldo por si cae en spam.">
+  </app-admin-page-header>
 
   <div class="filters mono" role="tablist" aria-label="Filtrar por estado">
     @for (option of filters; track option.value) {

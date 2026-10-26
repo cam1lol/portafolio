@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InboxService, InboxStatus, InboxThread, TOPIC_LABELS } from '../../../core/data/inbox.service';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 type Filter = InboxStatus | 'all';
 
@@ -23,7 +24,7 @@ export const STATUS_LABELS: Record<InboxStatus, string> = {
 @Component({
   selector: 'app-admin-inbox-list',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [AdminPageHeaderComponent, RouterLink, DatePipe],
   templateUrl: './admin-inbox-list.component.html',
   styleUrl: './admin-inbox-list.component.css',
 })

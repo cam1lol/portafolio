@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DayCount, VisitsChartComponent, bucketVisitsByDay } from './visits-chart.component';
 import { TOPIC_LABELS } from '../../../core/data/inbox.service';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 
 interface DashboardStats {
@@ -48,7 +49,7 @@ interface LanguageRow {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, VisitsChartComponent],
+  imports: [AdminPageHeaderComponent, RouterLink, DatePipe, VisitsChartComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })

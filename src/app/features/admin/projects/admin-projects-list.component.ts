@@ -4,11 +4,13 @@ import { ToastService } from '../shared/toast.service';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AdminProject, ProjectsService } from '../../../core/data/projects.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
+import { IconComponent } from '../../../shared/icons/icon.component';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 @Component({
   selector: 'app-admin-projects-list',
   standalone: true,
-  imports: [RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [AdminPageHeaderComponent, IconComponent, RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './admin-projects-list.component.html',
   styleUrl: './admin-projects-list.component.css',
 })
@@ -17,6 +19,7 @@ export class AdminProjectsListComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
+  protected readonly statusLabels: Record<AdminProject['status'], string> = { live: 'EN VIVO', wip: 'EN PROGRESO', archive: 'ARCHIVADO' };
   protected readonly rows = signal<AdminProject[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');

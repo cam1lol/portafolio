@@ -3,35 +3,36 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../../core/auth/auth.service';
 import { InboxService } from '../../core/data/inbox.service';
 import { ConfirmDialogComponent } from './shared/confirm-dialog.component';
+import { IconComponent } from '../../shared/icons/icon.component';
 import { ToastComponent } from './shared/toast.component';
 import { HasUnsavedChanges } from './shared/unsaved-changes.guard';
 
 interface NavGroup {
   label: string;
-  links: Array<{ path: string; label: string; badge?: 'inbox' }>;
+  links: Array<{ path: string; label: string; icon: string; badge?: 'inbox' }>;
 }
 
 /** Grouped by intent: one obvious place for each kind of task. */
 const NAV_GROUPS: NavGroup[] = [
-  { label: 'GENERAL', links: [{ path: 'dashboard', label: 'Dashboard' }] },
+  { label: 'GENERAL', links: [{ path: 'dashboard', label: 'Dashboard', icon: 'grid' }] },
   {
     label: 'CONTENIDO',
     links: [
-      { path: 'projects', label: 'Proyectos' },
-      { path: 'experience', label: 'Experiencia' },
-      { path: 'services', label: 'Servicios' },
-      { path: 'roadmap', label: 'Roadmap' },
-      { path: 'ticker', label: 'Ticker' },
-      { path: 'site-texts', label: 'Textos del sitio' },
+      { path: 'projects', label: 'Proyectos', icon: 'folder' },
+      { path: 'experience', label: 'Experiencia', icon: 'briefcase' },
+      { path: 'services', label: 'Servicios', icon: 'tag' },
+      { path: 'roadmap', label: 'Roadmap', icon: 'map' },
+      { path: 'ticker', label: 'Ticker', icon: 'rows' },
+      { path: 'site-texts', label: 'Textos del sitio', icon: 'type' },
     ],
   },
-  { label: 'PÁGINA', links: [{ path: 'structure', label: 'Estructura de portada' }] },
-  { label: 'BIBLIOTECA', links: [{ path: 'models', label: 'Modelos 3D' }] },
+  { label: 'PÁGINA', links: [{ path: 'structure', label: 'Estructura de portada', icon: 'layout' }] },
+  { label: 'BIBLIOTECA', links: [{ path: 'models', label: 'Modelos 3D', icon: 'box' }] },
   {
     label: 'COMUNIDAD',
     links: [
-      { path: 'inbox', label: 'Mensajes', badge: 'inbox' },
-      { path: 'comments', label: 'Comentarios' },
+      { path: 'inbox', label: 'Mensajes', icon: 'mail', badge: 'inbox' },
+      { path: 'comments', label: 'Comentarios', icon: 'message' },
     ],
   },
 ];
@@ -39,7 +40,7 @@ const NAV_GROUPS: NavGroup[] = [
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, ConfirmDialogComponent, ToastComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, ConfirmDialogComponent, ToastComponent, IconComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })

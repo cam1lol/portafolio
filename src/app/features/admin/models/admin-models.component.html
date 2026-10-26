@@ -1,14 +1,8 @@
 <section class="models-page">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">Biblioteca 3D</p>
-      <p class="help">Modelos GLB guardados en Storage. Súbelos aquí y úsalos en cualquier Galería 3D. Los modelos en uso no se pueden eliminar.</p>
-    </div>
-    <div class="page-actions">
-      <button type="button" class="btn" (click)="refresh()" [disabled]="loading()">ACTUALIZAR</button>
-      <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">CREAR BLOQUE 3D</a>
-    </div>
-  </div>
+  <app-admin-page-header icon="box" title="Modelos 3D" [count]="models().length" countLabel="modelos" description="Modelos GLB guardados en Storage. Súbelos aquí y úsalos en cualquier Galería 3D. Los modelos en uso no se pueden eliminar.">
+    <button type="button" class="btn" (click)="refresh()" [disabled]="loading()">ACTUALIZAR</button>
+    <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ type: 'gallery_3d' }">CREAR BLOQUE 3D</a>
+  </app-admin-page-header>
 
   <section class="upload-card" aria-labelledby="upload-title">
     <h3 id="upload-title" class="eyebrow">Subir modelo</h3>

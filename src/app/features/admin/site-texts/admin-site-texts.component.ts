@@ -8,6 +8,7 @@ import { forkJoin } from 'rxjs';
 import { SiteContentRow, SiteContentService } from '../../../core/data/site-content.service';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { SITE_TEXT_GROUPS, SiteTextField, SiteTextGroup } from './site-texts.config';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -16,7 +17,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 @Component({
   selector: 'app-admin-site-texts',
   standalone: true,
-  imports: [ReactiveFormsModule, UpperCasePipe],
+  imports: [AdminPageHeaderComponent, ReactiveFormsModule, UpperCasePipe],
   templateUrl: './admin-site-texts.component.html',
   styleUrl: './admin-site-texts.component.css',
 })

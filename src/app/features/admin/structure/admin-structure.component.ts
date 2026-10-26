@@ -8,6 +8,7 @@ import { PageItem, PageItemsService } from '../../../core/data/page-items.servic
 import { SectionVisibilityService } from '../../../core/data/section-visibility.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { ToastService } from '../shared/toast.service';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 interface StructureRow extends PageItem {
   label: string;
@@ -51,7 +52,7 @@ const BLOCK_LABELS: Record<Block['type'], string> = {
 @Component({
   selector: 'app-admin-structure',
   standalone: true,
-  imports: [RouterLink, DragDropModule],
+  imports: [AdminPageHeaderComponent, RouterLink, DragDropModule],
   templateUrl: './admin-structure.component.html',
   styleUrl: './admin-structure.component.css',
 })

@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { CommentRow, CommentsService } from '../../../core/data/comments.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { ToastService } from '../shared/toast.service';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 type Filter = 'all' | 'pending' | 'approved';
 
@@ -16,7 +17,7 @@ const FILTERS: Array<{ value: Filter; label: string }> = [
 @Component({
   selector: 'app-admin-comments',
   standalone: true,
-  imports: [DatePipe, UpperCasePipe],
+  imports: [AdminPageHeaderComponent, DatePipe, UpperCasePipe],
   templateUrl: './admin-comments.component.html',
   styleUrl: './admin-comments.component.css',
 })

@@ -7,6 +7,7 @@ import { BlocksService } from '../../../core/data/blocks.service';
 import { ModelAssetsService } from '../../../core/data/model-assets.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { ModelUploadComponent } from '../../../shared/model-upload/model-upload.component';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 interface ModelAssetRow extends ModelAsset {
   usedBy: string[];
@@ -15,7 +16,7 @@ interface ModelAssetRow extends ModelAsset {
 @Component({
   selector: 'app-admin-models',
   standalone: true,
-  imports: [RouterLink, ModelUploadComponent],
+  imports: [AdminPageHeaderComponent, RouterLink, ModelUploadComponent],
   templateUrl: './admin-models.component.html',
   styleUrl: './admin-models.component.css',
 })

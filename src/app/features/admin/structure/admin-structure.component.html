@@ -1,11 +1,7 @@
 <section class="structure-page">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">Estructura de portada</p>
-      <p class="help">Todo lo que aparece en la página principal, en el mismo orden en que se ve.</p>
-    </div>
+  <app-admin-page-header icon="layout" title="Estructura de portada" [count]="rows().length" countLabel="elementos" description="Todo lo que aparece en la página principal, en el mismo orden en que se ve.">
     <a class="btn primary" routerLink="/admin/blocks/new" [queryParams]="{ placement: 'end' }">NUEVO BLOQUE</a>
-  </div>
+  </app-admin-page-header>
 
   <dl class="how-to">
     <div><dt class="mono">AGREGAR</dt><dd>"Nuevo bloque" lo pone al final. "+ Debajo" lo pone justo después de esa fila.</dd></div>

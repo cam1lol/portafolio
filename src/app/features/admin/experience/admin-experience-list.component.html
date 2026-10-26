@@ -1,11 +1,7 @@
 <div class="experience-page">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">Experiencia</p>
-      <p class="help">Las entradas del timeline. Arrastra para ordenar; el interruptor publica u oculta cada una.</p>
-    </div>
+  <app-admin-page-header icon="briefcase" title="Experiencia" [count]="rows().length" countLabel="entradas" description="Las entradas del timeline. Arrastra para ordenar; el interruptor publica u oculta cada una.">
     <a class="btn primary" routerLink="/admin/experience/new">NUEVA EXPERIENCIA</a>
-  </div>
+  </app-admin-page-header>
 
   @if (errorMessage()) {
     <p class="error-msg">{{ errorMessage() }}</p>

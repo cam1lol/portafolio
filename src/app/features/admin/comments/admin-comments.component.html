@@ -1,11 +1,6 @@
 <section class="comments-admin">
-  <div class="page-head">
-    <div>
-      <p class="eyebrow">Comentarios</p>
-      <p class="help">Lo que dejan los visitantes en la sección Comentarios. Nada se publica hasta que lo apruebes.</p>
-    </div>
-    <span class="count mono">{{ pendingCount() }} PENDIENTE(S)</span>
-  </div>
+  <app-admin-page-header icon="message" title="Comentarios" [count]="pendingCount()" countLabel="pendientes" description="Lo que dejan los visitantes en la sección Comentarios. Nada se publica hasta que lo apruebes.">
+  </app-admin-page-header>
 
   <div class="toolbar">
     <div class="filters mono" role="tablist" aria-label="Filtrar comentarios">

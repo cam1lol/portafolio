@@ -1,10 +1,16 @@
 <div class="admin-shell wrap">
   <div class="admin-top">
-    <div>
-      <div class="sub mono">DASHBOARD // CONTROL PANEL</div>
-      <h2>PANEL</h2>
+    <div class="brand">
+      <span class="brand-mark">CA</span>
+      <div>
+        <span class="brand-name">PANEL DE CONTROL</span>
+        <span class="brand-sub mono">PORTAFOLIO · CAMILO AYALA</span>
+      </div>
     </div>
-    <button type="button" class="btn" (click)="logout()">CERRAR SESIÓN</button>
+    <div class="top-actions">
+      <a class="btn" href="/" target="_blank" rel="noopener"><app-icon name="external" /> VER SITIO</a>
+      <button type="button" class="btn" (click)="logout()"><app-icon name="logout" /> CERRAR SESIÓN</button>
+    </div>
   </div>
 
   <div class="admin-body">
@@ -14,7 +20,8 @@
           <span class="nav-group-label mono">{{ group.label }}</span>
           @for (link of group.links; track link.path) {
             <a [routerLink]="link.path" routerLinkActive="on">
-              {{ link.label }}
+              <span class="nav-icon" aria-hidden="true"><app-icon [name]="link.icon" /></span>
+              <span class="nav-label">{{ link.label }}</span>
               @if (link.badge === 'inbox' && inbox.unreadCount() > 0) {
                 <span class="nav-badge mono" [attr.aria-label]="inbox.unreadCount() + ' mensajes nuevos'">{{ inbox.unreadCount() }}</span>
               }

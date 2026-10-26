@@ -4,11 +4,12 @@ import { ToastService } from '../shared/toast.service';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AdminExperience, ExperienceService } from '../../../core/data/experience.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 @Component({
   selector: 'app-admin-experience-list',
   standalone: true,
-  imports: [RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [AdminPageHeaderComponent, RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './admin-experience-list.component.html',
   styleUrl: './admin-experience-list.component.css',
 })

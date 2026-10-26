@@ -5,12 +5,13 @@ import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } fro
 import { CollectionRow, CollectionsService } from '../../../core/data/collections.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { COLLECTIONS, CollectionConfig } from './collection.config';
+import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
 /** One list screen for every simple collection (Servicios, Roadmap, Ticker), picked by `data.collection`. */
 @Component({
   selector: 'app-admin-collection-list',
   standalone: true,
-  imports: [RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
+  imports: [AdminPageHeaderComponent, RouterLink, CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './admin-collection-list.component.html',
   styleUrl: './admin-collection-list.component.css',
 })
