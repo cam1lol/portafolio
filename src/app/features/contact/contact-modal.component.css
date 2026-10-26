@@ -86,6 +86,22 @@ h2 {
 .hint { display: block; margin-top: 6px; color: var(--steel); font-size: 12px; }
 .field-error { display: block; margin-top: 6px; color: var(--ember); font-size: 12px; }
 
+.email-suggestion {
+  display: block;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ember);
+  font: 12px 'Space Grotesk', sans-serif;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.email-suggestion:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
 .topics { margin: 0 0 16px; padding: 0; border: 0; }
 .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { position: relative; cursor: pointer; }

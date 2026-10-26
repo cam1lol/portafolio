@@ -7,7 +7,7 @@ const KEYS = [
   'ct_m_title', 'ct_m_lead', 'ct_m_name', 'ct_m_email', 'ct_m_email_hint', 'ct_m_topic', 'ct_m_topic_project',
   'ct_m_topic_job', 'ct_m_topic_other', 'ct_m_message', 'ct_m_ph_project', 'ct_m_ph_job', 'ct_m_ph_other',
   'ct_m_missing', 'ct_m_send', 'ct_m_sending', 'ct_m_privacy', 'ct_m_sent_title', 'ct_m_sent_body', 'ct_m_close',
-  'ct_m_again', 'ct_m_error', 'ct_m_limit', 'ct_m_err_name', 'ct_m_err_email', 'ct_m_err_message',
+  'ct_m_again', 'ct_m_error', 'ct_m_limit', 'ct_m_err_name', 'ct_m_err_email', 'ct_m_err_message', 'ct_m_suggest',
 ];
 /** Each key translates to itself, so assertions look for the key in the rendered text. */
 const identity = Object.fromEntries(KEYS.map((key) => [key, key]));
@@ -98,6 +98,16 @@ describe('ContactModalComponent', () => {
     expect(text()).toContain('ct_m_error');
     expect(field('contact-message').value).toBe('Hola, quiero cotizar un proyecto.');
     expect(root().querySelector('a[href^="mailto:"]')).not.toBeNull();
+  });
+
+  it('sugiere el dominio correcto y lo aplica con un clic', () => {
+    type('contact-email', 'ana@gmial.com');
+    const suggestion = root().querySelector<HTMLButtonElement>('.email-suggestion');
+    expect(suggestion?.textContent).toContain('ct_m_suggest');
+    suggestion!.click();
+    fixture.detectChanges();
+    expect(field('contact-email').value).toBe('ana@gmail.com');
+    expect(root().querySelector('.email-suggestion')).toBeNull();
   });
 
   it('muestra el límite', async () => {

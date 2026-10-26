@@ -86,5 +86,6 @@
   "ct_m_privacy": "Tu mensaje me llega por correo y queda guardado en mi panel. No lo comparto con nadie.",
   "ct_m_sent_title": "Mensaje enviado",
   "ct_m_sent_body": "Te respondo a {{email}} en menos de 24 horas. Si no ves mi respuesta, revisa la carpeta de spam.",
-  "ct_m_again": "Enviar otro mensaje"
+  "ct_m_again": "Enviar otro mensaje",
+  "ct_m_suggest": "¿Quisiste decir {{email}}?"
 }

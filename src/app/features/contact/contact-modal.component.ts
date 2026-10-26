@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ContactService, ContactSubmitResult, ContactTopic } from '../../core/data/contact.service';
 import { noControlCharsValidator } from '../../shared/validators/no-control-chars.validator';
+import { suggestEmail } from '../../shared/validators/email-suggestion';
 
 type ModalState = 'idle' | 'sending' | ContactSubmitResult;
 
@@ -57,6 +58,10 @@ export class ContactModalComponent implements AfterViewInit {
 
   private readonly topicValue = toSignal(this.form.controls.topic.valueChanges, { initialValue: '' as ContactTopic | '' });
   private readonly messageValue = toSignal(this.form.controls.message.valueChanges, { initialValue: '' });
+  private readonly emailValue = toSignal(this.form.controls.email.valueChanges, { initialValue: '' });
+
+  /** "Did you mean ana@gmail.com?" for typos in common domains; null when nothing to suggest. */
+  protected readonly emailSuggestion = computed(() => suggestEmail(this.emailValue() ?? ''));
 
   protected readonly placeholderKey = computed(() => `ct_m_ph_${this.topicValue() || 'other'}`);
   protected readonly messageLength = computed(() => this.messageValue().trim().length);
@@ -97,6 +102,13 @@ export class ContactModalComponent implements AfterViewInit {
       this.form.reset();
     }
     this.state.set(result);
+  }
+
+  acceptSuggestion(): void {
+    const suggestion = this.emailSuggestion();
+    if (!suggestion) return;
+    this.form.controls.email.setValue(suggestion);
+    this.focusField('contact-email');
   }
 
   sendAnother(): void {

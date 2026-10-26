@@ -30,7 +30,11 @@
             <label for="contact-email">{{ 'ct_m_email' | transloco }}</label>
             <input id="contact-email" type="email" formControlName="email" maxlength="254" autocomplete="email"
               [attr.aria-invalid]="invalid('email')" aria-describedby="contact-email-hint contact-email-error" />
-            @if (invalid('email')) {
+            @if (emailSuggestion(); as suggestion) {
+              <button type="button" class="email-suggestion" (click)="acceptSuggestion()">
+                {{ 'ct_m_suggest' | transloco: { email: suggestion } }}
+              </button>
+            } @else if (invalid('email')) {
               <span id="contact-email-error" class="field-error" role="alert">{{ 'ct_m_err_email' | transloco }}</span>
             } @else {
               <span id="contact-email-hint" class="hint">{{ 'ct_m_email_hint' | transloco }}</span>
