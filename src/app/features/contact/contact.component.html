@@ -11,8 +11,7 @@
     {{ 'ct_or' | transloco }}
     @if (mailto(email); as href) { <a [href]="href">{{ email }}</a> } @else { <span>{{ email }}</span> }
   </p>
+  @if (open()) {
+    <app-contact-modal [returnFocusTo]="trigger" [contactEmail]="email" (closed)="open.set(false)" />
+  }
 </section>
-
-@if (open()) {
-  <app-contact-modal [returnFocusTo]="trigger" (closed)="open.set(false)" />
-}

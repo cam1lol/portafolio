@@ -3,7 +3,6 @@
 .sub { color: var(--steel); font-size: 12px; }
 .message { padding: 10px 12px; margin: 0 0 14px; font-size: 12px; }
 .error-msg { color: var(--ember); background: var(--ember-soft); border-left: 2px solid var(--ember); }
-.ok-msg { color: var(--bone); background: var(--graphite); border-left: 2px solid var(--good); }
 
 .visitor {
   display: flex;
@@ -43,35 +42,11 @@
   background: var(--graphite);
 }
 
-.message-item.out { justify-self: end; border-color: var(--ember); }
 .message-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; color: var(--steel); font-size: 10px; letter-spacing: .06em; }
-.message-item.out .message-meta span:first-child { color: var(--ember); }
 .body { margin: 0; color: var(--bone); font-size: 14px; line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
 
-.reply {
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--graphite);
-}
-
-.reply label { display: block; margin-bottom: 8px; color: var(--steel); font-size: 10px; letter-spacing: .1em; }
-
-.reply textarea {
-  width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--ink);
-  color: var(--bone);
-  font: 14px 'Space Grotesk', sans-serif;
-  resize: vertical;
-}
-
-.reply textarea:focus { outline: none; border-color: var(--ember); }
-.hint { display: block; margin-top: 6px; color: var(--steel); font-size: 11px; }
-.field-error { display: block; margin-top: 6px; color: var(--ember); font-size: 10px; }
-.reply-foot { display: flex; justify-content: flex-end; margin-top: 12px; }
+.reply { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
+.hint { flex: 1 1 260px; color: var(--steel); font-size: 12px; line-height: 1.5; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .08em; padding: 10px 16px; border-radius: var(--r); border: 1px solid var(--line); color: var(--bone); background: transparent; text-decoration: none; white-space: nowrap; }
 .btn.primary { color: var(--ink); background: var(--ember); border-color: var(--ember); font-weight: 700; }

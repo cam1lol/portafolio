@@ -10,7 +10,6 @@
   </div>
 
   @if (errorMessage()) { <p class="message error-msg" role="alert">{{ errorMessage() }}</p> }
-  @if (notice()) { <p class="message ok-msg" role="status">{{ notice() }}</p> }
 
   @if (loading()) {
     <p class="sub">Cargando conversación…</p>
@@ -18,22 +17,17 @@
     <header class="visitor">
       <div>
         <span class="eyebrow mono">{{ statusLabels[current.status] }} · {{ current.lang | uppercase }}</span>
-        <h2>{{ current.subject || 'Sin asunto' }}</h2>
-        <p class="who">{{ current.name }} · <a [href]="'mailto:' + current.email">{{ current.email }}</a></p>
+        <h2>{{ topicLabels[current.topic] }}</h2>
+        <p class="who">{{ current.name }} · {{ current.email }}</p>
       </div>
-      <span class="mono started">INICIADA {{ current.createdAt | date: 'dd.MM.yyyy HH:mm' }}</span>
+      <span class="mono started">RECIBIDO {{ current.createdAt | date: 'dd.MM.yyyy HH:mm' }}</span>
     </header>
-
-    @if (current.syncError) {
-      <p class="message error-msg" role="alert">Error con Gmail en esta conversación: {{ current.syncError }}</p>
-    }
 
     <ol class="messages">
       @for (message of messages(); track message.id) {
-        <li class="message-item" [class.out]="message.direction === 'out'">
+        <li class="message-item">
           <div class="message-meta mono">
-            <span>{{ message.direction === 'out' ? 'TÚ' : current.name }}</span>
-            <span>{{ sourceLabels[message.source] }}</span>
+            <span>{{ current.name }}</span>
             <span>{{ message.createdAt | date: 'dd.MM.yyyy HH:mm' }}</span>
           </div>
           <p class="body">{{ message.body }}</p>
@@ -41,14 +35,9 @@
       }
     </ol>
 
-    <form class="reply" (ngSubmit)="send()" novalidate>
-      <label for="reply-body" class="mono">RESPONDER A {{ current.email }}</label>
-      <textarea id="reply-body" rows="6" [formControl]="reply" maxlength="10000"></textarea>
-      <span class="hint">Sale desde tu Gmail dentro del mismo hilo y termina con tu firma "Camilo Ayala".</span>
-      @if (reply.touched && reply.invalid) { <span class="field-error mono" role="alert">Escribe una respuesta (máximo 10 000 caracteres).</span> }
-      <div class="reply-foot">
-        <button type="submit" class="btn primary" [disabled]="sending()">{{ sending() ? 'ENVIANDO…' : 'ENVIAR RESPUESTA' }}</button>
-      </div>
-    </form>
+    <div class="reply">
+      <a class="btn primary" [href]="mailto()" (click)="onReply()">RESPONDER EN GMAIL</a>
+      <span class="hint">Abre tu correo con el asunto y el mensaje citado. La conversación queda marcada como respondida; si al final no envías nada, usa REABRIR.</span>
+    </div>
   }
 </section>

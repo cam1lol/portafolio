@@ -4,10 +4,12 @@ import { ContactModalComponent } from './contact-modal.component';
 import { ContactService, ContactSubmitResult } from '../../core/data/contact.service';
 
 const KEYS = [
-  'ct_m_title', 'ct_m_name', 'ct_m_email', 'ct_m_subject', 'ct_m_message', 'ct_m_send', 'ct_m_sending',
-  'ct_m_sent', 'ct_m_limit', 'ct_m_error', 'ct_m_err_name', 'ct_m_err_email', 'ct_m_err_message', 'ct_m_close',
+  'ct_m_title', 'ct_m_lead', 'ct_m_name', 'ct_m_email', 'ct_m_email_hint', 'ct_m_topic', 'ct_m_topic_project',
+  'ct_m_topic_job', 'ct_m_topic_other', 'ct_m_message', 'ct_m_ph_project', 'ct_m_ph_job', 'ct_m_ph_other',
+  'ct_m_missing', 'ct_m_send', 'ct_m_sending', 'ct_m_privacy', 'ct_m_sent_title', 'ct_m_sent_body', 'ct_m_close',
+  'ct_m_again', 'ct_m_error', 'ct_m_limit', 'ct_m_err_name', 'ct_m_err_email', 'ct_m_err_message',
 ];
-/** Each key translates to itself, so assertions can look for the key in the rendered text. */
+/** Each key translates to itself, so assertions look for the key in the rendered text. */
 const identity = Object.fromEntries(KEYS.map((key) => [key, key]));
 
 describe('ContactModalComponent', () => {
@@ -15,15 +17,16 @@ describe('ContactModalComponent', () => {
   let submit: jasmine.Spy<(input: unknown) => Promise<ContactSubmitResult>>;
   let trigger: HTMLButtonElement;
 
-  const text = () => (fixture.nativeElement as HTMLElement).textContent ?? '';
-  const field = (id: string) => (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(`#${id}`)!;
+  const root = () => fixture.nativeElement as HTMLElement;
+  const text = () => root().textContent ?? '';
+  const field = (id: string) => root().querySelector<HTMLInputElement>(`#${id}`)!;
   const type = (id: string, value: string) => {
-    const element = field(id);
-    element.value = value;
-    element.dispatchEvent(new Event('input'));
+    field(id).value = value;
+    field(id).dispatchEvent(new Event('input'));
+    fixture.detectChanges();
   };
   const send = async () => {
-    (fixture.nativeElement as HTMLElement).querySelector<HTMLFormElement>('form')!.dispatchEvent(new Event('submit'));
+    root().querySelector<HTMLFormElement>('form')!.dispatchEvent(new Event('submit'));
     await fixture.whenStable();
     fixture.detectChanges();
   };
@@ -57,22 +60,44 @@ describe('ContactModalComponent', () => {
 
   afterEach(() => trigger.remove());
 
-  it('no envía si el formulario es inválido', async () => {
+  it('no envía si el mensaje es corto y lleva el foco al campo con error', async () => {
     type('contact-name', 'Ana');
     type('contact-email', 'ana@mail.com');
     type('contact-message', 'corto');
     await send();
     expect(submit).not.toHaveBeenCalled();
     expect(text()).toContain('ct_m_err_message');
+    expect(document.activeElement).toBe(field('contact-message'));
   });
 
-  it('muestra el estado enviado y limpia el formulario', async () => {
+  it('el ejemplo del mensaje cambia según el tema y se envía el tema elegido', async () => {
+    expect(field('contact-message').placeholder).toBe('ct_m_ph_other');
+    // Order: project, job, other. [value] sets the property, not the attribute.
+    root().querySelectorAll<HTMLInputElement>('input[type="radio"]')[1].click();
+    fixture.detectChanges();
+    expect(field('contact-message').placeholder).toBe('ct_m_ph_job');
+
     submit.and.resolveTo('received');
     fillValid();
     await send();
-    expect(submit).toHaveBeenCalledWith(jasmine.objectContaining({ name: 'Ana', email: 'ana@mail.com', lang: 'es', website: '' }));
-    expect(text()).toContain('ct_m_sent');
-    expect(field('contact-name').value).toBe('');
+    expect(submit).toHaveBeenCalledWith(jasmine.objectContaining({ topic: 'job', name: 'Ana', email: 'ana@mail.com', lang: 'es', website: '' }));
+  });
+
+  it('al enviar reemplaza el formulario por la confirmación', async () => {
+    submit.and.resolveTo('received');
+    fillValid();
+    await send();
+    expect(text()).toContain('ct_m_sent_title');
+    expect(root().querySelector('form')).toBeNull();
+  });
+
+  it('si falla conserva lo escrito y ofrece el email directo', async () => {
+    submit.and.resolveTo('error');
+    fillValid();
+    await send();
+    expect(text()).toContain('ct_m_error');
+    expect(field('contact-message').value).toBe('Hola, quiero cotizar un proyecto.');
+    expect(root().querySelector('a[href^="mailto:"]')).not.toBeNull();
   });
 
   it('muestra el límite', async () => {

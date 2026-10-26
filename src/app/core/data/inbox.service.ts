@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, forkJoin, from, map, of, tap } from 'rxjs';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ContactTopic } from './contact.service';
 
 export type InboxStatus = 'new' | 'read' | 'replied' | 'archived';
 
@@ -9,10 +10,9 @@ export interface InboxThread {
   id: string;
   name: string;
   email: string;
-  subject: string;
+  topic: ContactTopic;
   lang: 'es' | 'en';
   status: InboxStatus;
-  syncError: string | null;
   createdAt: string;
   lastMessageAt: string;
   preview: string;
@@ -20,45 +20,30 @@ export interface InboxThread {
 
 export interface InboxMessage {
   id: string;
-  direction: 'in' | 'out';
   body: string;
-  source: 'form' | 'panel' | 'gmail';
   createdAt: string;
 }
 
-export interface SyncState {
-  lastSyncAt: string | null;
-  lastError: string | null;
-  lastErrorAt: string | null;
-}
+export const TOPIC_LABELS: Record<ContactTopic, string> = { project: 'Proyecto', job: 'Oferta de trabajo', other: 'Otra cosa' };
 
 interface ThreadRow {
   id: string;
   name: string;
   email: string;
-  subject: string;
+  topic: ContactTopic;
   lang: 'es' | 'en';
   status: InboxStatus;
-  sync_error: string | null;
   created_at: string;
   last_message_at: string;
   contact_messages?: Array<{ body: string; created_at: string }>;
 }
 
-interface MessageRow {
-  id: string;
-  direction: 'in' | 'out';
-  body: string;
-  source: 'form' | 'panel' | 'gmail';
-  created_at: string;
-}
-
 const PREVIEW_LENGTH = 140;
-const THREAD_COLUMNS = 'id, name, email, subject, lang, status, sync_error, created_at, last_message_at';
+const THREAD_COLUMNS = 'id, name, email, topic, lang, status, created_at, last_message_at';
 
 /**
- * Admin side of the contact inbox. Reads go straight to the RLS-protected tables;
- * replies go through the `contact-reply` Edge Function, which talks to Gmail.
+ * Admin side of the contact inbox (v2). Messages arrive by email through Web3Forms and are
+ * kept here as a backup; Camilo answers from Gmail and tracks the status in the panel.
  */
 @Injectable({ providedIn: 'root' })
 export class InboxService {
@@ -87,11 +72,7 @@ export class InboxService {
     return forkJoin({
       thread: from(this.supabase.client.from('contact_threads').select(THREAD_COLUMNS).eq('id', id).maybeSingle()),
       messages: from(
-        this.supabase.client
-          .from('contact_messages')
-          .select('id, direction, body, source, created_at')
-          .eq('thread_id', id)
-          .order('created_at', { ascending: true }),
+        this.supabase.client.from('contact_messages').select('id, body, created_at').eq('thread_id', id).order('created_at', { ascending: true }),
       ),
     }).pipe(
       map(({ thread, messages }) => {
@@ -100,7 +81,11 @@ export class InboxService {
         if (!thread.data) throw new Error('Conversation not found');
         return {
           thread: this.toThread(thread.data as ThreadRow),
-          messages: ((messages.data ?? []) as MessageRow[]).map((row) => this.toMessage(row)),
+          messages: ((messages.data ?? []) as Array<{ id: string; body: string; created_at: string }>).map((row) => ({
+            id: row.id,
+            body: row.body,
+            createdAt: row.created_at,
+          })),
         };
       }),
     );
@@ -114,7 +99,11 @@ export class InboxService {
     ).pipe(tap(() => this.refreshUnread()));
   }
 
-  setStatus(id: string, status: 'archived' | 'read'): Observable<void> {
+  markReplied(id: string): Observable<void> {
+    return this.setStatus(id, 'replied');
+  }
+
+  setStatus(id: string, status: Exclude<InboxStatus, 'new'>): Observable<void> {
     return this.write(this.supabase.client.from('contact_threads').update({ status }).eq('id', id)).pipe(
       tap(() => this.refreshUnread()),
     );
@@ -124,42 +113,18 @@ export class InboxService {
     return this.write(this.supabase.client.from('contact_threads').delete().eq('id', id)).pipe(tap(() => this.refreshUnread()));
   }
 
-  /** Sends through Gmail; the stored message arrives through `watchThread`. */
-  reply(threadId: string, body: string): Observable<void> {
-    return from(this.supabase.client.functions.invoke('contact-reply', { body: { threadId, body } })).pipe(
-      map(({ error }) => {
-        if (error) throw error;
-      }),
-    );
-  }
-
-  syncState(): Observable<SyncState> {
-    return from(
-      this.supabase.client.from('contact_sync_state').select('last_sync_at, last_error, last_error_at').eq('id', 1).maybeSingle(),
-    ).pipe(
-      map(({ data, error }) => {
-        if (error) throw error;
-        const row = data as { last_sync_at: string | null; last_error: string | null; last_error_at: string | null } | null;
-        return { lastSyncAt: row?.last_sync_at ?? null, lastError: row?.last_error ?? null, lastErrorAt: row?.last_error_at ?? null };
-      }),
-    );
-  }
-
-  /** New messages of one conversation (panel replies and Gmail sync) in real time. */
-  watchThread(id: string): Observable<InboxMessage> {
-    return new Observable<InboxMessage>((subscriber) => {
-      const channel = this.supabase.client
-        .channel(`contact-thread-${id}`)
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'contact_messages', filter: `thread_id=eq.${id}` },
-          (payload) => subscriber.next(this.toMessage(payload.new as MessageRow)),
-        )
-        .subscribe();
-      return () => {
-        this.supabase.client.removeChannel(channel);
-      };
+  /** `mailto:` that opens Camilo's mail client with the subject and the visitor's message quoted. */
+  replyMailto(thread: InboxThread, message: string): string {
+    const quoted = message
+      .split('\n')
+      .map((line) => `> ${line}`)
+      .join('\n');
+    const params = new URLSearchParams({
+      subject: `Re: ${TOPIC_LABELS[thread.topic]} · Camilo Ayala`,
+      body: `Hola ${thread.name},\n\n\n\n--\nCamilo Ayala\n\n${quoted}`,
     });
+    // URLSearchParams encodes spaces as "+", which mail clients show literally.
+    return `mailto:${thread.email}?${params.toString().replace(/\+/g, '%20')}`;
   }
 
   /** Called by the admin layout: loads the badge and keeps it current. */
@@ -202,17 +167,12 @@ export class InboxService {
       id: row.id,
       name: row.name,
       email: row.email,
-      subject: row.subject,
+      topic: row.topic,
       lang: row.lang,
       status: row.status,
-      syncError: row.sync_error,
       createdAt: row.created_at,
       lastMessageAt: row.last_message_at,
       preview: (latest?.body ?? '').replace(/\s+/g, ' ').trim().slice(0, PREVIEW_LENGTH),
     };
-  }
-
-  private toMessage(row: MessageRow): InboxMessage {
-    return { id: row.id, direction: row.direction, body: row.body, source: row.source, createdAt: row.created_at };
   }
 }

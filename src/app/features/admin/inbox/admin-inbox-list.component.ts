@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { InboxService, InboxStatus, InboxThread, SyncState } from '../../../core/data/inbox.service';
+import { InboxService, InboxStatus, InboxThread, TOPIC_LABELS } from '../../../core/data/inbox.service';
 
 type Filter = InboxStatus | 'all';
 
@@ -32,15 +32,14 @@ export class AdminInboxListComponent implements OnInit {
 
   protected readonly filters = FILTERS;
   protected readonly statusLabels = STATUS_LABELS;
+  protected readonly topicLabels = TOPIC_LABELS;
   protected readonly filter = signal<Filter>('all');
   protected readonly threads = signal<InboxThread[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
-  protected readonly sync = signal<SyncState | null>(null);
 
   ngOnInit(): void {
     this.load();
-    this.inbox.syncState().subscribe({ next: (state) => this.sync.set(state), error: () => this.sync.set(null) });
   }
 
   setFilter(value: Filter): void {

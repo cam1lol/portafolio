@@ -2,21 +2,8 @@
   <div class="page-head">
     <div>
       <p class="eyebrow">Mensajes</p>
-      <p class="help">Lo que llega por el formulario de contacto. Cada conversación también está en tu Gmail; aquí queda el respaldo y puedes responder.</p>
+      <p class="help">Lo que llega por el formulario de contacto. Cada mensaje también te llega a Gmail; aquí queda el respaldo por si cae en spam.</p>
     </div>
-  </div>
-
-  <div class="sync-strip mono" [class.has-error]="sync()?.lastError">
-    <span>CONEXIÓN CON GMAIL</span>
-    @if (sync(); as state) {
-      <span>ÚLTIMA SINCRONIZACIÓN · {{ state.lastSyncAt ? (state.lastSyncAt | date: 'dd.MM.yyyy HH:mm') : 'NUNCA' }}</span>
-      @if (state.lastError) {
-        <span class="error-text" role="alert">ÚLTIMO ERROR ({{ state.lastErrorAt | date: 'dd.MM HH:mm' }}): {{ state.lastError }}</span>
-        <span class="hint-text">Si ves errores de autorización, genera un nuevo refresh token en OAuth Playground y actualiza el secreto GOOGLE_REFRESH_TOKEN en Supabase.</span>
-      }
-    } @else {
-      <span>SIN DATOS</span>
-    }
   </div>
 
   <div class="filters mono" role="tablist" aria-label="Filtrar por estado">
@@ -43,13 +30,12 @@
               <small>{{ thread.email }}</small>
             </span>
             <span class="what">
-              <strong>{{ thread.subject || 'Sin asunto' }}</strong>
+              <strong>{{ topicLabels[thread.topic] }}</strong>
               <small>{{ thread.preview }}</small>
             </span>
             <span class="meta mono">
               <span class="status" [attr.data-status]="thread.status">{{ statusLabels[thread.status] }}</span>
               <span>{{ thread.lastMessageAt | date: 'dd.MM.yyyy HH:mm' }}</span>
-              @if (thread.syncError) { <span class="error-text">ERROR GMAIL</span> }
             </span>
           </a>
         </li>

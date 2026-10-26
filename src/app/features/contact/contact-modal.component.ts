@@ -1,12 +1,17 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { ContactService, ContactSubmitResult } from '../../core/data/contact.service';
+import { ContactService, ContactSubmitResult, ContactTopic } from '../../core/data/contact.service';
 import { noControlCharsValidator } from '../../shared/validators/no-control-chars.validator';
 
 type ModalState = 'idle' | 'sending' | ContactSubmitResult;
 
 const EMAIL_PATTERN = /^[^\s@<>()",;]+@[^\s@<>()",;]+\.[^\s@<>()",;]{2,}$/;
+const MESSAGE_MIN = 10;
+const MESSAGE_MAX = 5000;
+/** Order used to move focus to the first field with an error. */
+const FIELD_IDS = { name: 'contact-name', email: 'contact-email', message: 'contact-message' } as const;
 
 /**
  * Contact dialog. Rendered only while open (the parent wraps it in @if), so it takes focus on
@@ -22,14 +27,19 @@ const EMAIL_PATTERN = /^[^\s@<>()",;]+@[^\s@<>()",;]+\.[^\s@<>()",;]{2,}$/;
 export class ContactModalComponent implements AfterViewInit {
   private readonly contactService = inject(ContactService);
   private readonly transloco = inject(TranslocoService);
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly returnFocusTo = input<HTMLElement | null>(null);
+  /** Shown as the direct-email fallback when sending fails. */
+  readonly contactEmail = input('kmilo0230@gmail.com');
   readonly closed = output<void>();
 
   private readonly dialog = viewChild.required<ElementRef<HTMLElement>>('dialog');
-  private readonly firstField = viewChild.required<ElementRef<HTMLInputElement>>('firstField');
 
+  protected readonly topics: ContactTopic[] = ['project', 'job', 'other'];
+  protected readonly messageMax = MESSAGE_MAX;
   protected readonly state = signal<ModalState>('idle');
+  protected readonly sentTo = signal('');
 
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(80), noControlCharsValidator()] }),
@@ -37,40 +47,61 @@ export class ContactModalComponent implements AfterViewInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(254), Validators.pattern(EMAIL_PATTERN)],
     }),
-    subject: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(120), noControlCharsValidator()] }),
+    topic: new FormControl<ContactTopic | ''>('', { nonNullable: true }),
     message: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(5000), noControlCharsValidator({ allowNewlines: true })],
+      validators: [Validators.required, Validators.maxLength(MESSAGE_MAX), noControlCharsValidator({ allowNewlines: true })],
     }),
     website: new FormControl('', { nonNullable: true }),
   });
 
+  private readonly topicValue = toSignal(this.form.controls.topic.valueChanges, { initialValue: '' as ContactTopic | '' });
+  private readonly messageValue = toSignal(this.form.controls.message.valueChanges, { initialValue: '' });
+
+  protected readonly placeholderKey = computed(() => `ct_m_ph_${this.topicValue() || 'other'}`);
+  protected readonly messageLength = computed(() => this.messageValue().trim().length);
+  protected readonly missing = computed(() => Math.max(0, MESSAGE_MIN - this.messageLength()));
+
   ngAfterViewInit(): void {
-    this.firstField().nativeElement.focus();
+    this.focusField('contact-name');
   }
 
   protected invalid(name: 'name' | 'email' | 'message'): boolean {
     const control = this.form.controls[name];
-    return control.invalid && control.touched;
+    const tooShort = name === 'message' && this.messageLength() < MESSAGE_MIN;
+    return (control.invalid || tooShort) && control.touched;
   }
 
   async submit(): Promise<void> {
     if (this.state() === 'sending') return;
     this.form.markAllAsTouched();
-    const value = this.form.getRawValue();
-    if (this.form.invalid || !value.name.trim() || value.message.trim().length < 10) return;
 
+    const firstInvalid = (Object.keys(FIELD_IDS) as Array<keyof typeof FIELD_IDS>).find((name) => this.invalid(name));
+    if (firstInvalid) {
+      this.focusField(FIELD_IDS[firstInvalid]);
+      return;
+    }
+
+    const value = this.form.getRawValue();
     this.state.set('sending');
     const result = await this.contactService.submit({
       name: value.name.trim(),
       email: value.email.trim(),
-      subject: value.subject.trim(),
+      topic: value.topic || 'other',
       message: value.message.trim(),
       lang: this.transloco.getActiveLang() === 'en' ? 'en' : 'es',
       website: value.website,
     });
-    if (result === 'received') this.form.reset();
+    if (result === 'received') {
+      this.sentTo.set(value.email.trim());
+      this.form.reset();
+    }
     this.state.set(result);
+  }
+
+  sendAnother(): void {
+    this.state.set('idle');
+    queueMicrotask(() => this.focusField('contact-name'));
   }
 
   close(): void {
@@ -104,5 +135,9 @@ export class ContactModalComponent implements AfterViewInit {
       event.preventDefault();
       first.focus();
     }
+  }
+
+  private focusField(id: string): void {
+    (this.host.nativeElement as HTMLElement).querySelector<HTMLElement>(`#${id}`)?.focus();
   }
 }

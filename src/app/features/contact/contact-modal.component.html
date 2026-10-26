@@ -1,55 +1,92 @@
 <div class="backdrop" (click)="onBackdrop($event)">
-  <div #dialog class="dialog" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
-    <div class="dialog-head">
-      <span class="tag mono">CONTACT // 01</span>
-      <button type="button" class="close mono" (click)="close()" [attr.aria-label]="'ct_m_close' | transloco">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-      </button>
-    </div>
-    <h2 id="contact-modal-title">{{ 'ct_m_title' | transloco }}</h2>
+  <div #dialog class="dialog" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" aria-describedby="contact-modal-lead">
+    <button type="button" class="close" (click)="close()" [attr.aria-label]="'ct_m_close' | transloco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <div class="row">
-        <div class="field">
-          <label for="contact-name" class="mono">{{ 'ct_m_name' | transloco }}</label>
-          <input #firstField id="contact-name" type="text" formControlName="name" maxlength="80" autocomplete="name" />
-          @if (invalid('name')) { <span class="field-error mono" role="alert">{{ 'ct_m_err_name' | transloco }}</span> }
-        </div>
-        <div class="field">
-          <label for="contact-email" class="mono">{{ 'ct_m_email' | transloco }}</label>
-          <input id="contact-email" type="email" formControlName="email" maxlength="254" autocomplete="email" />
-          @if (invalid('email')) { <span class="field-error mono" role="alert">{{ 'ct_m_err_email' | transloco }}</span> }
+    @if (state() === 'received') {
+      <div class="sent" role="status">
+        <svg class="sent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+        <h2 id="contact-modal-title">{{ 'ct_m_sent_title' | transloco }}</h2>
+        <p id="contact-modal-lead" class="lead">{{ 'ct_m_sent_body' | transloco: { email: sentTo() } }}</p>
+        <div class="foot">
+          <button type="button" class="btn primary" (click)="close()">{{ 'ct_m_close' | transloco }}</button>
+          <button type="button" class="btn" (click)="sendAnother()">{{ 'ct_m_again' | transloco }}</button>
         </div>
       </div>
-      <div class="field">
-        <label for="contact-subject" class="mono">{{ 'ct_m_subject' | transloco }}</label>
-        <input id="contact-subject" type="text" formControlName="subject" maxlength="120" />
-      </div>
-      <div class="field">
-        <label for="contact-message" class="mono">{{ 'ct_m_message' | transloco }}</label>
-        <textarea id="contact-message" rows="6" formControlName="message" maxlength="5000"></textarea>
-        @if (invalid('message')) { <span class="field-error mono" role="alert">{{ 'ct_m_err_message' | transloco }}</span> }
-      </div>
+    } @else {
+      <h2 id="contact-modal-title">{{ 'ct_m_title' | transloco }}</h2>
+      <p id="contact-modal-lead" class="lead">{{ 'ct_m_lead' | transloco }}</p>
 
-      <!-- Honeypot: invisible and out of the tab order for people. -->
-      <div class="trap" aria-hidden="true">
-        <label for="contact-website">Website</label>
-        <input id="contact-website" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
-      </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row">
+          <div class="field">
+            <label for="contact-name">{{ 'ct_m_name' | transloco }}</label>
+            <input id="contact-name" type="text" formControlName="name" maxlength="80" autocomplete="name"
+              [attr.aria-invalid]="invalid('name')" aria-describedby="contact-name-error" />
+            @if (invalid('name')) { <span id="contact-name-error" class="field-error" role="alert">{{ 'ct_m_err_name' | transloco }}</span> }
+          </div>
+          <div class="field">
+            <label for="contact-email">{{ 'ct_m_email' | transloco }}</label>
+            <input id="contact-email" type="email" formControlName="email" maxlength="254" autocomplete="email"
+              [attr.aria-invalid]="invalid('email')" aria-describedby="contact-email-hint contact-email-error" />
+            @if (invalid('email')) {
+              <span id="contact-email-error" class="field-error" role="alert">{{ 'ct_m_err_email' | transloco }}</span>
+            } @else {
+              <span id="contact-email-hint" class="hint">{{ 'ct_m_email_hint' | transloco }}</span>
+            }
+          </div>
+        </div>
 
-      <div class="foot">
-        <button type="submit" class="btn primary" [disabled]="state() === 'sending'">
-          {{ (state() === 'sending' ? 'ct_m_sending' : 'ct_m_send') | transloco }}
-        </button>
-        <p class="status mono" role="status" aria-live="polite">
-          @switch (state()) {
-            @case ('received') { <span class="ok">{{ 'ct_m_sent' | transloco }}</span> }
-            @case ('rate_limited') { <span class="err">{{ 'ct_m_limit' | transloco }}</span> }
-            @case ('error') { <span class="err">{{ 'ct_m_error' | transloco }}</span> }
-            @case ('invalid') { <span class="err">{{ 'ct_m_error' | transloco }}</span> }
-          }
-        </p>
-      </div>
-    </form>
+        <fieldset class="topics">
+          <legend>{{ 'ct_m_topic' | transloco }}</legend>
+          <div class="pills" role="radiogroup">
+            @for (topic of topics; track topic) {
+              <label class="pill">
+                <input type="radio" formControlName="topic" [value]="topic" />
+                <span>{{ 'ct_m_topic_' + topic | transloco }}</span>
+              </label>
+            }
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="contact-message">{{ 'ct_m_message' | transloco }}</label>
+          <textarea id="contact-message" rows="6" formControlName="message" [attr.maxlength]="messageMax"
+            [placeholder]="placeholderKey() | transloco" [attr.aria-invalid]="invalid('message')"
+            aria-describedby="contact-message-count contact-message-error"></textarea>
+          <div class="message-meta">
+            @if (invalid('message')) {
+              <span id="contact-message-error" class="field-error" role="alert">{{ 'ct_m_err_message' | transloco }}</span>
+            } @else if (missing() > 0 && messageLength() > 0) {
+              <span class="hint">{{ 'ct_m_missing' | transloco: { n: missing() } }}</span>
+            } @else {
+              <span></span>
+            }
+            <span id="contact-message-count" class="count mono">{{ messageLength() }} / {{ messageMax }}</span>
+          </div>
+        </div>
+
+        <!-- Honeypot: invisible and out of the tab order for people. -->
+        <div class="trap" aria-hidden="true">
+          <label for="contact-website">Website</label>
+          <input id="contact-website" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        @if (state() === 'error' || state() === 'rate_limited') {
+          <p class="send-error" role="alert">
+            {{ (state() === 'error' ? 'ct_m_error' : 'ct_m_limit') | transloco }}
+            <a [href]="'mailto:' + contactEmail()">{{ contactEmail() }}</a>
+          </p>
+        }
+
+        <div class="foot">
+          <button type="submit" class="btn primary" [disabled]="state() === 'sending'">
+            {{ (state() === 'sending' ? 'ct_m_sending' : 'ct_m_send') | transloco }}
+          </button>
+          <p class="privacy">{{ 'ct_m_privacy' | transloco }}</p>
+        </div>
+      </form>
+    }
   </div>
 </div>

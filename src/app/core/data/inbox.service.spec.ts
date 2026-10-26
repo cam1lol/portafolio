@@ -27,10 +27,9 @@ const thread = (status: InboxThread['status']): InboxThread => ({
   id: 't1',
   name: 'Ana',
   email: 'ana@mail.com',
-  subject: '',
+  topic: 'project',
   lang: 'es',
   status,
-  syncError: null,
   createdAt: '2026-10-25T00:00:00Z',
   lastMessageAt: '2026-10-25T00:00:00Z',
   preview: '',
@@ -73,7 +72,7 @@ describe('InboxService', () => {
     const { service } = setup({
       data: [
         {
-          id: 't1', name: 'Ana', email: 'ana@mail.com', subject: '', lang: 'es', status: 'new', sync_error: null,
+          id: 't1', name: 'Ana', email: 'ana@mail.com', topic: 'project', lang: 'es', status: 'new',
           created_at: '2026-10-25T00:00:00Z', last_message_at: '2026-10-25T02:00:00Z',
           contact_messages: [
             { body: 'viejo', created_at: '2026-10-25T00:00:00Z' },
@@ -86,5 +85,21 @@ describe('InboxService', () => {
     const [first] = await firstValueFrom(service.listThreads('all'));
     expect(first.preview).toBe('x'.repeat(140));
     expect(first.lastMessageAt).toBe('2026-10-25T02:00:00Z');
+  });
+
+  it('markReplied pone la conversación en replied', async () => {
+    const { service, calls } = setup({ data: null, error: null });
+    await firstValueFrom(service.markReplied('t1'));
+    expect(calls).toContain(jasmine.objectContaining({ method: 'update', args: [{ status: 'replied' }] }));
+    expect(calls).toContain(jasmine.objectContaining({ method: 'eq', args: ['id', 't1'] }));
+  });
+
+  it('replyMailto arma el asunto con el tema y cita el mensaje', () => {
+    const { service } = setup();
+    const href = service.replyMailto({ ...thread('read'), topic: 'job' }, 'Hola\nCamilo');
+    expect(href.startsWith('mailto:ana@mail.com?')).toBeTrue();
+    const params = new URLSearchParams(href.split('?')[1]);
+    expect(params.get('subject')).toBe('Re: Oferta de trabajo · Camilo Ayala');
+    expect(params.get('body')).toContain('> Hola\n> Camilo');
   });
 });
