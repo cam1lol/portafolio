@@ -95,8 +95,8 @@ function tickPath(rIn: number, rOut: number, every: number): string {
   <div class="depth" style="--d: 0.5">
     <svg class="layer spin l2" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-outer" d="M 0,-268 A 268,268 0 1,1 -0.01,-268"/></defs>
-      <text font-size="11" fill="#e85525" fill-opacity=".7" font-family="monospace" letter-spacing="3.5">
-        <textPath href="#ring-text-outer">@for (rune of outerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
+      <text font-size="11" fill="#e85525" fill-opacity=".7" font-family="monospace">
+        <textPath href="#ring-text-outer" textLength="1680" lengthAdjust="spacing">@for (rune of outerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
       </text>
     </svg>
   </div>
@@ -148,8 +148,8 @@ function tickPath(rIn: number, rOut: number, every: number): string {
   <div class="depth" style="--d: 1.15">
     <svg class="layer spin l6" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-inner" d="M 0,-118 A 118,118 0 1,1 -0.01,-118"/></defs>
-      <text font-size="9" fill="#e85525" fill-opacity=".6" font-family="monospace" letter-spacing="2.5">
-        <textPath href="#ring-text-inner">@for (rune of innerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
+      <text font-size="9" fill="#e85525" fill-opacity=".6" font-family="monospace">
+        <textPath href="#ring-text-inner" textLength="738" lengthAdjust="spacing">@for (rune of innerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
       </text>
     </svg>
   </div>
@@ -162,8 +162,10 @@ export class RingLayerComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly rings = viewChild.required<ElementRef<HTMLDivElement>>('rings');
 
+  // textLength (on the textPath) spreads the runes over the full circumference, 2 * PI * r,
+  // so the ring closes with no gap: outer r=268 -> 1680, inner r=118 -> 738.
   readonly outerRunes = Array.from(repeat(RUNES, 7));
-  readonly innerRunes = Array.from(repeat(RUNES, 3));
+  readonly innerRunes = Array.from(repeat(RUNES, 4));
 
   readonly majTicks   = tickPath(285, 296, 30);
   readonly minTicks   = tickPath(290, 296, 10);
@@ -191,6 +193,7 @@ export class RingLayerComponent implements AfterViewInit {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       this.motionLoop(root);
       this.runeSparks(root);
+      this.energyPulse(root);
     });
   }
 
@@ -216,7 +219,17 @@ export class RingLayerComponent implements AfterViewInit {
       targetX = (event.clientX / window.innerWidth) * 2 - 1;
       targetY = (event.clientY / window.innerHeight) * 2 - 1;
     };
-    if (finePointer) window.addEventListener('pointermove', onPointer, { passive: true });
+    // Cursor left the window: drift back to the center instead of staying offset.
+    const onLeave = (event: MouseEvent) => {
+      if (!event.relatedTarget) {
+        targetX = 0;
+        targetY = 0;
+      }
+    };
+    if (finePointer) {
+      window.addEventListener('pointermove', onPointer, { passive: true });
+      document.addEventListener('mouseout', onLeave);
+    }
 
     const frame = (now: number) => {
       const dt = Math.max(16, now - lastT);
@@ -245,6 +258,7 @@ export class RingLayerComponent implements AfterViewInit {
     this.destroyRef.onDestroy(() => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('pointermove', onPointer);
+      document.removeEventListener('mouseout', onLeave);
     });
   }
 
@@ -254,15 +268,26 @@ export class RingLayerComponent implements AfterViewInit {
     if (runes.length === 0) return;
     const timeouts = new Set<ReturnType<typeof setTimeout>>();
 
-    const interval = setInterval(() => {
-      for (let i = 0; i < 3; i++) {
-        const rune = runes[Math.floor(Math.random() * runes.length)];
+    const later = (fn: () => void, ms: number) => {
+      const timeout = setTimeout(() => {
+        timeouts.delete(timeout);
+        fn();
+      }, ms);
+      timeouts.add(timeout);
+    };
+    const light = (rune: SVGTSpanElement, delay: number) =>
+      later(() => {
         rune.classList.add('lit');
-        const timeout = setTimeout(() => {
-          rune.classList.remove('lit');
-          timeouts.delete(timeout);
-        }, 1600);
-        timeouts.add(timeout);
+        later(() => rune.classList.remove('lit'), 1600);
+      }, delay);
+
+    const interval = setInterval(() => {
+      if (Math.random() < 0.3) {
+        // Now and then a short wave: three consecutive runes, one after another.
+        const start = Math.floor(Math.random() * (runes.length - 3));
+        for (let i = 0; i < 3; i++) light(runes[start + i], i * 140);
+      } else {
+        for (let i = 0; i < 3; i++) light(runes[Math.floor(Math.random() * runes.length)], 0);
       }
     }, 1100);
 
@@ -270,6 +295,29 @@ export class RingLayerComponent implements AfterViewInit {
       clearInterval(interval);
       timeouts.forEach(clearTimeout);
     });
+  }
+
+  /** Fires the expanding pulse at irregular intervals (7-12 s) so it feels alive, not mechanical. */
+  private energyPulse(root: HTMLElement): void {
+    const pulse = root.querySelector<SVGSVGElement>('.pulse');
+    if (!pulse) return;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    // Web Animations API: every call is a fresh animation, so it always replays
+    // (toggling a CSS class does not reliably restart an animation on SVG elements).
+    const fire = () => {
+      pulse.animate(
+        [
+          { transform: 'scale(0.12)', opacity: 0 },
+          { opacity: 0.85, offset: 0.14 },
+          { transform: 'scale(1.06)', opacity: 0 },
+        ],
+        { duration: 3800, easing: 'cubic-bezier(.2, .6, .3, 1)' },
+      );
+      timeout = setTimeout(fire, 7000 + Math.random() * 5000);
+    };
+    timeout = setTimeout(fire, 2500);
+    this.destroyRef.onDestroy(() => clearTimeout(timeout));
   }
 
   /** Fades the circle while a text-heavy section sits in the middle of the screen. */

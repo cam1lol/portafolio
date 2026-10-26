@@ -56,19 +56,11 @@
 @keyframes cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
-/* Energy pulse: grows from the center and fades out, then rests until the next cycle. */
+/* Energy pulse: hidden at rest, animated from the component at irregular intervals. */
 .pulse {
   opacity: 0;
   transform: scale(.12);
   will-change: transform, opacity;
-  animation: pulse 9s cubic-bezier(.2, .6, .3, 1) infinite;
-}
-
-@keyframes pulse {
-  0%   { transform: scale(.12); opacity: 0; }
-  6%   { opacity: .85; }
-  42%  { transform: scale(1.06); opacity: 0; }
-  100% { transform: scale(1.06); opacity: 0; }
 }
 
 /* Runes that light up (class toggled from the component). */
