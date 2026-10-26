@@ -58,5 +58,21 @@
   "cm_ok": "Thanks. Your comment will be published once reviewed.",
   "cm_err": "Could not send. Please try again in a moment.",
   "cm_wait": "Please wait a minute before sending another comment.",
-  "cm_empty": "No published comments yet. Be the first."
+  "cm_empty": "No published comments yet. Be the first.",
+  "ct_open": "Write to me",
+  "ct_or": "or email me at",
+  "ct_m_title": "Let's talk",
+  "ct_m_name": "Name",
+  "ct_m_email": "Email",
+  "ct_m_subject": "Subject (optional)",
+  "ct_m_message": "Message",
+  "ct_m_send": "Send message",
+  "ct_m_sending": "Sending…",
+  "ct_m_sent": "Message sent. I will reply within 24 h; check your inbox, I sent you a copy.",
+  "ct_m_limit": "I received several messages from your connection. Try again in an hour or email me directly.",
+  "ct_m_error": "Could not send. Try again or email me directly.",
+  "ct_m_err_name": "Enter your name (80 characters max).",
+  "ct_m_err_email": "Enter a valid email.",
+  "ct_m_err_message": "Write a message of 10 to 5000 characters.",
+  "ct_m_close": "Close"
 }

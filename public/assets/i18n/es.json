@@ -58,5 +58,21 @@
   "cm_ok": "Gracias. Tu comentario se publicará cuando sea revisado.",
   "cm_err": "No se pudo enviar. Inténtalo de nuevo en un momento.",
   "cm_wait": "Espera un minuto antes de enviar otro comentario.",
-  "cm_empty": "Todavía no hay comentarios publicados. Sé el primero."
+  "cm_empty": "Todavía no hay comentarios publicados. Sé el primero.",
+  "ct_open": "Escríbeme",
+  "ct_or": "o escribe directo a",
+  "ct_m_title": "Hablemos",
+  "ct_m_name": "Nombre",
+  "ct_m_email": "Email",
+  "ct_m_subject": "Asunto (opcional)",
+  "ct_m_message": "Mensaje",
+  "ct_m_send": "Enviar mensaje",
+  "ct_m_sending": "Enviando…",
+  "ct_m_sent": "Mensaje enviado. Te respondo en menos de 24 h; revisa tu correo, te envié una copia.",
+  "ct_m_limit": "Recibí varios mensajes desde tu conexión. Inténtalo de nuevo en una hora o escríbeme directo.",
+  "ct_m_error": "No se pudo enviar. Inténtalo de nuevo o escríbeme directo.",
+  "ct_m_err_name": "Escribe tu nombre (máximo 80 caracteres).",
+  "ct_m_err_email": "Escribe un email válido.",
+  "ct_m_err_message": "Escribe un mensaje de 10 a 5000 caracteres.",
+  "ct_m_close": "Cerrar"
 }

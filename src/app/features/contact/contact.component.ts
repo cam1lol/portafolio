@@ -1,19 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 import { SiteTextPipe } from '../../shared/site-text/site-text.pipe';
 import { InlineMarkupPipe } from '../../shared/site-text/inline-markup.pipe';
+import { ContactModalComponent } from './contact-modal.component';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [RevealDirective, MagneticDirective, SiteTextPipe, InlineMarkupPipe],
+  imports: [TranslocoPipe, RevealDirective, MagneticDirective, SiteTextPipe, InlineMarkupPipe, ContactModalComponent],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })
 export class ContactComponent {
+  protected readonly open = signal(false);
+
   /** Only real-looking addresses become a `mailto:` link. */
   protected mailto(email: string): string | null {
     const trimmed = email.trim();

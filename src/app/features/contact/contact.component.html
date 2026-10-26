@@ -3,8 +3,16 @@
   <h2 class="reveal" appReveal [innerHTML]="'ct_h' | siteText | inlineMarkup"></h2>
   <p class="lead reveal" appReveal>{{ 'ct_l' | siteText }}</p>
   @let email = 'contact_email' | siteText: ('ct_b' | siteText);
-  <a class="btn primary mag reveal" appReveal appMagnetic [attr.href]="mailto(email)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4zM4 7l8 6 8-6" /></svg>
-    {{ email }}
-  </a>
+  <button #trigger type="button" class="btn primary mag reveal" appReveal appMagnetic aria-haspopup="dialog" (click)="open.set(true)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM4 7l8 6 8-6" /></svg>
+    {{ 'ct_open' | transloco }}
+  </button>
+  <p class="direct mono reveal" appReveal>
+    {{ 'ct_or' | transloco }}
+    @if (mailto(email); as href) { <a [href]="href">{{ email }}</a> } @else { <span>{{ email }}</span> }
+  </p>
 </section>
+
+@if (open()) {
+  <app-contact-modal [returnFocusTo]="trigger" (closed)="open.set(false)" />
+}

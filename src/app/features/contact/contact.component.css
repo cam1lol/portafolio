@@ -56,3 +56,21 @@
 .btn:hover {
   border-color: var(--bone);
 }
+
+.direct {
+  margin: 18px 0 0;
+  color: var(--steel);
+  font-size: 11px;
+  letter-spacing: .06em;
+}
+
+.direct a {
+  color: var(--bone-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.direct a:hover,
+.direct a:focus-visible {
+  color: var(--ember);
+}
