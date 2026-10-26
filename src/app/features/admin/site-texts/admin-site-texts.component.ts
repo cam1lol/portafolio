@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 import { TranslocoService, Translation } from '@jsverse/transloco';
 import { forkJoin } from 'rxjs';
 import { SiteContentRow, SiteContentService } from '../../../core/data/site-content.service';
@@ -23,6 +24,7 @@ export class AdminSiteTextsComponent implements OnInit {
   private readonly siteContent = inject(SiteContentService);
   private readonly transloco = inject(TranslocoService);
   private readonly route = inject(ActivatedRoute);
+  private readonly toast = inject(ToastService);
   private readonly host = inject(ElementRef<HTMLElement>);
 
   protected readonly groups = SITE_TEXT_GROUPS;
@@ -88,6 +90,10 @@ export class AdminSiteTextsComponent implements OnInit {
     return es === en ? es : `ES: ${es} · EN: ${en}`;
   }
 
+  hasUnsavedChanges(): boolean {
+    return Object.values(this.forms).some((form) => form.dirty);
+  }
+
   save(group: SiteTextGroup): void {
     const form = this.forms[group.id];
     form.markAllAsTouched();
@@ -113,8 +119,12 @@ export class AdminSiteTextsComponent implements OnInit {
       next: () => {
         form.markAsPristine();
         this.setState(group.id, 'saved');
+        this.toast.show(`${group.title}: textos guardados.`);
       },
-      error: () => this.setState(group.id, 'error'),
+      error: () => {
+        this.setState(group.id, 'error');
+        this.toast.show('No se pudieron guardar los textos.', 'error');
+      },
     });
   }
 

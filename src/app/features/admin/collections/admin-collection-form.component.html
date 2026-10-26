@@ -4,7 +4,10 @@
       <span class="eyebrow mono">{{ config.title | uppercase }} // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
       <h1>{{ isEditMode() ? 'Editar ' : 'Nuevo: ' }}{{ config.singular }}</h1>
     </div>
-    <a class="btn" [routerLink]="['/admin', config.path]">VOLVER A {{ config.title | uppercase }}</a>
+    <div class="head-actions">
+      <a class="btn" [href]="'/' + config.siteAnchor" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" /></svg> VER EN EL SITIO</a>
+      <a class="btn" [routerLink]="['/admin', config.path]">VOLVER A {{ config.title | uppercase }}</a>
+    </div>
   </div>
 
   @if (loading()) {

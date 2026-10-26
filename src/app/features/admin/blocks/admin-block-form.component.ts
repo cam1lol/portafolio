@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 import { BlocksService } from '../../../core/data/blocks.service';
 import { Block } from '../../../core/data/block.model';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
@@ -110,6 +111,7 @@ export class AdminBlockFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly pageItems = inject(PageItemsService);
+  private readonly toast = inject(ToastService);
 
   protected readonly types = BLOCK_TYPES;
   protected readonly typeLabels = TYPE_LABELS;
@@ -226,10 +228,12 @@ export class AdminBlockFormComponent implements OnInit {
       return;
     }
     this.items.push(this.createItem());
+    this.form.markAsDirty();
   }
 
   removeItem(index: number): void {
     this.items.removeAt(index);
+    this.form.markAsDirty();
   }
 
   previewBlock(): Block {
@@ -242,6 +246,10 @@ export class AdminBlockFormComponent implements OnInit {
       sortOrder: 0,
       published: value.published,
     };
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty && !this.submitting();
   }
 
   submit(): void {
@@ -274,6 +282,8 @@ export class AdminBlockFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.submitting.set(false);
+            this.form.markAsPristine();
+            this.toast.show('Bloque guardado.');
             this.router.navigate(['/admin/structure']);
           },
           error: () => {
@@ -294,6 +304,8 @@ export class AdminBlockFormComponent implements OnInit {
       .subscribe({
         next: () => {
           this.submitting.set(false);
+          this.form.markAsPristine();
+          this.toast.show('Bloque guardado.');
           this.router.navigate(['/admin/structure']);
         },
         error: () => {

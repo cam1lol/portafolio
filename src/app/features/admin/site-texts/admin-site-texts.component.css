@@ -115,3 +115,6 @@
   .field-row.bilingual { grid-template-columns: minmax(0, 1fr); }
   .field-row:not(.bilingual) .field { max-width: none; }
 }
+
+.view-site { float: right; margin-left: 12px; text-decoration: none; gap: 8px; }
+.view-site svg { width: 14px; height: 14px; }

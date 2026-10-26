@@ -1,0 +1,54 @@
+.chart {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+
+figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 14px; }
+.title { color: var(--steel); font-size: 10px; letter-spacing: .12em; }
+.summary { color: var(--bone); font-size: 13px; }
+
+.plot { position: relative; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.baseline { stroke: var(--line); stroke-width: 1; }
+.bar { fill: var(--ember); opacity: .85; transition: opacity .15s; }
+.bar.active { opacity: 1; }
+.hit { fill: transparent; cursor: default; outline: none; }
+.hit:focus-visible { stroke: var(--bone); stroke-width: 1; }
+
+/* Text wears ink tokens, never the series color. */
+.peak-label { fill: var(--bone); font: 11px 'Space Mono', monospace; }
+.axis-label { fill: var(--steel); font: 10px 'Space Mono', monospace; }
+
+.tooltip {
+  position: absolute;
+  top: -6px;
+  transform: translate(-50%, -100%);
+  display: grid;
+  gap: 2px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--bone-dim);
+  font-size: 10px;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tooltip strong { color: var(--bone); font-size: 12px; }
+
+.table-view { margin-top: 12px; }
+.table-view summary { color: var(--steel); font-size: 10px; letter-spacing: .1em; cursor: pointer; }
+.table-view summary:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.table-view table { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 12px; }
+.table-view th, .table-view td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); color: var(--bone-dim); text-align: left; }
+.table-view td:last-child, .table-view th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bar { transition: none; }
+}

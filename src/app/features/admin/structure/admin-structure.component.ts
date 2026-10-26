@@ -7,6 +7,7 @@ import { Block } from '../../../core/data/block.model';
 import { PageItem, PageItemsService } from '../../../core/data/page-items.service';
 import { SectionVisibilityService } from '../../../core/data/section-visibility.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
+import { ToastService } from '../shared/toast.service';
 
 interface StructureRow extends PageItem {
   label: string;
@@ -59,6 +60,7 @@ export class AdminStructureComponent implements OnInit {
   private readonly blocksService = inject(BlocksService);
   private readonly visibilityService = inject(SectionVisibilityService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly toast = inject(ToastService);
 
   protected readonly rows = signal<StructureRow[]>([]);
   protected readonly loading = signal(true);
@@ -116,6 +118,7 @@ export class AdminStructureComponent implements OnInit {
     this.patchRow(row.key, { visible: nextVisible });
 
     this.visibilityService.setVisible(row.sectionKey, nextVisible).subscribe({
+      next: () => this.toast.show(nextVisible ? `${row.label}: visible en el sitio.` : `${row.label}: oculta del sitio.`),
       error: () => {
         this.patchRow(row.key, { visible: !nextVisible });
         this.errorMessage.set(`No se pudo cambiar la visibilidad de "${row.label}".`);
@@ -130,6 +133,7 @@ export class AdminStructureComponent implements OnInit {
     this.patchRow(row.key, { block: { ...block, published: nextPublished } });
 
     this.blocksService.update(block.id, { published: nextPublished }).subscribe({
+      next: () => this.toast.show(nextPublished ? 'Bloque publicado.' : 'Bloque en borrador.'),
       error: () => {
         this.patchRow(row.key, { block });
         this.errorMessage.set(`No se pudo actualizar "${row.description}".`);
@@ -164,7 +168,7 @@ export class AdminStructureComponent implements OnInit {
 
   private flash(message: string): void {
     this.errorMessage.set('');
-    this.successMessage.set(message);
+    if (message) this.toast.show(message);
   }
 
   private mergeLayout(layout: PageItem[], blocks: Block[], visibleBySection: Map<string, boolean>): StructureRow[] {

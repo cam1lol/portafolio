@@ -4,7 +4,10 @@
       <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
       <h1>{{ isEditMode() ? 'EDITAR BLOQUE' : (typeChosen() ? 'NUEVO BLOQUE' : 'ELIGE EL TIPO DE BLOQUE') }}</h1>
     </div>
-    <a class="btn" routerLink="/admin/structure">VOLVER A ESTRUCTURA</a>
+    <div class="head-actions">
+      <a class="btn" href="/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" /></svg> VER EN EL SITIO</a>
+      <a class="btn" routerLink="/admin/structure">VOLVER A ESTRUCTURA</a>
+    </div>
   </div>
 
   @if (!typeChosen()) {

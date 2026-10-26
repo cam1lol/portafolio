@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators, } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
+import { HasUnsavedChanges } from '../shared/unsaved-changes.guard';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { AdminExperience, ExperienceInput, ExperienceService } from '../../../core/data/experience.service';
 
@@ -52,12 +54,13 @@ function listItemControl(value = ''): FormControl<string> {
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './admin-experience-form.component.html',
-  styleUrl: './admin-experience-form.component.css',
+  styleUrls: ['../shared/admin-form.css', './admin-experience-form.component.css'],
 })
-export class AdminExperienceFormComponent implements OnInit {
+export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
   private readonly experienceService = inject(ExperienceService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   protected readonly form = new FormGroup({
     company: new FormControl('', { nonNullable: true, validators: requiredTextValidators(COMPANY_MAX) }),
@@ -161,34 +164,42 @@ export class AdminExperienceFormComponent implements OnInit {
 
   addPointEs(): void {
     this.pointsEs.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removePointEs(index: number): void {
     this.pointsEs.removeAt(index);
+    this.form.markAsDirty();
   }
 
   addPointEn(): void {
     this.pointsEn.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removePointEn(index: number): void {
     this.pointsEn.removeAt(index);
+    this.form.markAsDirty();
   }
 
   addStackItem(): void {
     this.stack.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removeStackItem(index: number): void {
     this.stack.removeAt(index);
+    this.form.markAsDirty();
   }
 
   addSubproject(): void {
     this.subprojects.push(subprojectGroup());
+    this.form.markAsDirty();
   }
 
   removeSubproject(index: number): void {
     this.subprojects.removeAt(index);
+    this.form.markAsDirty();
   }
 
   hasError(controlName: keyof typeof this.form.controls, error: string): boolean {
@@ -199,6 +210,10 @@ export class AdminExperienceFormComponent implements OnInit {
   listControlErrors(array: FormArray<FormControl<string>>, index: number): ValidationErrors | null {
     const control = array.at(index);
     return control.touched ? control.errors : null;
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty && !this.saving();
   }
 
   submit(): void {
@@ -249,6 +264,8 @@ export class AdminExperienceFormComponent implements OnInit {
           this.errorMessage.set('No se pudo guardar la experiencia.');
           return;
         }
+        this.form.markAsPristine();
+        this.toast.show('Experiencia guardada.');
         this.router.navigateByUrl('/admin/experience');
       },
       error: () => {

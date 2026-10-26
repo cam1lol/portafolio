@@ -398,3 +398,6 @@ form {
 @media (prefers-reduced-motion: reduce) {
   .type-card { transition: none; }
 }
+
+.head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn svg { width: 14px; height: 14px; }

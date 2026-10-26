@@ -15,13 +15,14 @@ import { AdminStructureComponent } from './structure/admin-structure.component';
 import { AdminCollectionListComponent } from './collections/admin-collection-list.component';
 import { AdminCollectionFormComponent } from './collections/admin-collection-form.component';
 import { AdminSiteTextsComponent } from './site-texts/admin-site-texts.component';
+import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 
 /** List + create + edit routes for one simple collection (see collections/collection.config.ts). */
 function collectionRoutes(collection: string): Routes {
   return [
     { path: collection, component: AdminCollectionListComponent, data: { collection } },
-    { path: `${collection}/new`, component: AdminCollectionFormComponent, data: { collection } },
-    { path: `${collection}/:id/edit`, component: AdminCollectionFormComponent, data: { collection } },
+    { path: `${collection}/new`, component: AdminCollectionFormComponent, data: { collection }, canDeactivate: [unsavedChangesGuard] },
+    { path: `${collection}/:id/edit`, component: AdminCollectionFormComponent, data: { collection }, canDeactivate: [unsavedChangesGuard] },
   ];
 }
 import { AdminModelsComponent } from './models/admin-models.component';
@@ -36,15 +37,15 @@ export const ADMIN_ROUTES: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'projects', component: AdminProjectsListComponent },
-      { path: 'projects/new', component: AdminProjectFormComponent },
-      { path: 'projects/:id/edit', component: AdminProjectFormComponent },
+      { path: 'projects/new', component: AdminProjectFormComponent, canDeactivate: [unsavedChangesGuard] },
+      { path: 'projects/:id/edit', component: AdminProjectFormComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'experience', component: AdminExperienceListComponent },
-      { path: 'experience/new', component: AdminExperienceFormComponent },
-      { path: 'experience/:id/edit', component: AdminExperienceFormComponent },
+      { path: 'experience/new', component: AdminExperienceFormComponent, canDeactivate: [unsavedChangesGuard] },
+      { path: 'experience/:id/edit', component: AdminExperienceFormComponent, canDeactivate: [unsavedChangesGuard] },
       ...collectionRoutes('services'),
       ...collectionRoutes('roadmap'),
       ...collectionRoutes('ticker'),
-      { path: 'site-texts', component: AdminSiteTextsComponent },
+      { path: 'site-texts', component: AdminSiteTextsComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'structure', component: AdminStructureComponent },
       // Visibility, home order and the blocks list now live together in "structure".
       { path: 'visibility', redirectTo: 'structure', pathMatch: 'full' },
@@ -53,8 +54,8 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'inbox', component: AdminInboxListComponent },
       { path: 'inbox/:id', component: AdminInboxThreadComponent },
       { path: 'comments', component: AdminCommentsComponent },
-      { path: 'blocks/new', component: AdminBlockFormComponent },
-      { path: 'blocks/:id/edit', component: AdminBlockFormComponent },
+      { path: 'blocks/new', component: AdminBlockFormComponent, canDeactivate: [unsavedChangesGuard] },
+      { path: 'blocks/:id/edit', component: AdminBlockFormComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'models', component: AdminModelsComponent },
     ],
   },

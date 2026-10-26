@@ -1,5 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DayCount, VisitsChartComponent, bucketVisitsByDay } from './visits-chart.component';
+import { TOPIC_LABELS } from '../../../core/data/inbox.service';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 
 interface DashboardStats {
@@ -9,6 +12,22 @@ interface DashboardStats {
   projectsPublished: number | null;
   projectsTotal: number | null;
   messagesNew: number | null;
+}
+
+interface RecentMessage {
+  id: string;
+  name: string;
+  topic: keyof typeof TOPIC_LABELS;
+  status: string;
+  created_at: string;
+}
+
+interface RecentComment {
+  id: string;
+  author: string;
+  body: string;
+  approved: boolean;
+  created_at: string;
 }
 
 interface LanguageSplit {
@@ -29,7 +48,7 @@ interface LanguageRow {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe, VisitsChartComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })
@@ -45,6 +64,10 @@ export class AdminDashboardComponent implements OnInit {
     projectsTotal: null,
     messagesNew: null,
   });
+  protected readonly topicLabels = TOPIC_LABELS;
+  protected readonly daily = signal<DayCount[]>(bucketVisitsByDay([], 30));
+  protected readonly recentMessages = signal<RecentMessage[]>([]);
+  protected readonly recentComments = signal<RecentComment[]>([]);
   private readonly visitsByLang = signal<LanguageSplit>({ es: null, en: null });
   private readonly commentsByLang = signal<LanguageSplit>({ es: null, en: null });
 
@@ -62,6 +85,20 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStats();
+    this.loadActivity();
+  }
+
+  /** Daily visits for the chart plus the latest messages and comments. Failures just leave them empty. */
+  private async loadActivity(): Promise<void> {
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [visits, messages, comments] = await Promise.all([
+      this.supabase.client.from('visits').select('created_at').gte('created_at', since).limit(20000),
+      this.supabase.client.from('contact_threads').select('id, name, topic, status, created_at').order('created_at', { ascending: false }).limit(5),
+      this.supabase.client.from('comments').select('id, author, body, approved, created_at').order('created_at', { ascending: false }).limit(5),
+    ]);
+    if (!visits.error) this.daily.set(bucketVisitsByDay((visits.data ?? []).map((row) => row.created_at as string), 30));
+    if (!messages.error) this.recentMessages.set((messages.data ?? []) as RecentMessage[]);
+    if (!comments.error) this.recentComments.set((comments.data ?? []) as RecentComment[]);
   }
 
   private async loadStats(): Promise<void> {

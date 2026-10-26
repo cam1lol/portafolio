@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 import { CdkDropList, CdkDrag, CdkDragHandle, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AdminProject, ProjectsService } from '../../../core/data/projects.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
@@ -13,6 +14,7 @@ import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 })
 export class AdminProjectsListComponent implements OnInit {
   private readonly projectsService = inject(ProjectsService);
+  private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly rows = signal<AdminProject[]>([]);
@@ -60,6 +62,7 @@ export class AdminProjectsListComponent implements OnInit {
     );
 
     this.projectsService.update(row.id, { published: nextPublished }).subscribe({
+      next: () => this.toast.show(nextPublished ? 'Publicado en el sitio.' : 'Oculto del sitio.'),
       error: () => {
         this.rows.update((rows) =>
           rows.map((r) => (r.id === row.id ? { ...r, published: !nextPublished } : r)),
@@ -78,6 +81,7 @@ export class AdminProjectsListComponent implements OnInit {
     this.projectsService.delete(row.id).subscribe({
       next: () => {
         this.rows.update((rows) => rows.filter((r) => r.id !== row.id));
+        this.toast.show('Proyecto eliminado.');
       },
       error: () => {
         this.errorMessage.set(`No se pudo borrar "${row.name}".`);

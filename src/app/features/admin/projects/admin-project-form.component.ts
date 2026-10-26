@@ -8,6 +8,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
+import { HasUnsavedChanges } from '../shared/unsaved-changes.guard';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { AdminProject, ProjectInput, ProjectsService } from '../../../core/data/projects.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
@@ -40,12 +42,13 @@ function listItemControl(value = ''): FormControl<string> {
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, ImageUploadComponent],
   templateUrl: './admin-project-form.component.html',
-  styleUrl: './admin-project-form.component.css',
+  styleUrls: ['../shared/admin-form.css', './admin-project-form.component.css'],
 })
-export class AdminProjectFormComponent implements OnInit {
+export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   private readonly projectsService = inject(ProjectsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   protected readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: requiredTextValidators(NAME_MAX) }),
@@ -147,30 +150,37 @@ export class AdminProjectFormComponent implements OnInit {
 
   addHighlightEs(): void {
     this.highlightsEs.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removeHighlightEs(index: number): void {
     this.highlightsEs.removeAt(index);
+    this.form.markAsDirty();
   }
 
   addHighlightEn(): void {
     this.highlightsEn.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removeHighlightEn(index: number): void {
     this.highlightsEn.removeAt(index);
+    this.form.markAsDirty();
   }
 
   addStackItem(): void {
     this.stack.push(listItemControl());
+    this.form.markAsDirty();
   }
 
   removeStackItem(index: number): void {
     this.stack.removeAt(index);
+    this.form.markAsDirty();
   }
 
   onPreviewImageChange(url: string): void {
     this.form.controls.previewImage.setValue(url);
+    this.form.markAsDirty();
   }
 
   hasError(controlName: keyof typeof this.form.controls, error: string): boolean {
@@ -181,6 +191,10 @@ export class AdminProjectFormComponent implements OnInit {
   listControlErrors(array: FormArray<FormControl<string>>, index: number): ValidationErrors | null {
     const control = array.at(index);
     return control.touched ? control.errors : null;
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty && !this.saving();
   }
 
   submit(): void {
@@ -227,6 +241,8 @@ export class AdminProjectFormComponent implements OnInit {
           this.errorMessage.set('No se pudo guardar el proyecto.');
           return;
         }
+        this.form.markAsPristine();
+        this.toast.show('Proyecto guardado.');
         this.router.navigateByUrl('/admin/projects');
       },
       error: () => {

@@ -3,6 +3,7 @@ import { DatePipe, UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InboxMessage, InboxService, InboxThread, TOPIC_LABELS } from '../../../core/data/inbox.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
+import { ToastService } from '../shared/toast.service';
 import { STATUS_LABELS } from './admin-inbox-list.component';
 
 @Component({
@@ -17,6 +18,7 @@ export class AdminInboxThreadComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly toast = inject(ToastService);
 
   protected readonly statusLabels = STATUS_LABELS;
   protected readonly topicLabels = TOPIC_LABELS;
@@ -65,7 +67,10 @@ export class AdminInboxThreadComponent implements OnInit {
     if (!thread) return;
     const next = thread.status === 'archived' ? 'read' : 'archived';
     this.inbox.setStatus(thread.id, next).subscribe({
-      next: () => this.thread.set({ ...thread, status: next }),
+      next: () => {
+        this.thread.set({ ...thread, status: next });
+        this.toast.show(next === 'archived' ? 'Conversación archivada.' : 'Conversación reabierta.');
+      },
       error: () => this.errorMessage.set('No se pudo cambiar el estado.'),
     });
   }
@@ -79,7 +84,10 @@ export class AdminInboxThreadComponent implements OnInit {
     });
     if (!confirmed) return;
     this.inbox.deleteThread(thread.id).subscribe({
-      next: () => this.router.navigate(['/admin/inbox']),
+      next: () => {
+        this.toast.show('Conversación eliminada.');
+        this.router.navigate(['/admin/inbox']);
+      },
       error: () => this.errorMessage.set('No se pudo eliminar la conversación.'),
     });
   }

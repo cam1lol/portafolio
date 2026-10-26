@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 import { CollectionValues, CollectionsService } from '../../../core/data/collections.service';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { COLLECTIONS, CollectionConfig, CollectionField, collectionColumns } from './collection.config';
@@ -18,6 +19,7 @@ export class AdminCollectionFormComponent implements OnInit {
   private readonly collections = inject(CollectionsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   protected readonly config: CollectionConfig = COLLECTIONS[this.route.snapshot.data['collection']];
   protected readonly form = new FormGroup<Record<string, FormControl<string>>>({});
@@ -79,6 +81,10 @@ export class AdminCollectionFormComponent implements OnInit {
     return 'Contiene caracteres no permitidos.';
   }
 
+  hasUnsavedChanges(): boolean {
+    return (this.form.dirty || this.published.dirty) && !this.submitting();
+  }
+
   submit(): void {
     this.errorMessage.set('');
     this.form.markAllAsTouched();
@@ -100,6 +106,9 @@ export class AdminCollectionFormComponent implements OnInit {
     request.subscribe({
       next: () => {
         this.submitting.set(false);
+        this.form.markAsPristine();
+        this.published.markAsPristine();
+        this.toast.show('Cambios guardados.');
         this.router.navigate(['/admin', this.config.path]);
       },
       error: () => {

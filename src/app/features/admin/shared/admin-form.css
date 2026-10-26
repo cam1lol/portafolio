@@ -1,0 +1,65 @@
+/* Shared admin form pattern: heading, numbered steps, ES/EN tags and a sticky action bar.
+   Included next to each form's own stylesheet (styleUrls). */
+
+.form-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.form-head .eyebrow-line { color: var(--ember); font: 10px 'Space Mono', monospace; letter-spacing: .1em; }
+
+.form-head h1 {
+  margin: 8px 0 0;
+  color: var(--bone);
+  font-family: 'Archivo', sans-serif;
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+}
+
+.form-head .head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.form-step {
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 20px 20px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+
+.form-step > legend { padding: 0 8px; color: var(--ember); font: 10px 'Space Mono', monospace; letter-spacing: .12em; }
+.step-hint { margin: 0 0 14px; color: var(--steel); font-size: 12px; line-height: 1.5; }
+
+.lang {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--bone-dim);
+  font: 9px 'Space Mono', monospace;
+  letter-spacing: .06em;
+  vertical-align: middle;
+}
+
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  background: var(--ink);
+}
+
+.btn svg { width: 14px; height: 14px; }

@@ -80,6 +80,7 @@ export class CommentsService {
       map(({ error }) => {
         if (error) {
           console.error('Failed to approve comment', error);
+          throw error;
         }
       }),
     );
@@ -90,7 +91,25 @@ export class CommentsService {
       map(({ error }) => {
         if (error) {
           console.error('Failed to hide comment', error);
+          throw error;
         }
+      }),
+    );
+  }
+
+  /** Bulk approval from the moderation screen. */
+  approveMany(ids: string[]): Observable<void> {
+    return from(this.supabase.client.from('comments').update({ approved: true }).in('id', ids)).pipe(
+      map(({ error }) => {
+        if (error) throw error;
+      }),
+    );
+  }
+
+  deleteMany(ids: string[]): Observable<void> {
+    return from(this.supabase.client.from('comments').delete().in('id', ids)).pipe(
+      map(({ error }) => {
+        if (error) throw error;
       }),
     );
   }
@@ -101,6 +120,7 @@ export class CommentsService {
       map(({ error }) => {
         if (error) {
           console.error('Failed to delete comment', error);
+          throw error;
         }
       }),
     );

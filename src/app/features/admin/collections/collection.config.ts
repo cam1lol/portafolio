@@ -22,6 +22,8 @@ export interface CollectionConfig {
   singular: string;
   newLabel: string;
   fields: CollectionField[];
+  /** Section on the public page, for "Ver en el sitio" (empty: top of the page). */
+  siteAnchor: string;
   /** Column shown as the row title in the list (Spanish side when bilingual). */
   listTitle: string;
   /** Optional second column in the list. */
@@ -33,6 +35,7 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     key: 'services',
     table: 'services',
     path: 'services',
+    siteAnchor: '#services',
     title: 'Servicios',
     help: 'Las tarjetas de la sección Servicios. Arrastra para ordenar; el interruptor publica u oculta cada una.',
     singular: 'servicio',
@@ -49,6 +52,7 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     key: 'roadmap',
     table: 'roadmap_items',
     path: 'roadmap',
+    siteAnchor: '#roadmap',
     title: 'Roadmap',
     help: 'Las tarjetas de la sección Roadmap. Arrastra para ordenar; el interruptor publica u oculta cada una.',
     singular: 'etapa',
@@ -65,6 +69,7 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     key: 'ticker',
     table: 'ticker_items',
     path: 'ticker',
+    siteAnchor: '',
     title: 'Ticker',
     help: 'Las tecnologías de la franja animada bajo el hero. Mismo texto en ambos idiomas.',
     singular: 'tecnología',

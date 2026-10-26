@@ -25,9 +25,10 @@
     </nav>
 
     <div class="admin-content">
-      <router-outlet></router-outlet>
+      <router-outlet (activate)="onActivate($event)"></router-outlet>
     </div>
   </div>
 </div>
 
 <app-confirm-dialog />
+<app-toast />

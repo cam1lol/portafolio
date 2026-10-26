@@ -1,0 +1,45 @@
+<figure class="chart">
+  <figcaption>
+    <span class="title mono">VISITAS POR DÍA · ÚLTIMOS 30 DÍAS</span>
+    <span class="summary">{{ total() }} visitas · {{ peakText() }}</span>
+  </figcaption>
+
+  <div class="plot">
+    <svg [attr.viewBox]="'0 0 ' + width + ' 175'" role="img" [attr.aria-label]="total() + ' visitas en los últimos 30 días. ' + peakText() + '. La tabla de abajo tiene el detalle.'">
+      <line class="baseline" x1="0" [attr.x2]="width" [attr.y1]="baseline" [attr.y2]="baseline" />
+      @for (bar of bars(); track bar.day.date; let i = $index) {
+        @if (bar.path) { <path class="bar" [class.active]="hovered() === i" [attr.d]="bar.path" /> }
+        @else { <path class="bar empty" d="" /> }
+        @if (i === peakIndex()) {
+          <text class="peak-label" [attr.x]="bar.x + bar.width / 2" y="22" text-anchor="middle">{{ bar.day.count }}</text>
+        }
+        <!-- Hit target: the whole column, larger than the bar, also reachable by keyboard. -->
+        <rect class="hit" [attr.x]="bar.x" y="0" [attr.width]="bar.width + 2" [attr.height]="baseline" tabindex="0"
+          [attr.aria-label]="formatDay(bar.day.date) + ': ' + bar.day.count + ' visitas'"
+          (mouseenter)="hovered.set(i)" (mouseleave)="hovered.set(null)" (focus)="hovered.set(i)" (blur)="hovered.set(null)" />
+      }
+      @for (label of axisLabels(); track label.text) {
+        <text class="axis-label" [attr.x]="label.x" y="170" text-anchor="middle">{{ label.text }}</text>
+      }
+    </svg>
+
+    @if (tooltip(); as tip) {
+      <div class="tooltip mono" [style.left.%]="tip.left" aria-hidden="true">
+        <span>{{ tip.date }}</span>
+        <strong>{{ tip.count }} visitas</strong>
+      </div>
+    }
+  </div>
+
+  <details class="table-view">
+    <summary class="mono">VER COMO TABLA</summary>
+    <table>
+      <thead><tr><th scope="col">Día</th><th scope="col">Visitas</th></tr></thead>
+      <tbody>
+        @for (day of days(); track day.date) {
+          <tr><td>{{ formatDay(day.date) }}</td><td>{{ day.count }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </details>
+</figure>

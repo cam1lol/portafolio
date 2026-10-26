@@ -29,6 +29,42 @@
   </div>
 </div>
 
+<app-visits-chart [days]="daily()" />
+
+<div class="activity">
+  <section class="activity-card" aria-labelledby="recent-messages">
+    <div class="activity-head">
+      <h3 id="recent-messages" class="mono">ÚLTIMOS MENSAJES</h3>
+      <a class="more mono" routerLink="/admin/inbox">VER TODOS</a>
+    </div>
+    @for (message of recentMessages(); track message.id) {
+      <a class="activity-row" [routerLink]="['/admin/inbox', message.id]">
+        <span class="who">{{ message.name }}</span>
+        <span class="what">{{ topicLabels[message.topic] }}</span>
+        <span class="when mono" [class.is-new]="message.status === 'new'">{{ message.status === 'new' ? 'NUEVO · ' : '' }}{{ message.created_at | date: 'dd.MM HH:mm' }}</span>
+      </a>
+    } @empty {
+      <p class="empty">Todavía no hay mensajes.</p>
+    }
+  </section>
+
+  <section class="activity-card" aria-labelledby="recent-comments">
+    <div class="activity-head">
+      <h3 id="recent-comments" class="mono">ÚLTIMOS COMENTARIOS</h3>
+      <a class="more mono" routerLink="/admin/comments">VER TODOS</a>
+    </div>
+    @for (comment of recentComments(); track comment.id) {
+      <a class="activity-row" routerLink="/admin/comments">
+        <span class="who">{{ comment.author }}</span>
+        <span class="what">{{ comment.body }}</span>
+        <span class="when mono" [class.is-new]="!comment.approved">{{ comment.approved ? '' : 'PENDIENTE · ' }}{{ comment.created_at | date: 'dd.MM HH:mm' }}</span>
+      </a>
+    } @empty {
+      <p class="empty">Todavía no hay comentarios.</p>
+    }
+  </section>
+</div>
+
 <section class="lang-panel" aria-labelledby="lang-title">
   <div class="lang-head">
     <h3 id="lang-title" class="mono">IDIOMAS</h3>

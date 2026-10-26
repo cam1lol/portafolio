@@ -1,46 +1,62 @@
 <section class="comments-admin">
-  <div class="admin-top">
+  <div class="page-head">
     <div>
-      <span class="eyebrow mono">PANEL // COMENTARIOS</span>
-      <h2>MODERACIÓN</h2>
-      <span class="sub mono">{{ comments().length }} comentario(s)</span>
+      <p class="eyebrow">Comentarios</p>
+      <p class="help">Lo que dejan los visitantes en la sección Comentarios. Nada se publica hasta que lo apruebes.</p>
     </div>
+    <span class="count mono">{{ pendingCount() }} PENDIENTE(S)</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters mono" role="tablist" aria-label="Filtrar comentarios">
+      @for (option of filters; track option.value) {
+        <button type="button" role="tab" [attr.data-filter]="option.value" [attr.aria-selected]="filter() === option.value"
+          [class.on]="filter() === option.value" (click)="setFilter(option.value)">{{ option.label }}</button>
+      }
+    </div>
+
+    @if (visible().length > 0) {
+      <div class="bulk mono">
+        <label class="select-all-label">
+          <input type="checkbox" class="select-all" [checked]="allVisibleSelected()" (change)="toggleSelectAll()" />
+          SELECCIONAR TODO
+        </label>
+        @if (selected().size > 0) {
+          <span class="bulk-count">{{ selected().size }} SELECCIONADO(S)</span>
+          <button type="button" class="btn primary bulk-approve" (click)="approveSelected()">APROBAR</button>
+          <button type="button" class="btn danger bulk-delete" (click)="deleteSelected()">ELIMINAR</button>
+        }
+      </div>
+    }
   </div>
 
   @if (loading()) {
     <p class="empty mono">Cargando…</p>
-  } @else if (comments().length === 0) {
-    <p class="empty mono">No hay comentarios todavía.</p>
+  } @else if (visible().length === 0) {
+    <p class="empty mono">{{ comments().length === 0 ? 'No hay comentarios todavía.' : 'No hay comentarios en este filtro.' }}</p>
   } @else {
     <ul class="comment-list">
-      @for (comment of comments(); track comment.id) {
-        <li class="comment-card" [class.pending]="!comment.approved" [class.is-new]="isNew(comment.id)">
-          <div class="comment-status">
-            @if (isNew(comment.id)) {
-              <span class="badge new mono">NUEVO</span>
-            }
-            @if (comment.approved) {
-              <span class="badge approved mono">APROBADO</span>
-            } @else {
-              <span class="badge pending mono">PENDIENTE</span>
-            }
+      @for (comment of visible(); track comment.id) {
+        <li class="comment-card" [class.pending]="!comment.approved" [class.is-new]="isNew(comment.id)" [class.is-selected]="selected().has(comment.id)">
+          <input type="checkbox" class="row-check" [checked]="selected().has(comment.id)" (change)="toggleSelected(comment.id)"
+            [attr.aria-label]="'Seleccionar comentario de ' + comment.author" />
+          <div class="comment-main">
+            <div class="comment-meta mono">
+              <span class="author">{{ comment.author }}</span>
+              <span>{{ comment.lang | uppercase }}</span>
+              <span>{{ comment.created_at | date: 'dd.MM.yyyy HH:mm' }}</span>
+              @if (isNew(comment.id)) { <span class="badge new">NUEVO</span> }
+              <span class="badge" [class.approved]="comment.approved" [class.pending]="!comment.approved">{{ comment.approved ? 'APROBADO' : 'PENDIENTE' }}</span>
+            </div>
+            <p class="comment-body">{{ comment.body }}</p>
           </div>
-
-          <div class="comment-meta mono">
-            <span class="author">{{ comment.author }}</span>
-            <span class="lang">{{ comment.lang }}</span>
-            <span class="date">{{ comment.created_at | date: 'short' }}</span>
-          </div>
-
-          <p class="comment-body">{{ comment.body }}</p>
-
           <div class="comment-actions">
             @if (!comment.approved) {
-              <button type="button" class="btn approve" (click)="approve(comment)">Aprobar</button>
+              <button type="button" class="btn primary" (click)="approve(comment)">APROBAR</button>
             } @else {
-              <button type="button" class="btn hide" (click)="hide(comment)">Ocultar</button>
+              <button type="button" class="btn" (click)="hide(comment)">OCULTAR</button>
             }
-            <button type="button" class="btn delete" (click)="remove(comment)">Borrar</button>
+            <button type="button" class="btn danger" (click)="remove(comment)">ELIMINAR</button>
           </div>
         </li>
       }

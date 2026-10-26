@@ -99,3 +99,6 @@ form { display: grid; gap: 18px; }
   .field-row.bilingual { grid-template-columns: minmax(0, 1fr); }
   .form-step { padding: 18px 14px 6px; }
 }
+
+.head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn svg { width: 14px; height: 14px; }

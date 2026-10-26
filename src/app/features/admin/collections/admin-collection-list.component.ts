@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ToastService } from '../shared/toast.service';
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CollectionRow, CollectionsService } from '../../../core/data/collections.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
@@ -15,6 +16,7 @@ import { COLLECTIONS, CollectionConfig } from './collection.config';
 })
 export class AdminCollectionListComponent implements OnInit {
   private readonly collections = inject(CollectionsService);
+  private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly config: CollectionConfig = COLLECTIONS[inject(ActivatedRoute).snapshot.data['collection']];
@@ -52,6 +54,7 @@ export class AdminCollectionListComponent implements OnInit {
     const published = !row.published;
     this.patch(row.id, { published });
     this.collections.update(this.config.table, row.id, { published }).subscribe({
+      next: () => this.toast.show(published ? 'Publicado en el sitio.' : 'Oculto del sitio.'),
       error: () => {
         this.patch(row.id, { published: !published });
         this.errorMessage.set(`No se pudo actualizar "${this.title(row)}".`);
@@ -67,7 +70,10 @@ export class AdminCollectionListComponent implements OnInit {
     if (!confirmed) return;
 
     this.collections.delete(this.config.table, row.id).subscribe({
-      next: () => this.rows.update((rows) => rows.filter((r) => r.id !== row.id)),
+      next: () => {
+        this.rows.update((rows) => rows.filter((r) => r.id !== row.id));
+        this.toast.show('Elemento eliminado.');
+      },
       error: () => this.errorMessage.set(`No se pudo eliminar "${this.title(row)}".`),
     });
   }
