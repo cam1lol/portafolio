@@ -1,10 +1,15 @@
-<div class="ticker">
+<div class="ticker" aria-label="Tecnologías y herramientas">
   <div class="ticker-track">
-    @for (tech of technologies(); track tech + '-a-' + $index) {
-      <span>{{ tech }}</span><i>/</i>
-    }
-    @for (tech of technologies(); track tech + '-b-' + $index) {
-      <span>{{ tech }}</span><i>/</i>
+    @for (copy of [0, 1]; track copy) {
+      <div
+        class="ticker-group"
+        [attr.aria-hidden]="copy === 1 ? 'true' : null"
+      >
+        @for (tech of technologies(); track $index) {
+          <span class="ticker-item">{{ tech }}</span>
+          <span class="ticker-separator" aria-hidden="true">/</span>
+        }
+      </div>
     }
   </div>
 </div>

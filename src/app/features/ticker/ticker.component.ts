@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CollectionsService } from '../../core/data/collections.service';
 
-/** Built-in list, used until `ticker_items` loads or if the table does not exist yet. */
 const DEFAULT_TECHNOLOGIES: readonly string[] = [
   'Angular',
   'TypeScript',
@@ -24,11 +23,24 @@ const DEFAULT_TECHNOLOGIES: readonly string[] = [
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.css',
 })
+
 export class TickerComponent {
-  private readonly rows = toSignal(inject(CollectionsService).getPublished('ticker_items'), { initialValue: null });
+  private readonly rows = toSignal(
+    inject(CollectionsService).getPublished('ticker_items'),
+    { initialValue: null },
+  );
 
   readonly technologies = computed<readonly string[]>(() => {
     const rows = this.rows();
-    return rows ? rows.map((row) => String(row['label'] ?? '')) : DEFAULT_TECHNOLOGIES;
+
+    if (!rows) {
+      return DEFAULT_TECHNOLOGIES;
+    }
+
+    const items = rows
+      .map((row) => String(row['label'] ?? '').trim())
+      .filter((label) => label.length > 0);
+
+    return items.length > 0 ? items : DEFAULT_TECHNOLOGIES;
   });
 }
