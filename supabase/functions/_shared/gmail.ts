@@ -67,6 +67,6 @@ export async function getMessageIdHeader(token: string, messageId: string): Prom
 export function getThread(
   token: string,
   threadId: string,
-): Promise<{ id: string; messages: { id: string; internalDate: string; payload: GmailPart }[] }> {
+): Promise<{ id: string; messages: { id: string; internalDate: string; labelIds?: string[]; payload: GmailPart }[] }> {
   return gmail(token, `/threads/${encodeURIComponent(threadId)}?format=full`);
 }
