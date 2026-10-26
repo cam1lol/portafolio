@@ -1,0 +1,227 @@
+<main class="project-page wrap">
+  @if (loaded()) {
+    @if (project(); as p) {
+      <a class="back mono" routerLink="/proyectos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+        {{ 'pp_all' | transloco }}
+      </a>
+
+      <header class="head">
+        <span class="eyebrow mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
+        <h1>{{ p.name }}</h1>
+        <p class="lead">{{ summary(p) }}</p>
+        @if (p.liveUrl || p.repoUrl) {
+          <div class="links">
+            @if (p.liveUrl) { <a class="btn primary" [href]="p.liveUrl" target="_blank" rel="noopener">{{ 'pp_live' | transloco }}</a> }
+            @if (p.repoUrl) { <a class="btn" [href]="p.repoUrl" target="_blank" rel="noopener">{{ 'pp_repo' | transloco }}</a> }
+          </div>
+        }
+      </header>
+
+      @if (hasFacts(p)) {
+        <dl class="facts" [attr.aria-label]="'pp_facts' | transloco">
+          @if (p.facts.year) { <div><dt class="mono">{{ 'pp_year' | transloco }}</dt><dd>{{ p.facts.year }}</dd></div> }
+          @if (loc(p.facts.roleEs, p.facts.roleEn)) { <div><dt class="mono">{{ 'pp_role' | transloco }}</dt><dd>{{ loc(p.facts.roleEs, p.facts.roleEn) }}</dd></div> }
+          @if (loc(p.facts.durationEs, p.facts.durationEn)) { <div><dt class="mono">{{ 'pp_duration' | transloco }}</dt><dd>{{ loc(p.facts.durationEs, p.facts.durationEn) }}</dd></div> }
+          @if (p.facts.client) { <div><dt class="mono">{{ 'pp_client' | transloco }}</dt><dd>{{ p.facts.client }}</dd></div> }
+          @if (p.facts.team) { <div><dt class="mono">{{ 'pp_team' | transloco }}</dt><dd>{{ p.facts.team }}</dd></div> }
+        </dl>
+      }
+
+      @if (hasMedia(p)) {
+        <app-project-media class="media" [project]="p" />
+      }
+
+      @if (p.results.length) {
+        <section class="results" [attr.aria-label]="'pp_results' | transloco">
+          @for (result of p.results; track $index) {
+            <div class="result">
+              <strong>{{ result.value }}</strong>
+              <span class="result-label mono">{{ loc(result.labelEs, result.labelEn) }}</span>
+              @if (loc(result.contextEs, result.contextEn)) { <p>{{ loc(result.contextEs, result.contextEn) }}</p> }
+            </div>
+          }
+        </section>
+      }
+
+      <div class="content">
+        <section class="overview">
+          @if (longText(p)) { <div class="long" [innerHTML]="longText(p) | inlineMarkup"></div> }
+          @if (highlights(p).length) {
+            <h2 class="mono">{{ 'pp_highlights' | transloco }}</h2>
+            <ul class="highlights">
+              @for (item of highlights(p); track item) { <li>{{ item }}</li> }
+            </ul>
+          }
+          <h2 class="mono">STACK</h2>
+          <div class="stack">
+            @for (item of p.stack; track item) { <span class="chip">{{ item }}</span> }
+          </div>
+        </section>
+
+        @if (caseStudy(p)) {
+          <section class="how">
+            <h2 class="mono">{{ 'pp_how' | transloco }}</h2>
+            <div class="case-study" [innerHTML]="caseStudy(p) | inlineMarkup"></div>
+          </section>
+        }
+      </div>
+
+      @if (p.videos.length) {
+        <section class="block-section">
+          <h2 class="mono">{{ 'pp_videos' | transloco }} <span class="n">{{ p.videos.length }}</span></h2>
+          <app-project-videos [videos]="p.videos" [lang]="lang()" />
+        </section>
+      }
+
+      @if (p.screens.length) {
+        <section class="block-section">
+          <h2 class="mono">{{ 'pp_screens' | transloco }} <span class="n">{{ p.screens.length }}</span></h2>
+          <div class="tour">
+            <div class="tour-list" role="tablist" [attr.aria-label]="'pp_screens' | transloco">
+              @for (item of p.screens; track $index; let i = $index) {
+                <button type="button" role="tab" [id]="'screen-tab-' + i" [attr.aria-selected]="screenIndex() === i" [attr.aria-controls]="'screen-panel'"
+                  [class.on]="screenIndex() === i" (click)="screenIndex.set(i)">
+                  <span class="mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+                  {{ loc(item.titleEs, item.titleEn) || ('pp_screens' | transloco) + ' ' + (i + 1) }}
+                </button>
+              }
+            </div>
+            @if (screen(); as s) {
+              <div class="tour-view" id="screen-panel" role="tabpanel" [attr.aria-labelledby]="'screen-tab-' + screenIndex()">
+                <div class="tour-media">
+                  @if (s.video) {
+                    <video [src]="s.video" [attr.poster]="s.image || null" controls playsinline [attr.preload]="s.image ? 'none' : 'metadata'"></video>
+                  } @else if (s.image) {
+                    <img [src]="s.image" [alt]="loc(s.titleEs, s.titleEn)" />
+                  }
+                </div>
+                @if (loc(s.descEs, s.descEn)) { <p class="tour-desc">{{ loc(s.descEs, s.descEn) }}</p> }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @if (p.gallery.length) {
+        <section class="block-section">
+          <h2 class="mono">{{ 'pp_gallery' | transloco }} <span class="n">{{ p.gallery.length }}</span></h2>
+          <div class="gallery">
+            @for (item of p.gallery; track $index; let i = $index) {
+              <button type="button" class="thumb" (click)="openPhoto(i)" [attr.aria-label]="loc(item.captionEs, item.captionEn) || ('pp_gallery' | transloco) + ' ' + (i + 1)">
+                <img [src]="item.image" alt="" loading="lazy" />
+              </button>
+            }
+          </div>
+        </section>
+
+        <dialog #lightbox class="lightbox" (keydown)="onLightboxKey($event)" (click)="$event.target === lightbox && closePhoto()" [attr.aria-label]="'pp_gallery' | transloco">
+          @if (photo(); as ph) {
+            <figure>
+              <img [src]="ph.image" [alt]="loc(ph.captionEs, ph.captionEn)" />
+              <figcaption>
+                <span class="mono">{{ 'pp_photo_of' | transloco: { i: photoIndex() + 1, n: p.gallery.length } }}</span>
+                {{ loc(ph.captionEs, ph.captionEn) }}
+              </figcaption>
+            </figure>
+          }
+          <button type="button" class="lb-btn lb-close" (click)="closePhoto()" [attr.aria-label]="'pp_close' | transloco">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+          @if (p.gallery.length > 1) {
+            <button type="button" class="lb-btn lb-prev" (click)="stepPhoto(-1)" [attr.aria-label]="'pp_prev_photo' | transloco">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+            </button>
+            <button type="button" class="lb-btn lb-next" (click)="stepPhoto(1)" [attr.aria-label]="'pp_next_photo' | transloco">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+            </button>
+          }
+        </dialog>
+      }
+
+      @if (p.improvements.length || p.docs.length || p.versions.length) {
+        <div class="extras">
+          @if (p.improvements.length) {
+            <section>
+              <h2 class="mono">{{ 'pp_improvements' | transloco }}</h2>
+              <ul class="improvements">
+                @for (item of p.improvements; track $index) {
+                  <li>
+                    <span class="imp-status mono" [attr.data-status]="item.status">{{ 'pp_imp_' + item.status | transloco }}</span>
+                    <span>{{ loc(item.textEs, item.textEn) }}</span>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (p.docs.length) {
+            <section>
+              <h2 class="mono">{{ 'pp_docs' | transloco }}</h2>
+              <ul class="docs">
+                @for (doc of p.docs; track $index) {
+                  <li>
+                    <a [href]="doc.file || doc.url" target="_blank" rel="noopener">
+                      <span class="doc-kind mono">{{ (doc.file ? 'pp_doc_pdf' : 'pp_doc_link') | transloco }}</span>
+                      {{ loc(doc.titleEs, doc.titleEn) || doc.file || doc.url }}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" /></svg>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (p.versions.length) {
+            <section>
+              <h2 class="mono">{{ 'pp_versions' | transloco }}</h2>
+              <ol class="versions">
+                @for (version of p.versions; track $index) {
+                  <li>
+                    <span class="ver mono">{{ version.version }}@if (version.date) { · {{ version.date }} }</span>
+                    @if (loc(version.notesEs, version.notesEn)) { <p>{{ loc(version.notesEs, version.notesEn) }}</p> }
+                  </li>
+                }
+              </ol>
+            </section>
+          }
+        </div>
+      }
+
+      @if (related().length) {
+        <section class="block-section">
+          <h2 class="mono">{{ 'pp_related' | transloco }}</h2>
+          <div class="related">
+            @for (other of related(); track other.id) {
+              <a class="related-card" [routerLink]="['/proyectos', other.slug]">
+                <span class="mono">{{ other.typeLabel }}</span>
+                <strong>{{ other.name }}</strong>
+                <p>{{ summary(other) }}</p>
+              </a>
+            }
+          </div>
+        </section>
+      }
+
+      <nav class="pager" [attr.aria-label]="'pp_more' | transloco">
+        @if (previous(); as prev) {
+          <a class="pager-link" [routerLink]="['/proyectos', prev.slug]">
+            <span class="mono">{{ 'pp_prev' | transloco }}</span>
+            <strong>{{ prev.name }}</strong>
+          </a>
+        } @else { <span></span> }
+        @if (next(); as nxt) {
+          <a class="pager-link next" [routerLink]="['/proyectos', nxt.slug]">
+            <span class="mono">{{ 'pp_next' | transloco }}</span>
+            <strong>{{ nxt.name }}</strong>
+          </a>
+        }
+      </nav>
+    } @else {
+      <div class="not-found">
+        <h1>{{ 'pp_not_found' | transloco }}</h1>
+        <a class="btn" routerLink="/proyectos">{{ 'pp_all' | transloco }}</a>
+      </div>
+    }
+  }
+</main>

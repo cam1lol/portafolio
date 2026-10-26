@@ -7,13 +7,16 @@ import { Project } from '../../core/data/project.model';
 import { ModalService } from '../../core/modal/modal.service';
 import { IconComponent } from '../../shared/icons/icon.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
+import { RouterLink } from '@angular/router';
+import { homeProjects } from '../../core/data/project-details';
 
 type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe],
+  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe, PreviewPlayDirective, RouterLink],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
@@ -22,7 +25,10 @@ export class ProjectsComponent {
   private readonly modalService = inject(ModalService);
   private readonly projectsService = inject(ProjectsService);
 
-  private readonly projects = toSignal(this.projectsService.getPublished(), { initialValue: [] });
+  private readonly allProjects = toSignal(this.projectsService.getPublished(), { initialValue: [] });
+  /** Home shows the featured projects (all of them while none is marked); /proyectos lists everything. */
+  private readonly projects = computed(() => homeProjects(this.allProjects()));
+  protected readonly totalCount = computed(() => this.allProjects().length);
 
   protected readonly filter = signal<ProjectFilter>('all');
 

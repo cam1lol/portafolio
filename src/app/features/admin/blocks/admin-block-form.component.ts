@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import {
   FormArray,
@@ -17,6 +17,9 @@ import { ModelUploadComponent } from '../../../shared/model-upload/model-upload.
 import { switchMap } from 'rxjs';
 import { PageBlockPlacement, PageItemsService } from '../../../core/data/page-items.service';
 import { ModelAsset, ModelAssetMetadata } from '../../../core/data/model-asset.model';
+import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
+import { FieldHintComponent } from '../shared/field-hint.component';
+import { focusFirstInvalid } from '../shared/focus-first-invalid';
 
 const BLOCK_TYPES: Block['type'][] = ['hero', 'text', 'card_grid', 'roadmap', 'gallery_3d'];
 const MAX_ITEMS = 12;
@@ -102,9 +105,9 @@ function textControl(maxLength: number, multiline = false, value = ''): FormCont
 @Component({
   selector: 'app-admin-block-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent, UpperCasePipe],
+  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent, UpperCasePipe, FormStepsComponent, FieldHintComponent],
   templateUrl: './admin-block-form.component.html',
-  styleUrl: './admin-block-form.component.css',
+  styleUrls: ['../shared/admin-form.css', './admin-block-form.component.css'],
 })
 export class AdminBlockFormComponent implements OnInit {
   private readonly blocksService = inject(BlocksService);
@@ -112,6 +115,7 @@ export class AdminBlockFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly pageItems = inject(PageItemsService);
   private readonly toast = inject(ToastService);
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   protected readonly types = BLOCK_TYPES;
   protected readonly typeLabels = TYPE_LABELS;
@@ -162,6 +166,13 @@ export class AdminBlockFormComponent implements OnInit {
     published: new FormControl(false, { nonNullable: true }),
     items: new FormArray<BlockItemForm>([]),
   });
+
+  private readonly c = this.form.controls;
+  protected readonly steps: FormStep[] = [
+    { id: 'step-content', label: 'Contenido', controls: [this.c.title, this.c.titleEn, this.c.eyebrow, this.c.eyebrowEn, this.c.lead, this.c.leadEn, this.c.body, this.c.bodyEn, this.c.description, this.c.descriptionEn, this.c.modelAuthor, this.c.modelLicense, this.c.items] },
+    { id: 'step-layout', label: 'Ubicación y apariencia', controls: [this.c.page, this.c.placement] },
+    { id: 'step-publish', label: 'Publicación', controls: [this.c.published] },
+  ];
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal('');
@@ -260,6 +271,7 @@ export class AdminBlockFormComponent implements OnInit {
       this.errorMessage.set(
         `Revisa ${invalidFields.join(', ')}: comprueba los límites de longitud y los caracteres permitidos.`,
       );
+      focusFirstInvalid(this.host.nativeElement);
       return;
     }
 

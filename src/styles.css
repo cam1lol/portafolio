@@ -18,21 +18,23 @@
   --scrim: rgba(10, 11, 13, .72);
 }
 
-/* Modo dia — mismo sistema invertido.
-   --ember y --ember-soft son la firma de marca. */
+/* Modo dia: fondo piedra calido (menos brillo que el crema anterior) con superficies
+   mas claras encima, para que las tarjetas se lean como capas elevadas. Texto secundario
+   >= 4.5:1. El ember se oscurece un poco solo aqui para que el texto en ember sea legible
+   sobre fondo claro (4.3:1 frente a 3:1); en modo noche sigue siendo #F2541B. */
 [data-theme="day"] {
-  --ink: #F3F1EC;
-  --graphite: #E7E3DA;
-  --graphite-2: #DCD7CB;
-  --line: #C9C2B3;
-  --line-soft: #D6D0C3;
-  --steel: #6B7280;
-  --bone: #14130F;
-  --bone-dim: #4B493F;
-  --ember: #F2541B;
-  --ember-soft: rgba(242, 84, 27, .10);
-  --good: #1F8F5C;
-  --scrim: rgba(243, 241, 236, .72);
+  --ink: #E6E2D9;
+  --graphite: #F1EEE7;
+  --graphite-2: #FAF8F4;
+  --line: #BFB7A7;
+  --line-soft: #D3CCBE;
+  --steel: #5D6370;
+  --bone: #121110;
+  --bone-dim: #3D3B34;
+  --ember: #C9400C;
+  --ember-soft: rgba(201, 64, 12, .10);
+  --good: #1F7F52;
+  --scrim: rgba(230, 226, 217, .78);
 }
 
 * {
@@ -146,3 +148,6 @@ app-root {
     transform: none !important;
   }
 }
+
+/* Height of the sticky site header, so other sticky bars (admin) sit just below it. */
+:root { --site-header-h: 69px; }

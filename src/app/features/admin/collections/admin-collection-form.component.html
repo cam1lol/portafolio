@@ -13,8 +13,10 @@
   @if (loading()) {
     <p class="sub">Cargando…</p>
   } @else {
+    <app-form-steps [steps]="steps" [form]="form" />
+
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-content">
         <legend class="mono">1 · CONTENIDO</legend>
         @for (field of config.fields; track field.name) {
           <div class="field-row" [class.bilingual]="field.bilingual">
@@ -23,16 +25,17 @@
                 <label [for]="column">
                   {{ field.label }}
                   @if (field.bilingual) { <span class="lang mono">{{ column.endsWith('_en') ? 'EN' : 'ES' }}</span> }
-                  @if (!field.required) { <span class="optional">opcional</span> }
+                  @if (field.required) { <span class="req" aria-hidden="true">*</span> }
                 </label>
                 @if (field.multiline) {
-                  <textarea [id]="column" rows="4" [formControlName]="column" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
+                  <textarea [id]="column" rows="4" [formControlName]="column" [attr.aria-required]="field.required || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
                 } @else {
-                  <input [id]="column" type="text" [formControlName]="column" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''" />
+                  <input [id]="column" type="text" [formControlName]="column" [attr.aria-required]="field.required || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''" />
                 }
                 @if (hasError(column)) {
                   <span class="field-error mono" role="alert">{{ errorText(field, column) }}</span>
                 }
+                <app-field-hint [control]="form.controls[column]" [max]="field.maxLength" [where]="field.where ?? ''" />
               </div>
             }
           </div>
@@ -40,7 +43,7 @@
         }
       </fieldset>
 
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-publish">
         <legend class="mono">2 · PUBLICACIÓN</legend>
         <label class="check-row">
           <input type="checkbox" [formControl]="published" />
@@ -53,7 +56,8 @@
         <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
       }
 
-      <div class="actions">
+      <div class="sticky-actions">
+        <span class="save-state" [class.dirty]="form.dirty || published.dirty" role="status">{{ form.dirty || published.dirty ? 'CAMBIOS SIN GUARDAR' : 'SIN CAMBIOS PENDIENTES' }}</span>
         <a class="btn" [routerLink]="['/admin', config.path]">CANCELAR</a>
         <button type="submit" class="btn primary" [disabled]="submitting()">
           {{ submitting() ? 'GUARDANDO…' : 'GUARDAR' }}

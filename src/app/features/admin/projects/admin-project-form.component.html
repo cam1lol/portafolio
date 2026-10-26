@@ -16,31 +16,36 @@
   @if (loading()) {
     <p class="sub">Cargando...</p>
   } @else {
+    <app-form-steps [steps]="steps" [form]="form" />
+
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-content">
         <legend>1 · CONTENIDO</legend>
         <p class="step-hint">Lo que se lee en la tarjeta y en el detalle del proyecto. Español e inglés lado a lado.</p>
 
         <div class="field">
-          <label for="name">Nombre</label>
-          <input id="name" type="text" formControlName="name" maxlength="120" />
+          <label for="name">Nombre <span class="req" aria-hidden="true">*</span></label>
+          <input id="name" type="text" formControlName="name" maxlength="120" aria-required="true" />
           @if (hasError('name', 'required')) {
             <span class="field-error">El nombre es obligatorio.</span>
           } @else if (hasError('name', 'controlChars')) {
             <span class="field-error">Contiene caracteres no válidos.</span>
           }
+          <app-field-hint [control]="form.controls.name" [max]="120" where="tarjeta, modal y página del proyecto" />
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label for="summaryEs">Resumen <span class="lang">ES</span></label>
-            <textarea id="summaryEs" formControlName="summaryEs" maxlength="300" rows="3"></textarea>
+            <label for="summaryEs">Resumen <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="summaryEs" formControlName="summaryEs" maxlength="300" rows="3" aria-required="true"></textarea>
             @if (hasError('summaryEs', 'required')) { <span class="field-error">El resumen en español es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.summaryEs" [max]="300" where="tarjeta y cabecera del modal" />
           </div>
           <div class="field">
-            <label for="summaryEn">Resumen <span class="lang">EN</span></label>
-            <textarea id="summaryEn" formControlName="summaryEn" maxlength="300" rows="3"></textarea>
+            <label for="summaryEn">Resumen <span class="lang">EN</span> <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="summaryEn" formControlName="summaryEn" maxlength="300" rows="3" aria-required="true"></textarea>
             @if (hasError('summaryEn', 'required')) { <span class="field-error">El resumen en inglés es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.summaryEn" [max]="300" where="tarjeta y cabecera del modal" />
           </div>
         </div>
 
@@ -48,10 +53,26 @@
           <div class="field">
             <label for="longEs">Descripción larga <span class="lang">ES</span></label>
             <textarea id="longEs" formControlName="longEs" maxlength="4000" rows="6"></textarea>
+            <app-field-hint [control]="form.controls.longEs" [max]="4000" where="pestaña Resumen del modal y página del proyecto" />
           </div>
           <div class="field">
             <label for="longEn">Descripción larga <span class="lang">EN</span></label>
             <textarea id="longEn" formControlName="longEn" maxlength="4000" rows="6"></textarea>
+            <app-field-hint [control]="form.controls.longEn" [max]="4000" where="pestaña Resumen del modal y página del proyecto" />
+          </div>
+        </div>
+
+        <p class="step-hint">Caso de estudio: el problema, las decisiones técnicas, qué salió mal y los resultados. Deja una línea en blanco entre párrafos; **texto** queda en negrita. Si lo dejas vacío, la pestaña no aparece.</p>
+        <div class="grid-2">
+          <div class="field">
+            <label for="caseStudyEs">Cómo está hecho <span class="lang">ES</span></label>
+            <textarea id="caseStudyEs" formControlName="caseStudyEs" maxlength="12000" rows="8"></textarea>
+            <app-field-hint [control]="form.controls.caseStudyEs" [max]="12000" where="pestaña Cómo está hecho y página del proyecto" />
+          </div>
+          <div class="field">
+            <label for="caseStudyEn">Cómo está hecho <span class="lang">EN</span></label>
+            <textarea id="caseStudyEn" formControlName="caseStudyEn" maxlength="12000" rows="8"></textarea>
+            <app-field-hint [control]="form.controls.caseStudyEn" [max]="12000" where="pestaña Cómo está hecho y página del proyecto" />
           </div>
         </div>
 
@@ -60,30 +81,32 @@
             <label>Destacados <span class="lang">ES</span></label>
             @for (item of highlightsEs.controls; track $index) {
               <div class="list-row">
-                <input type="text" [formControl]="item" maxlength="300" />
+                <input type="text" [formControl]="item" maxlength="300" [attr.aria-label]="'Destacado ' + ($index + 1) + ' en español'" />
                 <button type="button" class="remove-btn" (click)="removeHighlightEs($index)">Quitar</button>
               </div>
               @if (listControlErrors(highlightsEs, $index)) { <span class="field-error">Elemento inválido o vacío.</span> }
             }
             <button type="button" class="add-btn" (click)="addHighlightEs()">+ Agregar destacado</button>
+            <app-field-hint [control]="highlightsEs" where="modal y página del proyecto, una frase por fila" />
           </div>
           <div class="field list-field">
             <label>Destacados <span class="lang">EN</span></label>
             @for (item of highlightsEn.controls; track $index) {
               <div class="list-row">
-                <input type="text" [formControl]="item" maxlength="300" />
+                <input type="text" [formControl]="item" maxlength="300" [attr.aria-label]="'Destacado ' + ($index + 1) + ' en inglés'" />
                 <button type="button" class="remove-btn" (click)="removeHighlightEn($index)">Quitar</button>
               </div>
               @if (listControlErrors(highlightsEn, $index)) { <span class="field-error">Elemento inválido o vacío.</span> }
             }
             <button type="button" class="add-btn" (click)="addHighlightEn()">+ Agregar destacado</button>
+            <app-field-hint [control]="highlightsEn" where="modal y página del proyecto, una frase por fila" />
           </div>
         </div>
       </fieldset>
 
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-media">
         <legend>2 · CLASIFICACIÓN Y MEDIOS</legend>
-        <p class="step-hint">Cómo se filtra y se presenta: pestaña, estado, icono, tecnologías, imagen y enlaces.</p>
+        <p class="step-hint">Cómo se filtra y se presenta: pestaña, estado, icono, tecnologías, videos, imagen y enlaces.</p>
 
         <div class="grid-3">
           <div class="field">
@@ -113,14 +136,16 @@
 
         <div class="grid-3">
           <div class="field">
-            <label for="typeLabel">Etiqueta de tipo</label>
-            <input id="typeLabel" type="text" formControlName="typeLabel" maxlength="60" placeholder="3D / E-COMMERCE" />
+            <label for="typeLabel">Etiqueta de tipo <span class="req" aria-hidden="true">*</span></label>
+            <input id="typeLabel" type="text" formControlName="typeLabel" maxlength="60" placeholder="3D / E-COMMERCE" aria-required="true" />
             @if (hasError('typeLabel', 'required')) { <span class="field-error">La etiqueta de tipo es obligatoria.</span> }
+            <app-field-hint [control]="form.controls.typeLabel" [max]="60" where="tarjeta y página del proyecto" />
           </div>
           <div class="field">
-            <label for="icon">Icono</label>
-            <input id="icon" type="text" formControlName="icon" maxlength="60" placeholder="box" />
+            <label for="icon">Icono <span class="req" aria-hidden="true">*</span></label>
+            <input id="icon" type="text" formControlName="icon" maxlength="60" placeholder="box" aria-required="true" />
             @if (hasError('icon', 'required')) { <span class="field-error">El icono es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.icon" where="tarjeta (nombre de icono Lucide)" />
           </div>
           <div class="field">
             <label for="device">Marco de la vista previa</label>
@@ -132,48 +157,389 @@
           </div>
         </div>
 
-        <div class="field list-field">
-          <label>Stack tecnológico</label>
-          @for (item of stack.controls; track $index) {
-            <div class="list-row">
-              <input type="text" [formControl]="item" maxlength="300" />
-              <button type="button" class="remove-btn" (click)="removeStackItem($index)">Quitar</button>
-            </div>
-            @if (listControlErrors(stack, $index)) { <span class="field-error">Elemento inválido o vacío.</span> }
+        <div class="field">
+          <label for="stack-input">Stack tecnológico</label>
+          <app-tag-input inputId="stack-input" [array]="stack" [createControl]="newListItem" [maxLength]="300" placeholder="Por ejemplo: Angular, Supabase" />
+          @if (stackHasErrors()) { <span class="field-error">Hay etiquetas demasiado largas o con caracteres no válidos (en rojo).</span> }
+          <app-field-hint [control]="stack" where="chips de la tarjeta, modal y página del proyecto" />
+        </div>
+
+        <div class="field">
+          <label for="slug">Dirección de la página <span class="req" aria-hidden="true">*</span></label>
+          <input id="slug" type="text" formControlName="slug" maxlength="80" (input)="onSlugInput()" aria-required="true" />
+          @if (form.controls.slug.invalid && form.controls.slug.touched) {
+            <span class="field-error">Solo minúsculas, números y guiones (por ejemplo velamentum-store).</span>
           }
-          <button type="button" class="add-btn" (click)="addStackItem()">+ Agregar tecnología</button>
+          <app-field-hint [control]="form.controls.slug" [max]="80" [where]="'/proyectos/' + (form.controls.slug.value || '...') + ' (debe ser única)'" />
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="preview-video">Clip de vista previa</label>
+            <app-media-picker [slug]="form.controls.slug.value" selectId="preview-video" [value]="form.controls.previewVideo.value" (valueChange)="onPreviewVideoChange($event)" (uploaded)="onPreviewVideoChange($event.preview || $event.path)"
+              [recommendedMb]="2" hint="5 a 8 segundos, sin sonido, menos de 2 MB. Se reproduce en la tarjeta." />
+          </div>
+          <div class="field">
+            <label for="demo-video">Video completo (demo)</label>
+            <app-media-picker [slug]="form.controls.slug.value" selectId="demo-video" [value]="form.controls.demoVideoUrl.value" (valueChange)="onDemoVideoChange($event)" (uploaded)="onDemoUploaded($event)"
+              [recommendedMb]="25" hint="Recorrido de 1 a 3 minutos en MP4 (H.264), 720p o 1080p, menos de 25 MB. Se ve en el modal y en la página del proyecto." />
+          </div>
         </div>
 
         <div class="field">
           <label>Imagen de vista previa</label>
           <app-image-upload [value]="form.controls.previewImage.value" (valueChange)="onPreviewImageChange($event)"></app-image-upload>
+          <app-field-hint [control]="form.controls.previewImage" where="tarjeta cuando no hay clip, y póster del demo" />
         </div>
 
         <div class="grid-2">
           <div class="field">
             <label for="repoUrl">URL del repositorio</label>
-            <input id="repoUrl" type="text" formControlName="repoUrl" maxlength="2000" placeholder="https://github.com/..." />
+            <input id="repoUrl" type="url" formControlName="repoUrl" maxlength="2000" placeholder="https://github.com/..." />
+            <app-field-hint [control]="form.controls.repoUrl" where="botones del modal y de la página del proyecto" />
           </div>
           <div class="field">
             <label for="liveUrl">URL en vivo</label>
-            <input id="liveUrl" type="text" formControlName="liveUrl" maxlength="2000" placeholder="https://..." />
+            <input id="liveUrl" type="url" formControlName="liveUrl" maxlength="2000" placeholder="https://..." />
+            <app-field-hint [control]="form.controls.liveUrl" where="botones del modal y de la página del proyecto" />
           </div>
         </div>
       </fieldset>
 
-      <fieldset class="form-step">
-        <legend>3 · PUBLICACIÓN</legend>
+      <fieldset class="form-step" id="step-facts">
+        <legend>3 · FICHA Y RESULTADOS</legend>
+        <p class="step-hint">Opcional. La ficha aparece arriba en la página del proyecto; los campos vacíos no se muestran.</p>
+
+        <div formGroupName="facts">
+          <div class="grid-3">
+            <div class="field">
+              <label for="fact-year">Año</label>
+              <input id="fact-year" type="text" formControlName="year" maxlength="20" placeholder="2025" />
+            </div>
+            <div class="field">
+              <label for="fact-client">Cliente</label>
+              <input id="fact-client" type="text" formControlName="client" maxlength="120" placeholder="Proyecto personal" />
+            </div>
+            <div class="field">
+              <label for="fact-team">Equipo</label>
+              <input id="fact-team" type="text" formControlName="team" maxlength="80" placeholder="Solo / 3 personas" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="fact-roleEs">Mi rol <span class="lang">ES</span></label>
+              <input id="fact-roleEs" type="text" formControlName="roleEs" maxlength="120" placeholder="Diseño y desarrollo full-stack" />
+            </div>
+            <div class="field">
+              <label for="fact-roleEn">Mi rol <span class="lang">EN</span></label>
+              <input id="fact-roleEn" type="text" formControlName="roleEn" maxlength="120" placeholder="Full-stack design and development" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="fact-durationEs">Duración <span class="lang">ES</span></label>
+              <input id="fact-durationEs" type="text" formControlName="durationEs" maxlength="80" placeholder="3 meses" />
+            </div>
+            <div class="field">
+              <label for="fact-durationEn">Duración <span class="lang">EN</span></label>
+              <input id="fact-durationEn" type="text" formControlName="durationEn" maxlength="80" placeholder="3 months" />
+            </div>
+          </div>
+        </div>
+
+        <h3 class="list-title">Resultados con cifras <span class="list-count mono">{{ form.controls.results.length }}</span></h3>
+        <p class="step-hint">Una cifra y su contexto, por ejemplo "-40 %" · "tiempo de carga" · "tras optimizar imágenes y lazy loading". Usa solo datos reales.</p>
+        <div formArrayName="results">
+          @for (result of form.controls.results.controls; track result; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Resultado" [index]="i" [count]="form.controls.results.length" (moveUp)="moveItem('results', i, -1)" (moveDown)="moveItem('results', i, 1)" (remove)="removeItem('results', i)" />
+              <div class="grid-3">
+                <div class="field">
+                  <label [for]="'res-value-' + i">Cifra</label>
+                  <input [id]="'res-value-' + i" type="text" formControlName="value" maxlength="30" placeholder="-40 %" />
+                </div>
+                <div class="field">
+                  <label [for]="'res-labelEs-' + i">Qué mide <span class="lang">ES</span></label>
+                  <input [id]="'res-labelEs-' + i" type="text" formControlName="labelEs" maxlength="80" />
+                </div>
+                <div class="field">
+                  <label [for]="'res-labelEn-' + i">Qué mide <span class="lang">EN</span></label>
+                  <input [id]="'res-labelEn-' + i" type="text" formControlName="labelEn" maxlength="80" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'res-ctxEs-' + i">Contexto <span class="lang">ES</span></label>
+                  <input [id]="'res-ctxEs-' + i" type="text" formControlName="contextEs" maxlength="300" />
+                  <app-field-hint [control]="result.controls.contextEs" [max]="300" />
+                </div>
+                <div class="field">
+                  <label [for]="'res-ctxEn-' + i">Contexto <span class="lang">EN</span></label>
+                  <input [id]="'res-ctxEn-' + i" type="text" formControlName="contextEn" maxlength="300" />
+                  <app-field-hint [control]="result.controls.contextEn" [max]="300" />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('results')" [disabled]="form.controls.results.length >= maxItems">+ Agregar resultado</button>
+      </fieldset>
+
+      <fieldset class="form-step" id="step-videos">
+        <legend>4 · VIDEOS</legend>
+        <p class="step-hint">Opcional. Se muestran como una cuadrícula en la página del proyecto: al pasar el ratón se previsualizan y al hacer clic se abren en un reproductor grande. Súbelos desde tu equipo con el botón de cada video, o cópialos en <span class="mono">public/media/projects/{{ form.controls.slug.value || 'slug' }}/</span>.</p>
+
+        <div class="video-count">
+          <label for="video-count">¿Cuántos videos vas a subir?</label>
+          <input id="video-count" type="number" min="1" [max]="maxItems" [value]="videoCount()" (input)="videoCount.set(+$any($event.target).value || 1)" />
+          <button type="button" class="btn" (click)="createVideoSlots()">CREAR ESPACIOS</button>
+          <span class="step-hint">Agrega los espacios que falten; no borra los que ya tienes.</span>
+        </div>
+
+        <div class="video-tips">
+          <strong class="mono">PARA QUE CARGUEN RÁPIDO</strong>
+          <ul>
+            <li>Con <strong>SUBIR DESDE EL DISPOSITIVO</strong> (al trabajar con <span class="mono">npm start</span>) el video se optimiza solo: MP4 H.264 hasta 1080p con inicio rápido, póster WebP, clip de vista previa y duración. Sube el original en la mejor calidad que tengas.</li>
+            <li>Los archivos quedan en <span class="mono">public/media/projects/&lt;slug&gt;/</span>; para publicarlos, haz commit y push.</li>
+            <li>Si copias un video a mano: MP4 (H.264 + AAC), 720p o 1080p, menos de 25 MB, exportado con "inicio rápido" (<span class="mono">-movflags +faststart</span>) y con un póster de menos de 200 KB.</li>
+          </ul>
+        </div>
+
+        <h3 class="list-title">Videos <span class="list-count mono">{{ form.controls.videos.length }}</span></h3>
+        <div formArrayName="videos">
+          @for (video of form.controls.videos.controls; track video; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Video" [index]="i" [count]="form.controls.videos.length" (moveUp)="moveItem('videos', i, -1)" (moveDown)="moveItem('videos', i, 1)" (remove)="removeItem('videos', i)" />
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'vid-file-' + i">Archivo de video</label>
+                  <app-media-picker [slug]="form.controls.slug.value" kind="video" [selectId]="'vid-file-' + i" [value]="video.controls.video.value" (valueChange)="setItemPath(video, 'video', $event)" (uploaded)="onVideoUploaded(video, $event)" [recommendedMb]="25" [showHint]="false" />
+                </div>
+                <div class="field">
+                  <label [for]="'vid-poster-' + i">Póster</label>
+                  <app-media-picker [slug]="form.controls.slug.value" kind="image" [selectId]="'vid-poster-' + i" [value]="video.controls.poster.value" (valueChange)="setItemPath(video, 'poster', $event)" [recommendedMb]="0.3" [showHint]="false" />
+                </div>
+              </div>
+              <div class="grid-video-title">
+                <div class="field">
+                  <label [for]="'vid-titleEs-' + i">Título <span class="lang">ES</span></label>
+                  <input [id]="'vid-titleEs-' + i" type="text" formControlName="titleEs" maxlength="120" placeholder="Recorrido completo" />
+                </div>
+                <div class="field">
+                  <label [for]="'vid-titleEn-' + i">Título <span class="lang">EN</span></label>
+                  <input [id]="'vid-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" placeholder="Full walkthrough" />
+                </div>
+                <div class="field">
+                  <label [for]="'vid-duration-' + i">Duración</label>
+                  <input [id]="'vid-duration-' + i" type="text" formControlName="duration" maxlength="12" placeholder="2:15" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'vid-descEs-' + i">Descripción <span class="lang">ES</span></label>
+                  <textarea [id]="'vid-descEs-' + i" formControlName="descEs" maxlength="600" rows="3"></textarea>
+                  <app-field-hint [control]="video.controls.descEs" [max]="600" where="tarjeta y reproductor" />
+                </div>
+                <div class="field">
+                  <label [for]="'vid-descEn-' + i">Descripción <span class="lang">EN</span></label>
+                  <textarea [id]="'vid-descEn-' + i" formControlName="descEn" maxlength="600" rows="3"></textarea>
+                  <app-field-hint [control]="video.controls.descEn" [max]="600" where="tarjeta y reproductor" />
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-list">Sin videos. Indica cuántos vas a subir y pulsa "Crear espacios", o agrégalos uno a uno.</p>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('videos')" [disabled]="form.controls.videos.length >= maxItems">+ Agregar video</button>
+      </fieldset>
+
+      <fieldset class="form-step" id="step-screens">
+        <legend>5 · PANTALLAS Y GALERÍA</legend>
+        <p class="step-hint">Opcional. Las pantallas forman un recorrido en la página del proyecto: agrega una por cada vista de la web (inicio, login, panel…), con su video o captura. Los archivos se copian en <span class="mono">public/media/projects/{{ form.controls.slug.value || 'slug' }}/</span>.</p>
+
+        <h3 class="list-title">Pantallas <span class="list-count mono">{{ form.controls.screens.length }}</span></h3>
+        <div formArrayName="screens">
+          @for (screen of form.controls.screens.controls; track screen; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Pantalla" [index]="i" [count]="form.controls.screens.length" (moveUp)="moveItem('screens', i, -1)" (moveDown)="moveItem('screens', i, 1)" (remove)="removeItem('screens', i)" />
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'scr-titleEs-' + i">Nombre <span class="lang">ES</span></label>
+                  <input [id]="'scr-titleEs-' + i" type="text" formControlName="titleEs" maxlength="120" placeholder="Panel de control" />
+                </div>
+                <div class="field">
+                  <label [for]="'scr-titleEn-' + i">Nombre <span class="lang">EN</span></label>
+                  <input [id]="'scr-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" placeholder="Dashboard" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'scr-descEs-' + i">Qué se ve <span class="lang">ES</span></label>
+                  <textarea [id]="'scr-descEs-' + i" formControlName="descEs" maxlength="600" rows="3"></textarea>
+                  <app-field-hint [control]="screen.controls.descEs" [max]="600" />
+                </div>
+                <div class="field">
+                  <label [for]="'scr-descEn-' + i">Qué se ve <span class="lang">EN</span></label>
+                  <textarea [id]="'scr-descEn-' + i" formControlName="descEn" maxlength="600" rows="3"></textarea>
+                  <app-field-hint [control]="screen.controls.descEn" [max]="600" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'scr-video-' + i">Video</label>
+                  <app-media-picker [slug]="form.controls.slug.value" kind="video" [selectId]="'scr-video-' + i" [value]="screen.controls.video.value" (valueChange)="setItemPath(screen, 'video', $event)" (uploaded)="onScreenUploaded(screen, $event)" [recommendedMb]="15" [showHint]="false" />
+                </div>
+                <div class="field">
+                  <label [for]="'scr-image-' + i">Captura</label>
+                  <app-media-picker [slug]="form.controls.slug.value" kind="image" [selectId]="'scr-image-' + i" [value]="screen.controls.image.value" (valueChange)="setItemPath(screen, 'image', $event)" [recommendedMb]="1" [showHint]="false" />
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-list">Sin pantallas. Si las agregas, la página del proyecto muestra un recorrido por cada una.</p>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('screens')" [disabled]="form.controls.screens.length >= maxItems">+ Agregar pantalla</button>
+
+        <h3 class="list-title">Galería de fotos <span class="list-count mono">{{ form.controls.gallery.length }}</span></h3>
+        <div formArrayName="gallery" class="photo-grid">
+          @for (photo of form.controls.gallery.controls; track photo; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Foto" [index]="i" [count]="form.controls.gallery.length" (moveUp)="moveItem('gallery', i, -1)" (moveDown)="moveItem('gallery', i, 1)" (remove)="removeItem('gallery', i)" />
+              <div class="field">
+                <label [for]="'pho-image-' + i">Imagen</label>
+                <app-media-picker [slug]="form.controls.slug.value" kind="image" [selectId]="'pho-image-' + i" [value]="photo.controls.image.value" (valueChange)="setItemPath(photo, 'image', $event)" [recommendedMb]="1" [showHint]="false" />
+              </div>
+              <div class="field">
+                <label [for]="'pho-capEs-' + i">Pie de foto <span class="lang">ES</span></label>
+                <input [id]="'pho-capEs-' + i" type="text" formControlName="captionEs" maxlength="300" />
+              </div>
+              <div class="field">
+                <label [for]="'pho-capEn-' + i">Pie de foto <span class="lang">EN</span></label>
+                <input [id]="'pho-capEn-' + i" type="text" formControlName="captionEn" maxlength="300" />
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('gallery')" [disabled]="form.controls.gallery.length >= maxItems">+ Agregar foto</button>
+      </fieldset>
+
+      <fieldset class="form-step" id="step-extras">
+        <legend>6 · MEJORAS, DOCUMENTOS Y VERSIONES</legend>
+        <p class="step-hint">Opcional. Lo que viene, material de apoyo y la historia del proyecto.</p>
+
+        <h3 class="list-title">Mejoras planeadas <span class="list-count mono">{{ form.controls.improvements.length }}</span></h3>
+        <div formArrayName="improvements">
+          @for (item of form.controls.improvements.controls; track item; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Mejora" [index]="i" [count]="form.controls.improvements.length" (moveUp)="moveItem('improvements', i, -1)" (moveDown)="moveItem('improvements', i, 1)" (remove)="removeItem('improvements', i)" />
+              <div class="grid-improvement">
+                <div class="field">
+                  <label [for]="'imp-es-' + i">Mejora <span class="lang">ES</span></label>
+                  <input [id]="'imp-es-' + i" type="text" formControlName="textEs" maxlength="300" placeholder="Modo sin conexión" />
+                </div>
+                <div class="field">
+                  <label [for]="'imp-en-' + i">Mejora <span class="lang">EN</span></label>
+                  <input [id]="'imp-en-' + i" type="text" formControlName="textEn" maxlength="300" placeholder="Offline mode" />
+                </div>
+                <div class="field">
+                  <label [for]="'imp-status-' + i">Estado</label>
+                  <select [id]="'imp-status-' + i" formControlName="status">
+                    @for (status of improvementStatuses; track status) { <option [value]="status">{{ statusLabels[status] }}</option> }
+                  </select>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('improvements')" [disabled]="form.controls.improvements.length >= maxItems">+ Agregar mejora</button>
+
+        <h3 class="list-title">Documentación <span class="list-count mono">{{ form.controls.docs.length }}</span></h3>
+        <p class="step-hint">Un PDF del proyecto o un enlace externo (Notion, Figma, documentación). Basta con uno de los dos.</p>
+        <div formArrayName="docs">
+          @for (doc of form.controls.docs.controls; track doc; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Documento" [index]="i" [count]="form.controls.docs.length" (moveUp)="moveItem('docs', i, -1)" (moveDown)="moveItem('docs', i, 1)" (remove)="removeItem('docs', i)" />
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'doc-titleEs-' + i">Título <span class="lang">ES</span></label>
+                  <input [id]="'doc-titleEs-' + i" type="text" formControlName="titleEs" maxlength="120" placeholder="Manual de usuario" />
+                </div>
+                <div class="field">
+                  <label [for]="'doc-titleEn-' + i">Título <span class="lang">EN</span></label>
+                  <input [id]="'doc-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" placeholder="User guide" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'doc-file-' + i">Archivo PDF</label>
+                  <app-media-picker [slug]="form.controls.slug.value" kind="doc" [selectId]="'doc-file-' + i" [value]="doc.controls.file.value" (valueChange)="setItemPath(doc, 'file', $event)" [recommendedMb]="10" [showHint]="false" />
+                </div>
+                <div class="field">
+                  <label [for]="'doc-url-' + i">O enlace externo</label>
+                  <input [id]="'doc-url-' + i" type="url" formControlName="url" maxlength="2000" placeholder="https://..." />
+                  @if (doc.controls.url.invalid && doc.controls.url.touched) { <span class="field-error">Debe empezar por https:// o http://</span> }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('docs')" [disabled]="form.controls.docs.length >= maxItems">+ Agregar documento</button>
+
+        <h3 class="list-title">Historial de versiones <span class="list-count mono">{{ form.controls.versions.length }}</span></h3>
+        <div formArrayName="versions">
+          @for (version of form.controls.versions.controls; track version; let i = $index) {
+            <div class="repeat-card" [formGroupName]="i">
+              <app-repeat-head label="Versión" [index]="i" [count]="form.controls.versions.length" (moveUp)="moveItem('versions', i, -1)" (moveDown)="moveItem('versions', i, 1)" (remove)="removeItem('versions', i)" />
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'ver-version-' + i">Versión</label>
+                  <input [id]="'ver-version-' + i" type="text" formControlName="version" maxlength="30" placeholder="v1.2" />
+                </div>
+                <div class="field">
+                  <label [for]="'ver-date-' + i">Fecha</label>
+                  <input [id]="'ver-date-' + i" type="text" formControlName="date" maxlength="30" placeholder="2026-03" />
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label [for]="'ver-notesEs-' + i">Qué cambió <span class="lang">ES</span></label>
+                  <textarea [id]="'ver-notesEs-' + i" formControlName="notesEs" maxlength="600" rows="2"></textarea>
+                </div>
+                <div class="field">
+                  <label [for]="'ver-notesEn-' + i">Qué cambió <span class="lang">EN</span></label>
+                  <textarea [id]="'ver-notesEn-' + i" formControlName="notesEn" maxlength="600" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <button type="button" class="add-btn" (click)="addItem('versions')" [disabled]="form.controls.versions.length >= maxItems">+ Agregar versión</button>
+      </fieldset>
+
+      <fieldset class="form-step" id="step-publish">
+        <legend>7 · PUBLICACIÓN</legend>
         <div class="field checkbox-field">
           <label for="published">
             <input id="published" type="checkbox" formControlName="published" />
             Mostrar en el sitio público
           </label>
+          <app-field-hint [control]="form.controls.published" where="si lo desmarcas queda como borrador, solo visible aquí" />
+        </div>
+        <div class="field checkbox-field">
+          <label for="featured">
+            <input id="featured" type="checkbox" formControlName="featured" />
+            Destacar en la portada
+          </label>
+          <app-field-hint [control]="form.controls.featured" where="la portada muestra solo los destacados (todos, mientras no marques ninguno); /proyectos muestra todos" />
         </div>
       </fieldset>
 
       @if (errorMessage()) { <div class="form-error mono" role="alert">{{ errorMessage() }}</div> }
 
       <div class="sticky-actions">
+        <span class="save-state" [class.dirty]="form.dirty" role="status">{{ form.dirty ? 'CAMBIOS SIN GUARDAR' : 'SIN CAMBIOS PENDIENTES' }}</span>
         <a class="btn" routerLink="/admin/projects">CANCELAR</a>
         <button type="submit" class="btn primary" [disabled]="saving()">{{ saving() ? 'GUARDANDO…' : 'GUARDAR PROYECTO' }}</button>
       </div>

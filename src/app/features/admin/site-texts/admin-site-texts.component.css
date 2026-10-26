@@ -4,11 +4,18 @@
 .sub { color: var(--steel); font-size: 12px; }
 .error-msg { padding: 10px 12px; margin: 0 0 14px; font-size: 12px; color: var(--ember); background: var(--ember-soft); border-left: 2px solid var(--ember); }
 
+/* Sticky so the groups stay one click away on this long page. */
 .group-index {
+  position: sticky;
+  top: var(--site-header-h);
+  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink);
 }
 
 .group-index button {
@@ -23,6 +30,9 @@
   cursor: pointer;
 }
 
+.group-index button { display: inline-flex; align-items: center; gap: 6px; }
+.group-index button.dirty { border-color: var(--ember); color: var(--bone); }
+.dirty-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ember); }
 .group-index button:hover { color: var(--bone); border-color: var(--steel); }
 .group-index button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
@@ -85,7 +95,7 @@
 .field textarea:focus { outline: none; border-color: var(--ember); }
 
 .field-error { display: block; margin-top: 6px; color: var(--ember); font-size: 10px; }
-.hint { display: block; margin: -6px 0 14px; color: var(--steel); font-size: 11px; line-height: 1.5; }
+.hint { display: block; margin: 0 0 14px; color: var(--steel); font-size: 11px; line-height: 1.5; }
 
 .group-actions {
   position: sticky;
@@ -118,3 +128,6 @@
 
 .view-site { float: right; margin-left: 12px; text-decoration: none; gap: 8px; }
 .view-site svg { width: 14px; height: 14px; }
+.state.dirty { color: var(--ember); }
+/* Jump targets clear the sticky group index. */
+.group-card { scroll-margin-top: calc(var(--site-header-h) + 72px); }

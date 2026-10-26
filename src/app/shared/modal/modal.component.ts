@@ -1,4 +1,7 @@
-import { Component, HostListener, computed, inject } from '@angular/core';
+import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { InlineMarkupPipe } from '../site-text/inline-markup.pipe';
+import { ProjectMediaComponent, hasProjectMedia } from '../media/project-media.component';
 import { TranslocoService } from '@jsverse/transloco';
 import { ModalService } from '../../core/modal/modal.service';
 import { Project } from '../../core/data/project.model';
@@ -7,6 +10,7 @@ import { Experience } from '../../core/data/experience.model';
 @Component({
   selector: 'app-modal',
   standalone: true,
+  imports: [RouterLink, InlineMarkupPipe, ProjectMediaComponent],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.css',
 })
@@ -20,6 +24,37 @@ export class ModalComponent {
   protected readonly isEs = computed(() => this.lang() === 'es');
 
   protected readonly reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  protected readonly tab = signal<'summary' | 'how'>('summary');
+
+  constructor() {
+    // Every time a different item opens, start on the summary tab.
+    effect(() => {
+      this.active();
+      this.tab.set('summary');
+    });
+  }
+
+  protected hasMedia(project: Project): boolean {
+    return hasProjectMedia(project);
+  }
+
+  protected caseStudy(project: Project): string {
+    const text = this.isEs() ? project.caseStudyEs : project.caseStudyEn || project.caseStudyEs;
+    return (text ?? '').trim();
+  }
+
+  protected summaryTabLabel(): string {
+    return this.isEs() ? 'RESUMEN' : 'OVERVIEW';
+  }
+
+  protected howTabLabel(): string {
+    return this.isEs() ? 'CÓMO ESTÁ HECHO' : 'HOW IT IS BUILT';
+  }
+
+  protected projectPageLabel(): string {
+    return this.isEs() ? 'VER PÁGINA DEL PROYECTO' : 'OPEN PROJECT PAGE';
+  }
 
   protected readonly tag = computed(() => {
     const state = this.active();

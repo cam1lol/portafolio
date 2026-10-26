@@ -5,7 +5,10 @@
 
   <nav class="group-index mono" aria-label="Ir a un grupo">
     @for (group of groups; track group.id) {
-      <button type="button" (click)="scrollTo(group.id)">{{ group.title }}</button>
+      <button type="button" (click)="scrollTo(group.id)" [class.dirty]="forms[group.id]?.dirty">
+        {{ group.title }}
+        @if (forms[group.id]?.dirty) { <span class="dirty-dot" aria-label="sin guardar"></span> }
+      </button>
     }
   </nav>
 
@@ -53,6 +56,7 @@
                 @if (hasError(group.id, column)) {
                   <span class="field-error mono" role="alert">{{ errorText(field, group.id, column) }}</span>
                 }
+                <app-field-hint [control]="forms[group.id].controls[column]" [max]="field.maxLength" />
               </div>
             }
           </div>
@@ -67,6 +71,9 @@
           @switch (saveState()[group.id]) {
             @case ('saved') {
               @if (forms[group.id].pristine) { <span class="state ok mono" role="status">GUARDADO</span> }
+            }
+            @default {
+              @if (forms[group.id].dirty) { <span class="state dirty mono" role="status">CAMBIOS SIN GUARDAR</span> }
             }
             @case ('error') { <span class="state err mono" role="alert">REVISA LOS CAMPOS O TU SESIÓN</span> }
           }

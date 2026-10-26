@@ -18,7 +18,9 @@
       <div class="mbody">
         @switch (state.kind) {
           @case ('project') {
-            @if (state.data.kind === 'back') {
+            @if (hasMedia(state.data)) {
+              <app-project-media class="preview media-preview" [project]="state.data" />
+            } @else if (state.data.kind === 'back') {
               <div class="preview">
                 <div class="flow">
                   <svg viewBox="0 0 480 160">
@@ -87,19 +89,33 @@
 
             <div class="mtitle">{{ state.data.name }}</div>
             <div class="msub">{{ statusLabel(state.data.status) }} · {{ state.data.type.toUpperCase() }}</div>
-            <p class="mtext">{{ summary(state.data) }}</p>
-            <div class="msub2">{{ highlightsLabel() }}</div>
-            <ul class="mlist">
-              @for (item of highlights(state.data); track item) {
-                <li>{{ item }}</li>
-              }
-            </ul>
-            <div class="msub2">STACK</div>
-            <div class="stack">
-              @for (item of state.data.stack; track item) {
-                <span class="chip">{{ item }}</span>
-              }
-            </div>
+            @if (caseStudy(state.data)) {
+              <div class="mtabs mono" role="tablist">
+                <button type="button" role="tab" [attr.aria-selected]="tab() === 'summary'" [class.on]="tab() === 'summary'" (click)="tab.set('summary')">{{ summaryTabLabel() }}</button>
+                <button type="button" role="tab" [attr.aria-selected]="tab() === 'how'" [class.on]="tab() === 'how'" (click)="tab.set('how')">{{ howTabLabel() }}</button>
+              </div>
+            }
+            @if (tab() === 'how' && caseStudy(state.data)) {
+              <div class="mtext case-study" [innerHTML]="caseStudy(state.data) | inlineMarkup"></div>
+            } @else {
+              <p class="mtext">{{ summary(state.data) }}</p>
+              <div class="msub2">{{ highlightsLabel() }}</div>
+              <ul class="mlist">
+                @for (item of highlights(state.data); track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+              <div class="msub2">STACK</div>
+              <div class="stack">
+                @for (item of state.data.stack; track item) {
+                  <span class="chip">{{ item }}</span>
+                }
+              </div>
+            }
+            <a class="project-page-link mono" [routerLink]="['/proyectos', state.data.slug]" (click)="close()">
+              {{ projectPageLabel() }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
           }
           @case ('experience') {
             <div class="mtitle">{{ role(state.data) }}</div>

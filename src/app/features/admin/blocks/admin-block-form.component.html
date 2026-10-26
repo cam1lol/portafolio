@@ -1,4 +1,4 @@
-<section class="block-form wrap">
+<section class="block-form">
   <div class="form-heading">
     <div>
       <span class="eyebrow mono">BLOQUES // {{ isEditMode() ? 'EDITAR' : 'NUEVO' }}</span>
@@ -23,6 +23,8 @@
       }
     </div>
   } @else {
+    <app-form-steps [steps]="steps" [form]="form" />
+
     <div class="editor-grid">
       <div class="form-card">
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
@@ -35,44 +37,44 @@
             }
           </div>
 
-          <fieldset class="form-step">
+          <fieldset class="form-step" id="step-content">
             <legend class="mono">1 · CONTENIDO</legend>
             <p class="hint">Español obligatorio donde se indica. El inglés es opcional: si queda vacío se muestra el español.</p>
 
             @switch (form.controls.type.value) {
               @case ('hero') {
                 <div class="pair">
-                  <div class="field"><label for="eyebrow">ETIQUETA <span class="lang">ES</span></label><input id="eyebrow" type="text" formControlName="eyebrow" maxlength="80" placeholder="DISEÑO // DESARROLLO" /></div>
-                  <div class="field"><label for="eyebrowEn">ETIQUETA <span class="lang">EN</span></label><input id="eyebrowEn" type="text" formControlName="eyebrowEn" maxlength="80" placeholder="DESIGN // DEVELOPMENT" /></div>
+                  <div class="field"><label for="eyebrow">ETIQUETA <span class="lang">ES</span></label><input id="eyebrow" type="text" formControlName="eyebrow" maxlength="80" placeholder="DISEÑO // DESARROLLO" /><app-field-hint [control]="form.controls.eyebrow" [max]="80" /></div>
+                  <div class="field"><label for="eyebrowEn">ETIQUETA <span class="lang">EN</span></label><input id="eyebrowEn" type="text" formControlName="eyebrowEn" maxlength="80" placeholder="DESIGN // DEVELOPMENT" /><app-field-hint [control]="form.controls.eyebrowEn" [max]="80" /></div>
                 </div>
                 <div class="pair">
-                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
-                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><input id="title" type="text" formControlName="title" maxlength="120" /><app-field-hint [control]="form.controls.title" [max]="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /><app-field-hint [control]="form.controls.titleEn" [max]="120" /></div>
                 </div>
                 <div class="pair">
-                  <div class="field"><label for="lead">INTRODUCCIÓN <span class="lang">ES</span></label><textarea id="lead" rows="3" formControlName="lead" maxlength="300"></textarea></div>
-                  <div class="field"><label for="leadEn">INTRODUCCIÓN <span class="lang">EN</span></label><textarea id="leadEn" rows="3" formControlName="leadEn" maxlength="300"></textarea></div>
+                  <div class="field"><label for="lead">INTRODUCCIÓN <span class="lang">ES</span></label><textarea id="lead" rows="3" formControlName="lead" maxlength="300"></textarea><app-field-hint [control]="form.controls.lead" [max]="300" /></div>
+                  <div class="field"><label for="leadEn">INTRODUCCIÓN <span class="lang">EN</span></label><textarea id="leadEn" rows="3" formControlName="leadEn" maxlength="300"></textarea><app-field-hint [control]="form.controls.leadEn" [max]="300" /></div>
                 </div>
               }
               @case ('text') {
                 <div class="pair">
-                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
-                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /><app-field-hint [control]="form.controls.title" [max]="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /><app-field-hint [control]="form.controls.titleEn" [max]="120" /></div>
                 </div>
                 <div class="pair">
-                  <div class="field"><label for="body">TEXTO <span class="lang">ES</span> <span class="req">obligatorio</span></label><textarea id="body" rows="7" formControlName="body" maxlength="4000"></textarea></div>
-                  <div class="field"><label for="bodyEn">TEXTO <span class="lang">EN</span></label><textarea id="bodyEn" rows="7" formControlName="bodyEn" maxlength="4000"></textarea></div>
+                  <div class="field"><label for="body">TEXTO <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><textarea id="body" rows="7" formControlName="body" maxlength="4000"></textarea><app-field-hint [control]="form.controls.body" [max]="4000" /></div>
+                  <div class="field"><label for="bodyEn">TEXTO <span class="lang">EN</span></label><textarea id="bodyEn" rows="7" formControlName="bodyEn" maxlength="4000"></textarea><app-field-hint [control]="form.controls.bodyEn" [max]="4000" /></div>
                 </div>
                 <span class="hint">Máximo 4.000 caracteres por idioma.</span>
               }
               @case ('gallery_3d') {
                 <div class="pair">
-                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
-                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span></label><input id="title" type="text" formControlName="title" maxlength="120" /><app-field-hint [control]="form.controls.title" [max]="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /><app-field-hint [control]="form.controls.titleEn" [max]="120" /></div>
                 </div>
                 <div class="pair">
-                  <div class="field"><label for="description">DESCRIPCIÓN <span class="lang">ES</span></label><textarea id="description" rows="4" formControlName="description" maxlength="1000"></textarea></div>
-                  <div class="field"><label for="descriptionEn">DESCRIPCIÓN <span class="lang">EN</span></label><textarea id="descriptionEn" rows="4" formControlName="descriptionEn" maxlength="1000"></textarea></div>
+                  <div class="field"><label for="description">DESCRIPCIÓN <span class="lang">ES</span></label><textarea id="description" rows="4" formControlName="description" maxlength="1000"></textarea><app-field-hint [control]="form.controls.description" [max]="1000" /></div>
+                  <div class="field"><label for="descriptionEn">DESCRIPCIÓN <span class="lang">EN</span></label><textarea id="descriptionEn" rows="4" formControlName="descriptionEn" maxlength="1000"></textarea><app-field-hint [control]="form.controls.descriptionEn" [max]="1000" /></div>
                 </div>
                 <app-model-upload
                   [value]="form.controls.modelPath.value"
@@ -81,8 +83,8 @@
                   (assetSelected)="onAssetSelected($event)"
                 />
                 <div class="pair">
-                  <div class="field"><label for="modelAuthor">AUTOR DEL MODELO</label><input id="modelAuthor" type="text" formControlName="modelAuthor" maxlength="120" /></div>
-                  <div class="field"><label for="modelLicense">LICENCIA O ATRIBUCIÓN</label><input id="modelLicense" type="text" formControlName="modelLicense" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" /></div>
+                  <div class="field"><label for="modelAuthor">AUTOR DEL MODELO</label><input id="modelAuthor" type="text" formControlName="modelAuthor" maxlength="120" /><app-field-hint [control]="form.controls.modelAuthor" [max]="120" /></div>
+                  <div class="field"><label for="modelLicense">LICENCIA O ATRIBUCIÓN</label><input id="modelLicense" type="text" formControlName="modelLicense" maxlength="160" placeholder="CC BY 4.0 · Sketchfab" /><app-field-hint [control]="form.controls.modelLicense" [max]="160" /></div>
                 </div>
                 <div class="field"><label for="modelHeight">ALTURA DEL VISOR</label>
                   <select id="modelHeight" formControlName="modelHeight"><option value="compact">Compacta</option><option value="standard">Normal</option><option value="tall">Alta</option></select>
@@ -92,8 +94,8 @@
               }
               @default {
                 <div class="pair">
-                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input id="title" type="text" formControlName="title" maxlength="120" /></div>
-                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /></div>
+                  <div class="field"><label for="title">TÍTULO <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><input id="title" type="text" formControlName="title" maxlength="120" /><app-field-hint [control]="form.controls.title" [max]="120" /></div>
+                  <div class="field"><label for="titleEn">TÍTULO <span class="lang">EN</span></label><input id="titleEn" type="text" formControlName="titleEn" maxlength="120" /><app-field-hint [control]="form.controls.titleEn" [max]="120" /></div>
                 </div>
 
                 <div class="items-heading">
@@ -110,20 +112,20 @@
                       <legend class="mono">ELEMENTO {{ i + 1 }}</legend>
                       @if (usesRoadmapItems) {
                         <div class="pair">
-                          <div class="field"><label [for]="'when-' + i">FECHA O ETAPA <span class="lang">ES</span> <span class="req">obligatorio</span></label><input [id]="'when-' + i" type="text" formControlName="when" maxlength="80" placeholder="2026 · FASE 1" /></div>
-                          <div class="field"><label [for]="'whenEn-' + i">FECHA O ETAPA <span class="lang">EN</span></label><input [id]="'whenEn-' + i" type="text" formControlName="whenEn" maxlength="80" placeholder="2026 · PHASE 1" /></div>
+                          <div class="field"><label [for]="'when-' + i">FECHA O ETAPA <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><input [id]="'when-' + i" type="text" formControlName="when" maxlength="80" placeholder="2026 · FASE 1" /><app-field-hint [control]="item.controls.when" [max]="80" /></div>
+                          <div class="field"><label [for]="'whenEn-' + i">FECHA O ETAPA <span class="lang">EN</span></label><input [id]="'whenEn-' + i" type="text" formControlName="whenEn" maxlength="80" placeholder="2026 · PHASE 1" /><app-field-hint [control]="item.controls.whenEn" [max]="80" /></div>
                         </div>
                       }
                       <div class="pair">
-                        <div class="field"><label [for]="'item-title-' + i">TÍTULO <span class="lang">ES</span> <span class="req">obligatorio</span></label><input [id]="'item-title-' + i" type="text" formControlName="title" maxlength="120" /></div>
-                        <div class="field"><label [for]="'item-titleEn-' + i">TÍTULO <span class="lang">EN</span></label><input [id]="'item-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" /></div>
+                        <div class="field"><label [for]="'item-title-' + i">TÍTULO <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><input [id]="'item-title-' + i" type="text" formControlName="title" maxlength="120" /><app-field-hint [control]="item.controls.title" [max]="120" /></div>
+                        <div class="field"><label [for]="'item-titleEn-' + i">TÍTULO <span class="lang">EN</span></label><input [id]="'item-titleEn-' + i" type="text" formControlName="titleEn" maxlength="120" /><app-field-hint [control]="item.controls.titleEn" [max]="120" /></div>
                       </div>
                       <div class="pair">
-                        <div class="field"><label [for]="'item-description-' + i">DESCRIPCIÓN <span class="lang">ES</span> <span class="req">obligatorio</span></label><textarea [id]="'item-description-' + i" rows="3" formControlName="description" maxlength="1000"></textarea></div>
-                        <div class="field"><label [for]="'item-descriptionEn-' + i">DESCRIPCIÓN <span class="lang">EN</span></label><textarea [id]="'item-descriptionEn-' + i" rows="3" formControlName="descriptionEn" maxlength="1000"></textarea></div>
+                        <div class="field"><label [for]="'item-description-' + i">DESCRIPCIÓN <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label><textarea [id]="'item-description-' + i" rows="3" formControlName="description" maxlength="1000"></textarea><app-field-hint [control]="item.controls.description" [max]="1000" /></div>
+                        <div class="field"><label [for]="'item-descriptionEn-' + i">DESCRIPCIÓN <span class="lang">EN</span></label><textarea [id]="'item-descriptionEn-' + i" rows="3" formControlName="descriptionEn" maxlength="1000"></textarea><app-field-hint [control]="item.controls.descriptionEn" [max]="1000" /></div>
                       </div>
                       @if (!usesRoadmapItems) {
-                        <div class="field narrow"><label [for]="'item-icon-' + i">ETIQUETA (MISMA EN AMBOS IDIOMAS)</label><input [id]="'item-icon-' + i" type="text" formControlName="icon" maxlength="60" placeholder="01" /></div>
+                        <div class="field narrow"><label [for]="'item-icon-' + i">ETIQUETA (MISMA EN AMBOS IDIOMAS)</label><input [id]="'item-icon-' + i" type="text" formControlName="icon" maxlength="60" placeholder="01" /><app-field-hint [control]="item.controls.icon" [max]="60" /></div>
                       }
                       <button class="remove-item" type="button" (click)="removeItem(i)" [attr.aria-label]="'Quitar elemento ' + (i + 1)">QUITAR ELEMENTO</button>
                     </fieldset>
@@ -135,7 +137,7 @@
             }
           </fieldset>
 
-          <fieldset class="form-step">
+          <fieldset class="form-step" id="step-layout">
             <legend class="mono">2 · UBICACIÓN Y APARIENCIA</legend>
             <div class="field">
               <label for="placement">DÓNDE APARECE EN LA PÁGINA</label>
@@ -161,7 +163,7 @@
             <label class="check-row"><input type="checkbox" formControlName="borderless" /> Sin bordes</label>
           </fieldset>
 
-          <fieldset class="form-step">
+          <fieldset class="form-step" id="step-publish">
             <legend class="mono">3 · PUBLICACIÓN</legend>
             <label class="check-row"><input id="published" type="checkbox" formControlName="published" /> Mostrar en el sitio público</label>
             <span class="hint">Si lo desmarcas queda como borrador y no aparece en la portada.</span>
@@ -171,7 +173,8 @@
             <div class="form-error mono" role="alert">{{ errorMessage() }}</div>
           }
 
-          <div class="actions">
+          <div class="sticky-actions">
+            <span class="save-state" [class.dirty]="form.dirty" role="status">{{ form.dirty ? 'CAMBIOS SIN GUARDAR' : 'SIN CAMBIOS PENDIENTES' }}</span>
             <button type="button" class="btn" (click)="cancel()">CANCELAR</button>
             <button type="submit" class="btn primary" [disabled]="submitting()">
               {{ submitting() ? 'GUARDANDO…' : 'GUARDAR BLOQUE' }}

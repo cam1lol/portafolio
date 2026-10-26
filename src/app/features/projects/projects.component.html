@@ -21,6 +21,14 @@
   <div class="grid-cards">
     @for (p of filtered(); track p.id; let i = $index) {
       <div class="card" appReveal [style.transition-delay.ms]="i * 60" (click)="openProject(p)">
+        @if (p.previewVideo) {
+          <div class="media">
+            <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
+              muted loop playsinline aria-hidden="true"></video>
+          </div>
+        } @else if (p.previewImage) {
+          <div class="media"><img [src]="p.previewImage" alt="" loading="lazy" /></div>
+        }
         <span class="corner mono">0{{ i + 1 }}</span>
         <div class="ic">
           <app-icon [name]="p.icon" />
@@ -33,11 +41,22 @@
             <span class="chip">{{ item }}</span>
           }
         </div>
-        <span class="open-hint mono">{{ openHintLabel() }}</span>
-        <div class="st">
-          <span class="dot" [class]="p.status"></span>{{ statusLabel(p.status) }}
+        <div class="card-foot">
+          <span class="open-hint mono">{{ openHintLabel() }}</span>
+          <div class="st">
+            <span class="dot" [class]="p.status"></span>{{ statusLabel(p.status) }}
+          </div>
         </div>
       </div>
     }
   </div>
+
+  @if (totalCount()) {
+    <div class="see-all-row" appReveal>
+      <a class="see-all mono" routerLink="/proyectos">
+        {{ 'wk_all' | transloco: { n: totalCount() } }}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </div>
+  }
 </section>

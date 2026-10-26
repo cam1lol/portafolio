@@ -32,6 +32,7 @@
               <span class="thumb thumb-empty" aria-hidden="true"><app-icon [name]="row.icon || 'folder'" /></span>
             }
             <span class="name">{{ row.name }}</span>
+            @if (row.previewVideo || row.demoVideoUrl) { <span class="video-tag mono">VIDEO</span> }
           </span>
           <span class="col-type">{{ row.typeLabel }}</span>
           <span class="col-status"><span class="status-chip" [attr.data-status]="row.status">{{ statusLabels[row.status] }}</span></span>

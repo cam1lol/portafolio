@@ -1,0 +1,64 @@
+<div class="vgrid">
+  @for (item of videos(); track $index; let i = $index) {
+    <button type="button" class="vcard" (click)="open(i)" (mouseenter)="startPreview(i)" (mouseleave)="stopPreview()"
+      (focus)="startPreview(i)" (blur)="stopPreview()" [attr.aria-label]="('pp_play' | transloco) + ': ' + (loc(item.titleEs, item.titleEn) || i + 1)">
+      <span class="vthumb">
+        @if (item.poster) {
+          <img [src]="item.poster" alt="" loading="lazy" decoding="async" />
+        } @else {
+          <video [src]="item.video + '#t=0.1'" preload="metadata" muted playsinline tabindex="-1" aria-hidden="true"></video>
+        }
+        @if (previewing() === i) {
+          <!-- The light hover clip when the upload generated one; otherwise the video itself. -->
+          <video class="vpreview" [src]="item.preview || item.video" [muted]="true" loop playsinline preload="auto" tabindex="-1" aria-hidden="true" (loadeddata)="playPreview($event)"></video>
+        }
+        <span class="vplay" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z" /></svg>
+        </span>
+        @if (item.duration) { <span class="vdur mono">{{ item.duration }}</span> }
+        <span class="vidx mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+      </span>
+      <span class="vbody">
+        <h3>{{ loc(item.titleEs, item.titleEn) || ('pp_videos' | transloco) + ' ' + (i + 1) }}</h3>
+        @if (loc(item.descEs, item.descEn)) { <p>{{ loc(item.descEs, item.descEn) }}</p> }
+      </span>
+    </button>
+  }
+</div>
+
+<dialog #player class="vplayer" (close)="onClosed()" (keydown)="onKey($event)" (click)="$event.target === player && close()"
+  [attr.aria-label]="active() ? loc(active()!.titleEs, active()!.titleEn) : ('pp_videos' | transloco)">
+  <!-- The player only exists while open: nothing downloads before, and closing stops the download. -->
+  @if (isOpen() && active(); as v) {
+    <div class="vp-frame">
+      <header class="vp-head">
+        <span class="vp-count mono">{{ current() + 1 }} / {{ videos().length }}</span>
+        <h3>{{ loc(v.titleEs, v.titleEn) || ('pp_videos' | transloco) + ' ' + (current() + 1) }}</h3>
+        @if (v.duration) { <span class="vp-dur mono">{{ v.duration }}</span> }
+      </header>
+
+      <div class="vp-stage">
+        <!-- A fresh element per video, so switching always starts from 0 and fires its own events. -->
+        @for (key of [current()]; track key) {
+          <video #playerVideo [src]="v.video" [attr.poster]="v.poster || null" controls playsinline preload="auto"
+            (loadeddata)="onPlayerReady($event)" (waiting)="buffering.set(true)" (playing)="buffering.set(false)" (error)="buffering.set(false)"></video>
+        }
+        @if (buffering()) { <span class="vp-loading" role="status" [attr.aria-label]="'pp_loading' | transloco"></span> }
+      </div>
+
+      @if (loc(v.descEs, v.descEn)) { <p class="vp-desc">{{ loc(v.descEs, v.descEn) }}</p> }
+    </div>
+
+    <button type="button" class="vp-btn vp-close" (click)="close()" [attr.aria-label]="'pp_close' | transloco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+    @if (videos().length > 1) {
+      <button type="button" class="vp-btn vp-prev" (click)="step(-1)" [attr.aria-label]="'pp_prev_video' | transloco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+      </button>
+      <button type="button" class="vp-btn vp-next" (click)="step(1)" [attr.aria-label]="'pp_next_video' | transloco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+      </button>
+    }
+  }
+</dialog>

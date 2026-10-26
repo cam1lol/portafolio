@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { filter, map, startWith } from 'rxjs';
 import { HudComponent } from './shared/hud/hud.component';
@@ -11,7 +11,7 @@ import { SupabaseService } from './core/supabase/supabase.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
+  imports: [RouterOutlet, RouterLink, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

@@ -1,0 +1,81 @@
+<main class="projects-index wrap">
+  <header class="head">
+    <span class="eyebrow mono">02 // {{ 'pi_title' | transloco | uppercase }}</span>
+    <h1>{{ 'pi_title' | transloco }}</h1>
+    <p class="lead">{{ 'pi_lead' | transloco }}</p>
+  </header>
+
+  <div class="filters" role="search">
+    <div class="tabs" role="group" [attr.aria-label]="'pi_title' | transloco">
+      @for (option of types; track option.value) {
+        <button type="button" [class.on]="type() === option.value" [attr.aria-pressed]="type() === option.value" (click)="type.set(option.value)">
+          {{ option.key === '3D' ? '3D' : (option.key | transloco) }}
+        </button>
+      }
+    </div>
+    <div class="selects">
+      <label class="visually-hidden" for="pi-status">{{ 'pi_any_status' | transloco }}</label>
+      <select id="pi-status" [value]="status()" (change)="status.set($any($event.target).value)">
+        <option value="all">{{ 'pi_any_status' | transloco }}</option>
+        @for (option of statuses; track option) { <option [value]="option">{{ 'pp_status_' + option | transloco }}</option> }
+      </select>
+      <label class="visually-hidden" for="pi-tech">{{ 'pi_any_tech' | transloco }}</label>
+      <select id="pi-tech" [value]="tech()" (change)="tech.set($any($event.target).value)">
+        <option value="">{{ 'pi_any_tech' | transloco }}</option>
+        @for (option of technologies(); track option) { <option [value]="option.toLowerCase()" [selected]="tech() === option.toLowerCase()">{{ option }}</option> }
+      </select>
+      <label class="visually-hidden" for="pi-query">{{ 'pi_search' | transloco }}</label>
+      <input id="pi-query" type="search" [value]="query()" (input)="query.set($any($event.target).value)" [placeholder]="'pi_search' | transloco" />
+    </div>
+  </div>
+
+  @if (loaded()) {
+    <p class="count mono" role="status">
+      {{ filtered().length === 1 ? ('pi_count_one' | transloco) : ('pi_count' | transloco: { n: filtered().length }) }}
+      @if (hasFilters()) { · <button type="button" class="reset" (click)="reset()">{{ 'pi_reset' | transloco }}</button> }
+    </p>
+
+    <ul class="list">
+      @for (p of filtered(); track p.id; let i = $index) {
+        <li class="item">
+          <a class="item-link" [class.no-media]="!p.previewVideo && !p.previewImage" [routerLink]="['/proyectos', p.slug]">
+            <div class="media">
+              @if (p.previewVideo) {
+                <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'" muted loop playsinline aria-hidden="true"></video>
+              } @else if (p.previewImage) {
+                <img [src]="p.previewImage" alt="" loading="lazy" />
+              } @else {
+                <span class="media-empty"><app-icon [name]="p.icon" /></span>
+              }
+              <span class="idx mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            </div>
+            <div class="body">
+              <span class="meta mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
+              <h2>{{ p.name }}</h2>
+              @if (factsLine(p)) { <span class="facts mono">{{ factsLine(p) }}</span> }
+              <p class="summary">{{ loc(p.summaryEs, p.summaryEn) }}</p>
+              @if (p.results.length) {
+                <div class="results">
+                  @for (result of p.results.slice(0, 3); track $index) {
+                    <span class="result"><strong>{{ result.value }}</strong> {{ loc(result.labelEs, result.labelEn) }}</span>
+                  }
+                </div>
+              }
+              <div class="stack">
+                @for (item of p.stack; track item) { <span class="chip">{{ item }}</span> }
+              </div>
+              <span class="open mono">{{ 'pi_open' | transloco }}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </span>
+            </div>
+          </a>
+        </li>
+      } @empty {
+        <li class="empty">
+          <p>{{ 'pi_empty' | transloco }}</p>
+          <button type="button" class="btn" (click)="reset()">{{ 'pi_reset' | transloco }}</button>
+        </li>
+      }
+    </ul>
+  }
+</main>

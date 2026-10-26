@@ -288,3 +288,43 @@
     animation: none;
   }
 }
+
+/* Real project media: YouTube facade, preview clip or image. */
+.media-preview { display: block; padding: 0; }
+
+.mtabs { display: flex; gap: 6px; margin: 4px 0 16px; }
+
+.mtabs button {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bone-dim);
+  font: 10px 'Space Mono', monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+.mtabs button.on { border-color: var(--ember); color: var(--ember); }
+.mtabs button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+.case-study { line-height: 1.7; }
+
+.project-page-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  color: var(--ember);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-decoration: none;
+}
+
+.project-page-link svg { width: 14px; height: 14px; transition: transform .2s; }
+.project-page-link:hover svg { transform: translateX(4px); }
+.project-page-link:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .project-page-link svg { transition: none; }
+}

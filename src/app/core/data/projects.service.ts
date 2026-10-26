@@ -2,6 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, from, map } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Project } from './project.model';
+import { ProjectDetails, detailsFromRow, detailsToRow } from './project-details';
+
+const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos'];
 
 /**
  * Row shape returned by the Supabase `projects` table (snake_case),
@@ -30,8 +33,23 @@ interface ProjectRow {
   preview_image: string | null;
   repo_url: string | null;
   live_url: string | null;
+  slug: string;
+  preview_video: string | null;
+  demo_video_url: string | null;
+  case_study_es: string | null;
+  case_study_en: string | null;
   published: boolean;
   sort_order: number;
+  /** jsonb detail columns (0010), read by `detailsFromRow`. */
+  featured?: boolean;
+  facts?: unknown;
+  results?: unknown;
+  screens?: unknown;
+  gallery?: unknown;
+  improvements?: unknown;
+  docs?: unknown;
+  versions?: unknown;
+  videos?: unknown;
 }
 
 /**
@@ -176,6 +194,12 @@ export class ProjectsService {
       previewImage: row.preview_image ?? undefined,
       repoUrl: row.repo_url ?? undefined,
       liveUrl: row.live_url ?? undefined,
+      slug: row.slug,
+      previewVideo: row.preview_video ?? undefined,
+      demoVideoUrl: row.demo_video_url ?? undefined,
+      caseStudyEs: row.case_study_es ?? '',
+      caseStudyEn: row.case_study_en ?? '',
+      ...detailsFromRow(row as unknown as Record<string, unknown>),
     };
   }
 
@@ -208,6 +232,14 @@ export class ProjectsService {
     if (input.repoUrl !== undefined) row['repo_url'] = input.repoUrl;
     if (input.liveUrl !== undefined) row['live_url'] = input.liveUrl;
     if (input.published !== undefined) row['published'] = input.published;
+    if (input.slug !== undefined) row['slug'] = input.slug;
+    if (input.previewVideo !== undefined) row['preview_video'] = input.previewVideo || null;
+    if (input.demoVideoUrl !== undefined) row['demo_video_url'] = input.demoVideoUrl || null;
+    if (input.caseStudyEs !== undefined) row['case_study_es'] = input.caseStudyEs;
+    if (input.caseStudyEn !== undefined) row['case_study_en'] = input.caseStudyEn;
+    // The detail columns are written together (the form sends all of them); a lone featured toggle also works.
+    if (DETAIL_KEYS.every((key) => input[key] !== undefined)) Object.assign(row, detailsToRow(input as ProjectDetails));
+    else if (input.featured !== undefined) row['featured'] = input.featured;
     return row;
   }
 }

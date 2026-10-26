@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,24 +6,30 @@ import { ToastService } from '../shared/toast.service';
 import { CollectionValues, CollectionsService } from '../../../core/data/collections.service';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { COLLECTIONS, CollectionConfig, CollectionField, collectionColumns } from './collection.config';
+import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
+import { FieldHintComponent } from '../shared/field-hint.component';
+import { focusFirstInvalid } from '../shared/focus-first-invalid';
 
 /** Create/edit screen shared by every simple collection, built from its `CollectionConfig`. */
 @Component({
   selector: 'app-admin-collection-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe],
+  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent],
   templateUrl: './admin-collection-form.component.html',
-  styleUrl: './admin-collection-form.component.css',
+  styleUrls: ['../shared/admin-form.css', './admin-collection-form.component.css'],
 })
 export class AdminCollectionFormComponent implements OnInit {
   private readonly collections = inject(CollectionsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   protected readonly config: CollectionConfig = COLLECTIONS[this.route.snapshot.data['collection']];
   protected readonly form = new FormGroup<Record<string, FormControl<string>>>({});
   protected readonly published = new FormControl(true, { nonNullable: true });
+
+  protected readonly steps: FormStep[];
 
   protected readonly isEditMode = signal(false);
   protected readonly loading = signal(false);
@@ -38,6 +44,10 @@ export class AdminCollectionFormComponent implements OnInit {
         this.form.addControl(column, new FormControl('', { nonNullable: true, validators: this.validatorsFor(field) }));
       }
     }
+    this.steps = [
+      { id: 'step-content', label: 'Contenido', controls: Object.values(this.form.controls) },
+      { id: 'step-publish', label: 'Publicación', controls: [this.published] },
+    ];
   }
 
   ngOnInit(): void {
@@ -90,6 +100,7 @@ export class AdminCollectionFormComponent implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       this.errorMessage.set('Revisa los campos marcados antes de guardar.');
+      focusFirstInvalid(this.host.nativeElement);
       return;
     }
 

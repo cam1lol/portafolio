@@ -16,83 +16,95 @@
   @if (loading()) {
     <p class="sub">Cargando...</p>
   } @else {
+    <app-form-steps [steps]="steps" [form]="form" />
+
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-role">
         <legend>1 · PUESTO</legend>
         <p class="step-hint">La cabecera de la entrada en el timeline.</p>
 
         <div class="grid-2">
           <div class="field">
-            <label for="company">Empresa</label>
-            <input id="company" type="text" formControlName="company" maxlength="120" />
+            <label for="company">Empresa <span class="req" aria-hidden="true">*</span></label>
+            <input id="company" type="text" formControlName="company" maxlength="120" aria-required="true" />
             @if (hasError('company', 'required')) {
               <span class="field-error">La empresa es obligatoria.</span>
             } @else if (hasError('company', 'controlChars')) {
               <span class="field-error">Contiene caracteres no válidos.</span>
             }
+            <app-field-hint [control]="form.controls.company" [max]="120" where="timeline y modal" />
           </div>
           <div class="field checkbox-field">
             <label for="isCurrent">
               <input id="isCurrent" type="checkbox" formControlName="isCurrent" />
               Es mi puesto actual
             </label>
+            <app-field-hint [control]="form.controls.isCurrent" where="marca de puesto actual en el timeline" />
           </div>
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label for="roleEs">Rol <span class="lang">ES</span></label>
-            <input id="roleEs" type="text" formControlName="roleEs" maxlength="120" />
+            <label for="roleEs">Rol <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="roleEs" type="text" formControlName="roleEs" maxlength="120" aria-required="true" />
             @if (hasError('roleEs', 'required')) { <span class="field-error">El rol en español es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.roleEs" [max]="120" where="título de la entrada" />
           </div>
           <div class="field">
-            <label for="roleEn">Rol <span class="lang">EN</span></label>
-            <input id="roleEn" type="text" formControlName="roleEn" maxlength="120" />
+            <label for="roleEn">Rol <span class="lang">EN</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="roleEn" type="text" formControlName="roleEn" maxlength="120" aria-required="true" />
             @if (hasError('roleEn', 'required')) { <span class="field-error">El rol en inglés es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.roleEn" [max]="120" where="título de la entrada" />
           </div>
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label for="periodEs">Periodo <span class="lang">ES</span></label>
-            <input id="periodEs" type="text" formControlName="periodEs" maxlength="60" placeholder="2022 — presente" />
+            <label for="periodEs">Periodo <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="periodEs" type="text" formControlName="periodEs" maxlength="60" placeholder="2022 — presente" aria-required="true" />
             @if (hasError('periodEs', 'required')) { <span class="field-error">El periodo en español es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.periodEs" [max]="60" where="fecha sobre el rol" />
           </div>
           <div class="field">
-            <label for="periodEn">Periodo <span class="lang">EN</span></label>
-            <input id="periodEn" type="text" formControlName="periodEn" maxlength="60" placeholder="2022 — present" />
+            <label for="periodEn">Periodo <span class="lang">EN</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="periodEn" type="text" formControlName="periodEn" maxlength="60" placeholder="2022 — present" aria-required="true" />
             @if (hasError('periodEn', 'required')) { <span class="field-error">El periodo en inglés es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.periodEn" [max]="60" where="fecha sobre el rol" />
           </div>
         </div>
 
         <div class="grid-2">
           <div class="field">
-            <label for="tagEs">Etiqueta <span class="lang">ES</span></label>
-            <input id="tagEs" type="text" formControlName="tagEs" maxlength="60" />
+            <label for="tagEs">Etiqueta <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="tagEs" type="text" formControlName="tagEs" maxlength="60" aria-required="true" />
             @if (hasError('tagEs', 'required')) { <span class="field-error">La etiqueta en español es obligatoria.</span> }
+            <app-field-hint [control]="form.controls.tagEs" [max]="60" where="junto a la fecha" />
           </div>
           <div class="field">
-            <label for="tagEn">Etiqueta <span class="lang">EN</span></label>
-            <input id="tagEn" type="text" formControlName="tagEn" maxlength="60" />
+            <label for="tagEn">Etiqueta <span class="lang">EN</span> <span class="req" aria-hidden="true">*</span></label>
+            <input id="tagEn" type="text" formControlName="tagEn" maxlength="60" aria-required="true" />
             @if (hasError('tagEn', 'required')) { <span class="field-error">La etiqueta en inglés es obligatoria.</span> }
+            <app-field-hint [control]="form.controls.tagEn" [max]="60" where="junto a la fecha" />
           </div>
         </div>
       </fieldset>
 
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-details">
         <legend>2 · LOGROS Y STACK</legend>
         <p class="step-hint">Lo que se ve al abrir la entrada: resumen, puntos destacados, tecnologías y subproyectos.</p>
 
         <div class="grid-2">
           <div class="field">
-            <label for="summaryEs">Resumen <span class="lang">ES</span></label>
-            <textarea id="summaryEs" formControlName="summaryEs" maxlength="600" rows="4"></textarea>
+            <label for="summaryEs">Resumen <span class="lang">ES</span> <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="summaryEs" formControlName="summaryEs" maxlength="600" rows="4" aria-required="true"></textarea>
             @if (hasError('summaryEs', 'required')) { <span class="field-error">El resumen en español es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.summaryEs" [max]="600" where="timeline y modal" />
           </div>
           <div class="field">
-            <label for="summaryEn">Resumen <span class="lang">EN</span></label>
-            <textarea id="summaryEn" formControlName="summaryEn" maxlength="600" rows="4"></textarea>
+            <label for="summaryEn">Resumen <span class="lang">EN</span> <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="summaryEn" formControlName="summaryEn" maxlength="600" rows="4" aria-required="true"></textarea>
             @if (hasError('summaryEn', 'required')) { <span class="field-error">El resumen en inglés es obligatorio.</span> }
+            <app-field-hint [control]="form.controls.summaryEn" [max]="600" where="timeline y modal" />
           </div>
         </div>
 
@@ -102,41 +114,36 @@
             <div formArrayName="pointsEs">
               @for (point of pointsEs.controls; track $index) {
                 <div class="list-row">
-                  <input type="text" [formControlName]="$index" maxlength="300" />
+                  <input type="text" [formControlName]="$index" maxlength="300" [attr.aria-label]="'Punto ' + ($index + 1) + ' en español'" />
                   <button type="button" class="remove-btn" (click)="removePointEs($index)">Quitar</button>
                 </div>
                 @if (listControlErrors(pointsEs, $index)) { <span class="field-error">Punto inválido o vacío.</span> }
               }
             </div>
             <button type="button" class="add-btn" (click)="addPointEs()">+ Agregar punto</button>
+            <app-field-hint [control]="pointsEs" where="modal, una frase por fila" />
           </div>
           <div class="field list-field">
             <label>Puntos destacados <span class="lang">EN</span></label>
             <div formArrayName="pointsEn">
               @for (point of pointsEn.controls; track $index) {
                 <div class="list-row">
-                  <input type="text" [formControlName]="$index" maxlength="300" />
+                  <input type="text" [formControlName]="$index" maxlength="300" [attr.aria-label]="'Punto ' + ($index + 1) + ' en inglés'" />
                   <button type="button" class="remove-btn" (click)="removePointEn($index)">Quitar</button>
                 </div>
                 @if (listControlErrors(pointsEn, $index)) { <span class="field-error">Punto inválido o vacío.</span> }
               }
             </div>
             <button type="button" class="add-btn" (click)="addPointEn()">+ Agregar punto</button>
+            <app-field-hint [control]="pointsEn" where="modal, una frase por fila" />
           </div>
         </div>
 
-        <div class="field list-field">
-          <label>Stack tecnológico</label>
-          <div formArrayName="stack">
-            @for (item of stack.controls; track $index) {
-              <div class="list-row">
-                <input type="text" [formControlName]="$index" maxlength="300" />
-                <button type="button" class="remove-btn" (click)="removeStackItem($index)">Quitar</button>
-              </div>
-              @if (listControlErrors(stack, $index)) { <span class="field-error">Elemento inválido o vacío.</span> }
-            }
-          </div>
-          <button type="button" class="add-btn" (click)="addStackItem()">+ Agregar tecnología</button>
+        <div class="field">
+          <label for="stack-input">Stack tecnológico</label>
+          <app-tag-input inputId="stack-input" [array]="stack" [createControl]="newListItem" [maxLength]="300" placeholder="Por ejemplo: Angular, Supabase" />
+          @if (stackHasErrors()) { <span class="field-error">Hay etiquetas demasiado largas o con caracteres no válidos (en rojo).</span> }
+          <app-field-hint [control]="stack" where="chips del timeline y del modal" />
         </div>
 
         <div class="field subprojects-field">
@@ -149,39 +156,45 @@
                   <button type="button" class="remove-btn" (click)="removeSubproject($index)">Quitar</button>
                 </div>
                 <div class="field">
-                  <label [for]="'sub-name-' + $index">Nombre</label>
-                  <input [id]="'sub-name-' + $index" type="text" formControlName="name" maxlength="120" />
+                  <label [for]="'sub-name-' + $index">Nombre <span class="req" aria-hidden="true">*</span></label>
+                  <input [id]="'sub-name-' + $index" type="text" formControlName="name" maxlength="120" aria-required="true" />
+                  @if (sub.controls.name.invalid && sub.controls.name.touched) { <span class="field-error">El nombre del subproyecto es obligatorio.</span> }
                 </div>
                 <div class="grid-2">
                   <div class="field">
                     <label [for]="'sub-desc-es-' + $index">Descripción <span class="lang">ES</span></label>
                     <textarea [id]="'sub-desc-es-' + $index" formControlName="descEs" maxlength="400" rows="3"></textarea>
+                    <app-field-hint [control]="sub.controls.descEs" [max]="400" />
                   </div>
                   <div class="field">
                     <label [for]="'sub-desc-en-' + $index">Descripción <span class="lang">EN</span></label>
                     <textarea [id]="'sub-desc-en-' + $index" formControlName="descEn" maxlength="400" rows="3"></textarea>
+                    <app-field-hint [control]="sub.controls.descEn" [max]="400" />
                   </div>
                 </div>
               </div>
             }
           </div>
           <button type="button" class="add-btn" (click)="addSubproject()">+ Agregar subproyecto</button>
+          <app-field-hint [control]="subprojects" where="modal, debajo de los puntos destacados" />
         </div>
       </fieldset>
 
-      <fieldset class="form-step">
+      <fieldset class="form-step" id="step-publish">
         <legend>3 · PUBLICACIÓN</legend>
         <div class="field checkbox-field">
           <label for="published">
             <input id="published" type="checkbox" formControlName="published" />
             Mostrar en el sitio público
           </label>
+          <app-field-hint [control]="form.controls.published" where="si lo desmarcas queda como borrador, solo visible aquí" />
         </div>
       </fieldset>
 
       @if (errorMessage()) { <div class="form-error mono" role="alert">{{ errorMessage() }}</div> }
 
       <div class="sticky-actions">
+        <span class="save-state" [class.dirty]="form.dirty" role="status">{{ form.dirty ? 'CAMBIOS SIN GUARDAR' : 'SIN CAMBIOS PENDIENTES' }}</span>
         <a class="btn" routerLink="/admin/experience">CANCELAR</a>
         <button type="submit" class="btn primary" [disabled]="saving()">{{ saving() ? 'GUARDANDO…' : 'GUARDAR EXPERIENCIA' }}</button>
       </div>

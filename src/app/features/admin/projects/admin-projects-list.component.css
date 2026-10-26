@@ -199,3 +199,5 @@
 .status-chip { display: inline-block; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .06em; }
 .status-chip[data-status='live'] { border-color: var(--good); color: var(--good); }
 .status-chip[data-status='wip'] { border-color: var(--ember); color: var(--ember); }
+
+.video-tag { flex-shrink: 0; padding: 2px 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--bone-dim); font-size: 9px; letter-spacing: .08em; }

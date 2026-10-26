@@ -1,10 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators, } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ToastService } from '../shared/toast.service';
 import { HasUnsavedChanges } from '../shared/unsaved-changes.guard';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { AdminExperience, ExperienceInput, ExperienceService } from '../../../core/data/experience.service';
+import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
+import { FieldHintComponent } from '../shared/field-hint.component';
+import { TagInputComponent } from '../shared/tag-input.component';
+import { focusFirstInvalid } from '../shared/focus-first-invalid';
 
 const COMPANY_MAX = 120;
 const ROLE_MAX = 120;
@@ -52,7 +56,7 @@ function listItemControl(value = ''): FormControl<string> {
 @Component({
   selector: 'app-admin-experience-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, FormStepsComponent, FieldHintComponent, TagInputComponent],
   templateUrl: './admin-experience-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-experience-form.component.css'],
 })
@@ -61,6 +65,7 @@ export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly host = inject(ElementRef<HTMLElement>);
 
   protected readonly form = new FormGroup({
     company: new FormControl('', { nonNullable: true, validators: requiredTextValidators(COMPANY_MAX) }),
@@ -79,6 +84,15 @@ export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
     stack: new FormArray<FormControl<string>>([]),
     subprojects: new FormArray<SubprojectGroup>([]),
   });
+
+  private readonly c = this.form.controls;
+  protected readonly steps: FormStep[] = [
+    { id: 'step-role', label: 'Puesto', controls: [this.c.company, this.c.roleEs, this.c.roleEn, this.c.periodEs, this.c.periodEn, this.c.tagEs, this.c.tagEn] },
+    { id: 'step-details', label: 'Logros y stack', controls: [this.c.summaryEs, this.c.summaryEn, this.c.pointsEs, this.c.pointsEn, this.c.stack, this.c.subprojects] },
+    { id: 'step-publish', label: 'Publicación', controls: [this.c.published] },
+  ];
+  /** Factory for new tags, so they keep the list item validators. */
+  protected readonly newListItem = listItemControl;
 
   protected readonly isEditMode = signal(false);
   protected readonly loading = signal(false);
@@ -182,14 +196,8 @@ export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
     this.form.markAsDirty();
   }
 
-  addStackItem(): void {
-    this.stack.push(listItemControl());
-    this.form.markAsDirty();
-  }
-
-  removeStackItem(index: number): void {
-    this.stack.removeAt(index);
-    this.form.markAsDirty();
+  stackHasErrors(): boolean {
+    return this.stack.controls.some((control) => control.invalid);
   }
 
   addSubproject(): void {
@@ -222,6 +230,7 @@ export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
 
     if (this.form.invalid) {
       this.errorMessage.set('Revisa los campos marcados antes de guardar.');
+      focusFirstInvalid(this.host.nativeElement);
       return;
     }
 

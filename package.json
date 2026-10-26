@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/media-manifest.mjs",
     "start": "ng serve",
+    "media": "node scripts/media-server.mjs",
+    "prebuild": "node scripts/media-manifest.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

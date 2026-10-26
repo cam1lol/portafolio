@@ -154,9 +154,6 @@ section.block {
 }
 
 .card .st {
-  position: absolute;
-  bottom: 14px;
-  right: 14px;
   font-family: 'Space Mono', monospace;
   font-size: 10px;
   display: flex;
@@ -166,9 +163,6 @@ section.block {
 }
 
 .card .open-hint {
-  position: absolute;
-  bottom: 14px;
-  left: 22px;
   font-family: 'Space Mono', monospace;
   font-size: 10px;
   color: var(--ember);
@@ -216,3 +210,64 @@ section.block {
     margin-left: 0;
   }
 }
+
+/* Media strip: preview clip (plays on hover / when visible) or still image. */
+.card .media {
+  position: relative;
+  margin: -22px -22px 18px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink);
+}
+
+.card .media video,
+.card .media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s var(--ease);
+}
+
+.card:hover .media video,
+.card:hover .media img { transform: scale(1.03); }
+
+.card .media ~ .corner { z-index: 2; padding: 2px 6px; border-radius: var(--r); background: rgba(10, 11, 13, .65); color: var(--bone); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card .media video, .card .media img { transition: none; }
+  .card:hover .media video, .card:hover .media img { transform: none; }
+}
+
+/* Footer in normal flow: the hint and status never overlap the stack chips. */
+.card .card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Link to the full /proyectos page under the grid. */
+.see-all-row { display: flex; justify-content: center; margin-top: 36px; }
+.see-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--bone);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-decoration: none;
+  transition: border-color .2s, color .2s;
+}
+.see-all svg { width: 14px; height: 14px; transition: transform .2s; }
+.see-all:hover { border-color: var(--ember); color: var(--ember); }
+.see-all:hover svg { transform: translateX(4px); }
+.see-all:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .see-all, .see-all svg { transition: none; } }

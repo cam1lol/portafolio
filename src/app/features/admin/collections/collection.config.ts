@@ -10,6 +10,8 @@ export interface CollectionField {
   maxLength: number;
   placeholder?: string;
   hint?: string;
+  /** Where the field shows on the public site, for the line under it. */
+  where?: string;
 }
 
 export interface CollectionConfig {
@@ -44,9 +46,9 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     singular: 'servicio',
     newLabel: 'NUEVO SERVICIO',
     fields: [
-      { name: 'title', label: 'Título', bilingual: true, required: true, maxLength: 120, placeholder: 'WEB APPS' },
-      { name: 'description', label: 'Descripción', bilingual: true, multiline: true, maxLength: 1000 },
-      { name: 'price', label: 'Precio o condición', bilingual: true, maxLength: 120, placeholder: 'DESDE · COTIZACIÓN POR ALCANCE', hint: 'Opcional. Si queda vacío no se muestra.' },
+      { name: 'title', label: 'Título', bilingual: true, required: true, maxLength: 120, placeholder: 'WEB APPS', where: 'título de la tarjeta en Servicios' },
+      { name: 'description', label: 'Descripción', bilingual: true, multiline: true, maxLength: 1000, where: 'texto de la tarjeta en Servicios' },
+      { name: 'price', label: 'Precio o condición', bilingual: true, maxLength: 120, placeholder: 'DESDE · COTIZACIÓN POR ALCANCE', hint: 'Si queda vacío no se muestra.', where: 'tarjeta en Servicios' },
     ],
     listTitle: 'title_es',
     listDetail: 'price_es',
@@ -62,9 +64,9 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     singular: 'etapa',
     newLabel: 'NUEVA ETAPA',
     fields: [
-      { name: 'when', label: 'Momento o estado', bilingual: true, maxLength: 60, placeholder: 'NOW · 2026' },
-      { name: 'title', label: 'Título', bilingual: true, required: true, maxLength: 120 },
-      { name: 'description', label: 'Descripción', bilingual: true, multiline: true, maxLength: 1000 },
+      { name: 'when', label: 'Momento o estado', bilingual: true, maxLength: 60, placeholder: 'NOW · 2026', where: 'etiqueta de la etapa en Roadmap' },
+      { name: 'title', label: 'Título', bilingual: true, required: true, maxLength: 120, where: 'título de la etapa en Roadmap' },
+      { name: 'description', label: 'Descripción', bilingual: true, multiline: true, maxLength: 1000, where: 'texto de la etapa en Roadmap' },
     ],
     listTitle: 'title_es',
     listDetail: 'when_es',
@@ -80,7 +82,7 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
     singular: 'tecnología',
     newLabel: 'NUEVA TECNOLOGÍA',
     fields: [
-      { name: 'label', label: 'Nombre', bilingual: false, required: true, maxLength: 40, placeholder: 'Angular' },
+      { name: 'label', label: 'Nombre', bilingual: false, required: true, maxLength: 40, placeholder: 'Angular', where: 'franja animada bajo el hero' },
     ],
     listTitle: 'label',
   },

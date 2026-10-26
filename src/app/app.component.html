@@ -14,10 +14,11 @@
   </div>
 
   <nav class="links">
-    <a href="#work">{{ 'nav_work' | transloco }}</a>
-    <a href="#experience">{{ 'nav_xp' | transloco }}</a>
-    <a href="#services">{{ 'nav_services' | transloco }}</a>
-    <a href="#contact">{{ 'nav_contact' | transloco }}</a>
+    <a routerLink="/" fragment="work">{{ 'nav_work' | transloco }}</a>
+    <a routerLink="/proyectos">{{ 'nav_projects' | transloco }}</a>
+    <a routerLink="/" fragment="experience">{{ 'nav_xp' | transloco }}</a>
+    <a routerLink="/" fragment="services">{{ 'nav_services' | transloco }}</a>
+    <a routerLink="/" fragment="contact">{{ 'nav_contact' | transloco }}</a>
   </nav>
 
   <div class="controls">
