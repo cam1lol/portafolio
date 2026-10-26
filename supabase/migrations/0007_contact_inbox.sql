@@ -4,6 +4,24 @@
 
 create extension if not exists pgcrypto with schema extensions;
 
+-- Upgrade from the first (Gmail API) version of this migration, if it was applied.
+-- Its tables have a different shape and were never written to (its Edge Functions were not
+-- deployed), so they are replaced. If they hold any row, stop instead of deleting data.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'contact_threads' and column_name = 'gmail_thread_id'
+  ) then
+    if exists (select 1 from contact_threads) or exists (select 1 from contact_messages) then
+      raise exception 'contact_threads (v1) has data; migrate it manually before applying v2';
+    end if;
+    drop table if exists contact_sync_state;
+    drop table if exists contact_messages;
+    drop table if exists contact_threads;
+  end if;
+end $$;
+
 create table if not exists contact_threads (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 1 and 80),
