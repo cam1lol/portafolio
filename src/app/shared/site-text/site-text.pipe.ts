@@ -21,11 +21,15 @@ export class SiteTextPipe implements PipeTransform {
   }
 
   transform(key: string, fallback = ''): string {
+    const lang = this.transloco.getActiveLang();
     const row = this.siteContent.content()[key];
-    const value = row ? (this.transloco.getActiveLang() === 'en' ? row.en : row.es) : '';
+    const value = row ? (lang === 'en' ? row.en : row.es) : '';
     if (value.trim()) return value;
 
-    const translated = this.transloco.translate(key);
-    return translated && translated !== key ? translated : fallback;
+    // Read the loaded dictionary directly: translate() on a key that only lives in Supabase
+    // (contact_email, hero_m1_value...) triggers Transloco's missing-key warning, and this
+    // impure pipe runs on every change detection, flooding the console.
+    const translated = this.transloco.getTranslation(lang)[key];
+    return typeof translated === 'string' && translated ? translated : fallback;
   }
 }
