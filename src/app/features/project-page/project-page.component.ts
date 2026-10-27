@@ -11,6 +11,7 @@ import { ProjectMediaComponent, hasProjectMedia } from '../../shared/media/proje
 import { relatedProjects } from '../../core/data/project-details';
 import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 import { SwipeBackDirective } from '../../shared/gestures/swipe-back.directive';
+import { ScrambleDirective } from '../../shared/directives/scramble.directive';
 import { ProjectVideosComponent } from './project-videos.component';
 
 const SITE_NAME = 'Camilo Ayala';
@@ -19,7 +20,7 @@ const SITE_NAME = 'Camilo Ayala';
 @Component({
   selector: 'app-project-page',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent, SwipeBackDirective],
+  imports: [RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent, SwipeBackDirective, ScrambleDirective],
   templateUrl: './project-page.component.html',
   styleUrls: ['./project-page.component.css', './project-page-details.component.css'],
 })

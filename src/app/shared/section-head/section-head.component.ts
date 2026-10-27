@@ -1,15 +1,16 @@
 import { Component, Input } from '@angular/core';
 import { SiteTextPipe } from '../site-text/site-text.pipe';
+import { ScrambleDirective } from '../directives/scramble.directive';
 import { RevealDirective } from '../directives/reveal.directive';
 
 @Component({
   selector: 'app-section-head',
   standalone: true,
-  imports: [SiteTextPipe, RevealDirective],
+  imports: [SiteTextPipe, RevealDirective, ScrambleDirective],
   template: `
     <div class="sec-head">
       <span class="idx mono reveal" appReveal>{{ index }}</span>
-      <h2 class="reveal" appReveal>{{ headingKey | siteText }}</h2>
+      <h2 class="reveal" appReveal [appScramble]="headingKey | siteText" scrambleOnView></h2>
       <span class="desc reveal" appReveal>{{ descKey | siteText }}</span>
     </div>
   `,

@@ -134,18 +134,12 @@
           </div>
         </div>
 
-        <div class="grid-3">
+        <div class="grid-2">
           <div class="field">
             <label for="typeLabel">Etiqueta de tipo <span class="req" aria-hidden="true">*</span></label>
             <input id="typeLabel" type="text" formControlName="typeLabel" maxlength="60" placeholder="3D / E-COMMERCE" aria-required="true" />
             @if (hasError('typeLabel', 'required')) { <span class="field-error">La etiqueta de tipo es obligatoria.</span> }
             <app-field-hint [control]="form.controls.typeLabel" [max]="60" where="tarjeta y página del proyecto" />
-          </div>
-          <div class="field">
-            <label for="icon">Icono <span class="req" aria-hidden="true">*</span></label>
-            <input id="icon" type="text" formControlName="icon" maxlength="60" placeholder="box" aria-required="true" />
-            @if (hasError('icon', 'required')) { <span class="field-error">El icono es obligatorio.</span> }
-            <app-field-hint [control]="form.controls.icon" where="tarjeta (nombre de icono Lucide)" />
           </div>
           <div class="field">
             <label for="device">Marco de la vista previa</label>
@@ -155,6 +149,13 @@
               <option value="phone">Teléfono</option>
             </select>
           </div>
+        </div>
+
+        <div class="field">
+          <span class="label-like" id="icon-label">Icono <span class="req" aria-hidden="true">*</span></span>
+          <app-icon-picker labelledBy="icon-label" [value]="form.controls.icon.value" (valueChange)="setIcon($event)" />
+          @if (hasError('icon', 'required')) { <span class="field-error">Elige un icono.</span> }
+          <p class="step-hint picker-hint">Se ve en la tarjeta del proyecto, siempre animado.</p>
         </div>
 
         <div class="field">

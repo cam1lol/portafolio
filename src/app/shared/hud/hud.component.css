@@ -3,6 +3,8 @@
   inset: 0;
   pointer-events: none;
   z-index: 60;
+  /* Stays put during page transitions; set here (not on the host) so z-index keeps it above the page. */
+  view-transition-name: site-hud;
 }
 
 .hud .tick {
@@ -39,4 +41,30 @@
   right: 14px;
   border-left: none;
   border-top: none;
+}
+
+.progress {
+  position: absolute;
+  top: var(--site-header-h);
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--ember);
+  box-shadow: 0 0 10px rgba(242, 84, 27, .6);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.index {
+  position: absolute;
+  right: 40px;
+  bottom: 16px;
+  color: var(--steel);
+  font: 10px/1 'Space Mono', monospace;
+  letter-spacing: .14em;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .index { display: none; }
 }

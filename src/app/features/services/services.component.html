@@ -3,7 +3,7 @@
   <div class="svc">
     @if (cards(); as cards) {
       @for (card of cards; track card.id; let i = $index) {
-        <div class="s reveal" appReveal>
+        <div class="s reveal" appReveal appTilt>
           <div class="no mono">{{ index(i) }}</div>
           <h3>{{ card.title }}</h3>
           <p>{{ card.description }}</p>

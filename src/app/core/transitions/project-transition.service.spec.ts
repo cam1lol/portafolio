@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, ViewTransitionInfo } from '@angular/router';
-import { ProjectTransitionService, direction, leafPath } from './project-transition.service';
+import { ProjectTransitionService, RING_BURST_EVENT, direction, leafPath } from './project-transition.service';
 
 /** Minimal route snapshot chain whose deepest child has `path`. */
 function snapshot(path: string): ActivatedRouteSnapshot {
@@ -20,7 +20,7 @@ describe('ProjectTransitionService', () => {
 
   beforeEach(() => {
     service = TestBed.inject(ProjectTransitionService);
-    document.documentElement.classList.remove('vt-forward', 'vt-back', 'vt-modal');
+    document.documentElement.classList.remove('vt-forward', 'vt-back', 'vt-modal', 'vt-instant');
   });
 
   it('leafPath lee la ruta más profunda y direction compara profundidad', () => {
@@ -35,20 +35,27 @@ describe('ProjectTransitionService', () => {
   it('solo el proyecto activo lleva los nombres compartidos', () => {
     expect(service.name('cauce', 'title')).toBeNull();
     service.activeSlug.set('cauce');
-    expect(service.name('cauce', 'title')).toBe('project-title-cauce');
-    expect(service.name('cauce', 'media')).toBe('project-media-cauce');
+    expect(service.name('cauce', 'title')).toBe('project-title');
+    expect(service.name('cauce', 'media')).toBe('project-media');
+    expect(service.name('cauce', 'card')).toBe('project-card');
     expect(service.name('velamentum', 'title')).toBeNull();
   });
 
-  it('anima lista -> proyecto con vt-forward y quita la clase al terminar', async () => {
+  it('anima lista -> proyecto con vt-forward, avisa a los anillos y limpia al terminar', async () => {
+    const burst = jasmine.createSpy('burst');
+    window.addEventListener(RING_BURST_EVENT, burst);
     const { value, skipTransition, finish } = info('proyectos', 'proyectos/:slug');
     service.onRouterTransition(value);
+    window.removeEventListener(RING_BURST_EVENT, burst);
     expect(skipTransition).not.toHaveBeenCalled();
     expect(document.documentElement.classList).toContain('vt-forward');
+    expect(service.transitioning()).toBeTrue();
+    expect(burst).toHaveBeenCalled();
     finish();
     await Promise.resolve();
     await Promise.resolve();
     expect(document.documentElement.classList).not.toContain('vt-forward');
+    expect(service.transitioning()).toBeFalse();
   });
 
   it('volver del proyecto a la portada es vt-back', () => {
@@ -59,17 +66,18 @@ describe('ProjectTransitionService', () => {
   it('no anima fuera de los proyectos (admin) ni entre anclas de la portada', () => {
     const admin = info('', 'dashboard');
     service.onRouterTransition(admin.value);
-    expect(admin.skipTransition).toHaveBeenCalled();
+    expect(document.documentElement.classList).toContain('vt-instant');
     const anchors = info('', '');
     service.onRouterTransition(anchors.value);
-    expect(anchors.skipTransition).toHaveBeenCalled();
+    expect(anchors.skipTransition).not.toHaveBeenCalled(); // instant, not skipped (no dev AbortError)
   });
 
   it('tras el gesto de deslizar se salta una sola transición', () => {
     service.skipNextTransition();
     const first = info('proyectos/:slug', 'proyectos');
     service.onRouterTransition(first.value);
-    expect(first.skipTransition).toHaveBeenCalled();
+    expect(document.documentElement.classList).toContain('vt-instant');
+    expect(document.documentElement.classList).not.toContain('vt-back');
     const second = info('proyectos', 'proyectos/:slug');
     service.onRouterTransition(second.value);
     expect(second.skipTransition).not.toHaveBeenCalled();

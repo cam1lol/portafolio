@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, NgZone, inject, viewChild } from '@angular/core';
+import { RING_BURST_EVENT } from '../transitions/project-transition.service';
 
 const RUNES = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛏᛒᛖᛗᛚᛜᛞᛟ·';
 
@@ -230,6 +231,9 @@ export class RingLayerComponent implements AfterViewInit {
       window.addEventListener('pointermove', onPointer, { passive: true });
       document.addEventListener('mouseout', onLeave);
     }
+    // Opening a project: a sudden spin-up that settles back on its own (same slow ease as scrolling).
+    const onBurst = () => (rate = Math.max(rate, 8));
+    window.addEventListener(RING_BURST_EVENT, onBurst);
 
     const frame = (now: number) => {
       const dt = Math.max(16, now - lastT);
@@ -259,6 +263,7 @@ export class RingLayerComponent implements AfterViewInit {
       cancelAnimationFrame(frameId);
       window.removeEventListener('pointermove', onPointer);
       document.removeEventListener('mouseout', onLeave);
+      window.removeEventListener(RING_BURST_EVENT, onBurst);
     });
   }
 
@@ -305,19 +310,26 @@ export class RingLayerComponent implements AfterViewInit {
 
     // Web Animations API: every call is a fresh animation, so it always replays
     // (toggling a CSS class does not reliably restart an animation on SVG elements).
-    const fire = () => {
+    const fire = (duration = 3800) => {
       pulse.animate(
         [
           { transform: 'scale(0.12)', opacity: 0 },
           { opacity: 0.85, offset: 0.14 },
           { transform: 'scale(1.06)', opacity: 0 },
         ],
-        { duration: 3800, easing: 'cubic-bezier(.2, .6, .3, 1)' },
+        { duration, easing: 'cubic-bezier(.2, .6, .3, 1)' },
       );
+      clearTimeout(timeout);
       timeout = setTimeout(fire, 7000 + Math.random() * 5000);
     };
     timeout = setTimeout(fire, 2500);
-    this.destroyRef.onDestroy(() => clearTimeout(timeout));
+    // Opening a project fires a quicker pulse right away (and restarts the irregular timer).
+    const onBurst = () => fire(1600);
+    window.addEventListener(RING_BURST_EVENT, onBurst);
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(timeout);
+      window.removeEventListener(RING_BURST_EVENT, onBurst);
+    });
   }
 
   /** Fades the circle while a text-heavy section sits in the middle of the screen. */

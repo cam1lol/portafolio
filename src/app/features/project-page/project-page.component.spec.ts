@@ -40,7 +40,9 @@ describe('ProjectPageComponent', () => {
 
   it('muestra el proyecto, su caso de estudio y fija el título', async () => {
     const { root } = await render('cauce');
-    expect(root.querySelector('h1')?.textContent).toContain('Cauce');
+    // Accessible name of the title (its decode effect shows glyphs for a moment).
+    const h1 = root.querySelector('h1')!;
+    expect(h1.getAttribute('aria-label') ?? h1.textContent).toContain('Cauce');
     expect(root.querySelector('.case-study')?.innerHTML).toContain('<b>construí</b>');
     expect(TestBed.inject(Title).getTitle()).toContain('Cauce');
   });

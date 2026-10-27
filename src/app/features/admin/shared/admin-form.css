@@ -72,7 +72,8 @@
 .field { min-width: 0; margin-bottom: 18px; }
 .field:last-child { margin-bottom: 14px; }
 
-.field > label {
+.field > label,
+.field > .label-like {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -253,3 +254,4 @@
 @media (pointer: coarse) {
   .remove-btn, .add-btn { min-height: 40px; }
 }
+.picker-hint { margin: 10px 0 0; }

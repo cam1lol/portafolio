@@ -5,14 +5,16 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { filter, map, startWith } from 'rxjs';
 import { HudComponent } from './shared/hud/hud.component';
+import { BootComponent } from './shared/boot/boot.component';
 import { ThemeService } from './core/theme/theme.service';
 import { RingLayerComponent } from './core/background/ring-layer.component';
+import { StarRainComponent } from './core/background/star-rain.component';
 import { ModalComponent } from './shared/modal/modal.component';
 import { SupabaseService } from './core/supabase/supabase.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
+  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, HudComponent, BootComponent, RingLayerComponent, StarRainComponent, ModalComponent, TranslocoPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -55,6 +57,9 @@ export class AppComponent implements OnInit {
   );
 
   protected readonly isAdminScreen = computed(() => this.currentUrl().startsWith('/admin'));
+
+  /** First-visit intro on the home page (see BootComponent). */
+  protected readonly showBoot = signal(BootComponent.shouldShow(location.pathname));
 
   // ---- Mobile menu (below 1180px the nav links live in a panel opened from the header)
 

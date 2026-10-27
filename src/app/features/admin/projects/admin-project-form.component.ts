@@ -20,6 +20,7 @@ import { FieldHintComponent } from '../shared/field-hint.component';
 import { TagInputComponent } from '../shared/tag-input.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
 import { RepeatHeadComponent } from '../shared/repeat-head.component';
+import { IconPickerComponent } from '../shared/icon-picker.component';
 import {
   MAX_ITEMS, detailControls, docGroup, improvementGroup, moveItem, patchDetails, photoGroup, readDetails,
   resultGroup, screenGroup, versionGroup, videoGroup, fillToCount,
@@ -67,7 +68,7 @@ function listItemControl(value = ''): FormControl<string> {
   standalone: true,
   imports: [
     ReactiveFormsModule, RouterLink, ImageUploadComponent, MediaPickerComponent,
-    FormStepsComponent, FieldHintComponent, TagInputComponent, RepeatHeadComponent,
+    FormStepsComponent, FieldHintComponent, TagInputComponent, RepeatHeadComponent, IconPickerComponent,
   ],
   templateUrl: './admin-project-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-project-form.component.css'],
@@ -141,6 +142,12 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   onDemoVideoChange(url: string): void {
     this.form.controls.demoVideoUrl.setValue(url);
     this.form.markAsDirty();
+  }
+
+  setIcon(name: string): void {
+    this.form.controls.icon.setValue(name);
+    this.form.controls.icon.markAsDirty();
+    this.form.controls.icon.markAsTouched();
   }
 
   onPreviewVideoChange(url: string): void {

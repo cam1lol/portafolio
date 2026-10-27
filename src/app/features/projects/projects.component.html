@@ -1,7 +1,7 @@
 <section class="block wrap" id="work">
   <div class="sec-head">
     <span class="idx mono" appReveal>02</span>
-    <h2 appReveal>{{ 'wk_h' | siteText }}</h2>
+    <h2 appReveal [appScramble]="'wk_h' | siteText" scrambleOnView></h2>
     <span class="desc" appReveal>{{ 'wk_d' | siteText }}</span>
   </div>
 
@@ -21,8 +21,8 @@
   <div class="grid-cards">
     @for (p of filtered(); track p.id; let i = $index) {
       <!-- Keyboard and TV remotes: focusable, opens with Enter or Space like a button. -->
-      <div class="card" appReveal [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
-        role="button" tabindex="0" [attr.aria-label]="p.name" (keydown.enter)="openProject(p)" (keydown.space)="$event.preventDefault(); openProject(p)">
+      <div class="card" appReveal appTilt [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
+        role="button" tabindex="0" [attr.aria-label]="p.name" [style.view-transition-name]="cardName(p.slug, 'card')" (keydown.enter)="openProject(p)" (keydown.space)="$event.preventDefault(); openProject(p)">
         @if (p.previewVideo) {
           <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')">
             <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
@@ -33,7 +33,7 @@
         }
         <span class="corner mono">0{{ i + 1 }}</span>
         <div class="ic">
-          <app-icon [name]="p.icon" />
+          <app-icon [name]="p.icon" animated />
         </div>
         <div class="ptype mono">{{ p.typeLabel }}</div>
         <h3 [style.view-transition-name]="cardName(p.slug, 'title')">{{ p.name }}</h3>

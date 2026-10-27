@@ -9,7 +9,9 @@ import { IconComponent } from '../../shared/icons/icon.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
 import { RouterLink } from '@angular/router';
-import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
+import { ProjectTransitionService, SharedPart } from '../../core/transitions/project-transition.service';
+import { TiltDirective } from '../../shared/directives/tilt.directive';
+import { ScrambleDirective } from '../../shared/directives/scramble.directive';
 import { homeProjects } from '../../core/data/project-details';
 
 type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
@@ -17,7 +19,7 @@ type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe, PreviewPlayDirective, RouterLink],
+  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe, PreviewPlayDirective, RouterLink, TiltDirective, ScrambleDirective],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })
@@ -71,7 +73,7 @@ export class ProjectsComponent {
   }
 
   /** Shared names leave the card while the modal shows it (names must be unique on the page). */
-  protected cardName(slug: string, part: 'title' | 'media'): string | null {
+  protected cardName(slug: string, part: SharedPart): string | null {
     return this.modalService.active() ? null : this.vt.name(slug, part);
   }
 }

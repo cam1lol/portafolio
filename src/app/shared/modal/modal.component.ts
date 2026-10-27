@@ -84,7 +84,13 @@ export class ModalComponent {
     return `EXPERIENCE // ${this.period(state.data)}`;
   });
 
-  /** Closing a project morphs its title back into the home card. */
+  /** The panel is the end point of the home card growing into the modal (projects only). */
+  protected panelName(): string | null {
+    const state = this.active();
+    return state?.kind === 'project' ? this.vt.name(state.data.slug, 'card') : null;
+  }
+
+  /** Closing a project shrinks the panel back into its home card. */
   close(): void {
     if (this.active()?.kind === 'project') this.vt.run(() => this.modalService.close());
     else this.modalService.close();

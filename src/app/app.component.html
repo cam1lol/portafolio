@@ -1,7 +1,9 @@
 @defer (on idle) {
   <app-ring-layer></app-ring-layer>
+  <app-star-rain></app-star-rain>
 }
 <app-hud></app-hud>
+@if (showBoot()) { <app-boot (done)="showBoot.set(false)" /> }
 <app-modal></app-modal>
 
 <header #siteHeader [class.menu-open]="menuOpen()">
@@ -33,6 +35,8 @@
     </svg>
   </button>
 </header>
+<!-- Ember ring that rides the edge of the circular reveal when a project opens (styles.css). -->
+<div class="vt-ring" aria-hidden="true"></div>
 @if (menuOpen()) { <div class="menu-scrim" (click)="closeMenu()" aria-hidden="true"></div> }
 
 <ng-template #controls>

@@ -4,7 +4,7 @@
   [attr.inert]="active() ? null : ''"
   (click)="onBackdropClick($event)"
 >
-  <div class="modal" role="dialog" aria-modal="true">
+  <div class="modal" role="dialog" aria-modal="true" [style.view-transition-name]="panelName()">
     @if (active(); as state) {
       <div class="mhead">
         <span class="mt mono">{{ tag() }}</span>

@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { SectionHeadComponent } from '../../shared/section-head/section-head.component';
+import { TiltDirective } from '../../shared/directives/tilt.directive';
 import { CollectionRow, CollectionsService } from '../../core/data/collections.service';
 
 interface ServiceCard {
@@ -15,7 +16,7 @@ interface ServiceCard {
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [TranslocoPipe, RevealDirective, SectionHeadComponent],
+  imports: [TranslocoPipe, RevealDirective, SectionHeadComponent, TiltDirective],
   templateUrl: './services.component.html',
   styleUrl: './services.component.css',
 })

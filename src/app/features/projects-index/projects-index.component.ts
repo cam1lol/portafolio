@@ -9,6 +9,8 @@ import { Project } from '../../core/data/project.model';
 import { ProjectFilters, allTechnologies, filterProjects } from '../../core/data/project-details';
 import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
 import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
+import { TiltDirective } from '../../shared/directives/tilt.directive';
+import { ScrambleDirective } from '../../shared/directives/scramble.directive';
 import { IconComponent } from '../../shared/icons/icon.component';
 
 const SITE_NAME = 'Camilo Ayala';
@@ -17,7 +19,7 @@ const SITE_NAME = 'Camilo Ayala';
 @Component({
   selector: 'app-projects-index',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, PreviewPlayDirective, UpperCasePipe, IconComponent],
+  imports: [RouterLink, TranslocoPipe, PreviewPlayDirective, UpperCasePipe, IconComponent, TiltDirective, ScrambleDirective],
   templateUrl: './projects-index.component.html',
   styleUrl: './projects-index.component.css',
 })
