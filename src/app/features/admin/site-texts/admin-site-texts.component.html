@@ -41,7 +41,15 @@
                     <span class="lang mono">ES + EN</span>
                   }
                 </label>
-                @if (field.multiline) {
+                @if (field.kind === 'pdf') {
+                  <app-pdf-upload folder="cv" [inputId]="column" [value]="forms[group.id].controls[column].value" (valueChange)="setValue(group.id, column, $event)" />
+                } @else if (field.kind === 'select') {
+                  <select [id]="column" [formControlName]="column">
+                    @for (option of field.options ?? []; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                } @else if (field.multiline) {
                   <textarea [id]="column" [rows]="field.markup ? 5 : 3" [formControlName]="column" [attr.maxlength]="field.maxLength"></textarea>
                 } @else {
                   <input
@@ -50,13 +58,15 @@
                     [attr.inputmode]="field.kind === 'number' ? 'numeric' : null"
                     [formControlName]="column"
                     [attr.maxlength]="field.maxLength"
-                    [placeholder]="field.kind === 'email' ? 'tu@email.com' : ''"
+                    [placeholder]="field.kind === 'email' ? 'tu@email.com' : (field.placeholder ?? '')"
                   />
                 }
                 @if (hasError(group.id, column)) {
                   <span class="field-error mono" role="alert">{{ errorText(field, group.id, column) }}</span>
                 }
-                <app-field-hint [control]="forms[group.id].controls[column]" [max]="field.maxLength" />
+                @if (field.kind !== 'pdf' && field.kind !== 'select') {
+                  <app-field-hint [control]="forms[group.id].controls[column]" [max]="field.maxLength" />
+                }
               </div>
             }
           </div>

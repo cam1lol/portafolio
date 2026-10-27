@@ -1,5 +1,5 @@
 section.block {
-  padding: 96px 0;
+  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -20,7 +20,7 @@ section.block {
 .sec-head h2 {
   font-family: 'Archivo', sans-serif;
   font-weight: 800;
-  font-size: clamp(26px, 3.4vw, 40px);
+  font-size: clamp(26px, 3.4vw, calc(var(--maxw) * .0323));
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
@@ -271,3 +271,6 @@ section.block {
 .see-all:hover svg { transform: translateX(4px); }
 .see-all:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .see-all, .see-all svg { transition: none; } }
+
+/* Keyboard / TV remote focus: thick ember ring, readable from a distance; same lift as hover. */
+.card:focus-visible { outline: 3px solid var(--ember); outline-offset: 4px; }

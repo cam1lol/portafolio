@@ -140,5 +140,10 @@
   "pp_play": "Reproducir",
   "pp_loading": "Cargando video",
   "pp_prev_video": "Video anterior",
-  "pp_next_video": "Video siguiente"
+  "pp_next_video": "Video siguiente",
+  "cl_h": "// HAN CONFIADO EN MÍ",
+  "ts_h": "TESTIMONIOS",
+  "ts_d": "Lo que dicen quienes han trabajado conmigo",
+  "nav_menu": "Menú",
+  "nav_close": "Cerrar menú"
 }

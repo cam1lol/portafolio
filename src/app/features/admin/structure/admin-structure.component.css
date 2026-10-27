@@ -153,3 +153,9 @@
   .structure-row { padding: 10px; }
   .state-label { display: none; }
 }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .drag-handle { min-width: 40px; min-height: 40px; }
+  .link-action { display: inline-flex; align-items: center; min-height: 40px; }
+}

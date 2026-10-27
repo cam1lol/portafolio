@@ -62,7 +62,7 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
     this.renderer = renderer;
 
     const scene = new THREE.Scene();
-    const cam = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+    const cam = new THREE.PerspectiveCamera(fitFov(w / h), w / h, 0.1, 100);
     cam.position.z = 3.4;
 
     const geo = new THREE.IcosahedronGeometry(1.15, 1);
@@ -122,9 +122,22 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
       const nw = host.clientWidth;
       const nh = host.clientHeight;
       cam.aspect = nw / nh;
+      cam.fov = fitFov(cam.aspect);
       cam.updateProjectionMatrix();
       renderer.setSize(nw, nh);
     };
     window.addEventListener('resize', this.onResize);
   }
+}
+
+/**
+ * Vertical field of view that keeps the whole object in frame horizontally too: 45 degrees on wide
+ * canvases, wider when the canvas is narrower than tall (e.g. the hero column at 1920px), so the
+ * icosahedron (radius 1.15 plus the pointer parallax) never gets cut at the sides.
+ */
+function fitFov(aspect: number): number {
+  const halfWidthNeeded = 1.45; // world units around the center
+  const distance = 3.4; // camera z
+  const fov = (2 * Math.atan(halfWidthNeeded / (distance * aspect)) * 180) / Math.PI;
+  return Math.max(45, fov);
 }

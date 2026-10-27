@@ -9,12 +9,13 @@ import { COLLECTIONS, CollectionConfig, CollectionField, collectionColumns } fro
 import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
+import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 
 /** Create/edit screen shared by every simple collection, built from its `CollectionConfig`. */
 @Component({
   selector: 'app-admin-collection-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent],
+  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent, ImageUploadComponent],
   templateUrl: './admin-collection-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-collection-form.component.css'],
 })
@@ -41,7 +42,7 @@ export class AdminCollectionFormComponent implements OnInit {
   constructor() {
     for (const field of this.config.fields) {
       for (const column of this.columnsOf(field)) {
-        this.form.addControl(column, new FormControl('', { nonNullable: true, validators: this.validatorsFor(field) }));
+        this.form.addControl(column, new FormControl('', { nonNullable: true, validators: this.validatorsFor(field, column) }));
       }
     }
     this.steps = [
@@ -88,7 +89,19 @@ export class AdminCollectionFormComponent implements OnInit {
     const control = this.form.controls[column];
     if (control?.hasError('required')) return 'Este campo es obligatorio.';
     if (control?.hasError('maxlength')) return `Máximo ${field.maxLength} caracteres.`;
+    if (control?.hasError('pattern')) return 'Debe empezar por https:// o http://';
     return 'Contiene caracteres no permitidos.';
+  }
+
+  protected isRequired(field: CollectionField, column: string): boolean {
+    return field.required === true || (field.required === 'es' && !column.endsWith('_en'));
+  }
+
+  /** Values set by a widget instead of an input (image upload). */
+  protected setValue(column: string, value: string): void {
+    const control = this.form.controls[column];
+    control.setValue(value);
+    control.markAsDirty();
   }
 
   hasUnsavedChanges(): boolean {
@@ -129,8 +142,9 @@ export class AdminCollectionFormComponent implements OnInit {
     });
   }
 
-  private validatorsFor(field: CollectionField): ValidatorFn[] {
+  private validatorsFor(field: CollectionField, column: string): ValidatorFn[] {
     const validators = [Validators.maxLength(field.maxLength), noControlCharsValidator({ allowNewlines: field.multiline })];
-    return field.required ? [Validators.required, ...validators] : validators;
+    if (field.kind === 'url') validators.push(Validators.pattern(/^https?:\/\/\S+$/));
+    return this.isRequired(field, column) ? [Validators.required, ...validators] : validators;
   }
 }

@@ -7,11 +7,12 @@ import { Experience } from '../../core/data/experience.model';
 import { ModalService } from '../../core/modal/modal.service';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { IconComponent } from '../../shared/icons/icon.component';
+import { CvButtonComponent } from '../../shared/cv-button/cv-button.component';
 
 @Component({
   selector: 'app-experience',
   standalone: true,
-  imports: [RevealDirective, IconComponent, SiteTextPipe],
+  imports: [RevealDirective, IconComponent, SiteTextPipe, CvButtonComponent],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.css',
 })

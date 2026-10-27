@@ -6,7 +6,10 @@ export interface CollectionField {
   label: string;
   bilingual: boolean;
   multiline?: boolean;
-  required?: boolean;
+  /** `'es'`: only the Spanish column is required (English falls back to it on the site). */
+  required?: boolean | 'es';
+  /** `image` uploads to Supabase Storage (previews bucket) and stores the public URL; `url` must start with http(s). */
+  kind?: 'text' | 'image' | 'url';
   maxLength: number;
   placeholder?: string;
   hint?: string;
@@ -32,6 +35,8 @@ export interface CollectionConfig {
   listTitle: string;
   /** Optional second column in the list. */
   listDetail?: string;
+  /** Migration that creates the table, named in the load error (default 0005_site_content.sql). */
+  migration?: string;
 }
 
 export const COLLECTIONS: Record<string, CollectionConfig> = {
@@ -85,6 +90,52 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
       { name: 'label', label: 'Nombre', bilingual: false, required: true, maxLength: 40, placeholder: 'Angular', where: 'franja animada bajo el hero' },
     ],
     listTitle: 'label',
+  },
+  clients: {
+    key: 'clients',
+    table: 'clients',
+    path: 'clients',
+    icon: 'users',
+    siteAnchor: '#clients',
+    title: 'Clientes',
+    help: 'Los logos de la franja "Han confiado en mí". Usa solo clientes o empresas que te hayan dado permiso. Si no hay ninguno publicado, la franja no aparece.',
+    singular: 'cliente',
+    newLabel: 'NUEVO CLIENTE',
+    fields: [
+      { name: 'name', label: 'Nombre', bilingual: false, required: true, maxLength: 80, placeholder: 'Velamentum', where: 'texto alternativo del logo (o el nombre si no hay logo)' },
+      {
+        name: 'logo', label: 'Logo', bilingual: false, kind: 'image', maxLength: 2000,
+        hint: 'PNG o WebP con fondo transparente, idealmente en una sola tinta. Se muestra en gris claro y toma su color al pasar el ratón. Sin logo se muestra el nombre.',
+      },
+      { name: 'url', label: 'Enlace', bilingual: false, kind: 'url', maxLength: 2000, placeholder: 'https://...', hint: 'Opcional. El logo abre esta web.' },
+    ],
+    listTitle: 'name',
+    listDetail: 'url',
+    migration: '0012_clients_testimonials.sql',
+  },
+  testimonials: {
+    key: 'testimonials',
+    table: 'testimonials',
+    path: 'testimonials',
+    icon: 'quote',
+    siteAnchor: '#testimonials',
+    title: 'Testimonios',
+    help: 'Citas reales de clientes o compañeros, con su permiso. Si no hay ninguna publicada, la sección no aparece.',
+    singular: 'testimonio',
+    newLabel: 'NUEVO TESTIMONIO',
+    fields: [
+      {
+        name: 'quote', label: 'Cita', bilingual: true, multiline: true, required: 'es', maxLength: 600, where: 'tarjeta en Testimonios',
+        hint: 'Obligatoria en español; si dejas vacía la versión en inglés se muestra la española.',
+      },
+      { name: 'author', label: 'Nombre', bilingual: false, required: true, maxLength: 80, where: 'tarjeta en Testimonios' },
+      { name: 'role', label: 'Cargo', bilingual: true, maxLength: 120, placeholder: 'Product Owner', where: 'bajo el nombre' },
+      { name: 'company', label: 'Empresa', bilingual: false, maxLength: 80, where: 'bajo el nombre' },
+      { name: 'photo', label: 'Foto', bilingual: false, kind: 'image', maxLength: 2000, hint: 'Opcional. Cuadrada, se muestra en círculo pequeño. Sin foto se muestran sus iniciales.' },
+    ],
+    listTitle: 'author',
+    listDetail: 'company',
+    migration: '0012_clients_testimonials.sql',
   },
 };
 

@@ -1,0 +1,26 @@
+@if (items().length) {
+  <section class="block wrap" id="testimonials">
+    <app-section-head index="REF" headingKey="ts_h" descKey="ts_d" />
+    <div class="cards">
+      @for (item of items(); track item.id; let i = $index) {
+        <figure class="card reveal" appReveal [style.transition-delay.ms]="i * 90">
+          <span class="idx mono">{{ index(i) }}</span>
+          <blockquote>{{ item.quote }}</blockquote>
+          <figcaption>
+            @if (item.photo) {
+              <img class="avatar" [src]="item.photo" alt="" loading="lazy" decoding="async" />
+            } @else {
+              <span class="avatar initials mono" aria-hidden="true">{{ item.initials }}</span>
+            }
+            <span class="who">
+              <strong>{{ item.author }}</strong>
+              @if (item.role || item.company) {
+                <span class="mono">{{ item.role }}{{ item.role && item.company ? ' · ' : '' }}{{ item.company }}</span>
+              }
+            </span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </section>
+}

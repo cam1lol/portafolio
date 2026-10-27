@@ -47,6 +47,7 @@ nav.links {
 }
 
 nav.links a {
+  white-space: nowrap;
   color: var(--bone-dim);
   text-decoration: none;
   font-size: 13px;
@@ -97,7 +98,7 @@ nav.links a:hover {
   color: var(--ink);
 }
 
-.seg#theme button {
+.seg.theme button {
   padding: 7px 10px;
 }
 
@@ -124,29 +125,122 @@ footer .mono {
   letter-spacing: .1em;
 }
 
-@media (max-width: 900px) {
-  nav.links {
-    display: none;
-  }
+/* Narrow desktops: the subtitle would wrap and make the header taller. */
+@media (max-width: 1279px) {
+  .brand .role { display: none; }
+}
 
-  .brand .role {
-    display: none;
-  }
+/* ---- Mobile menu: hidden on desktop, where the links sit inline in the header. */
 
+.menu-btn,
+.menu-controls,
+.menu-scrim {
+  display: none;
+}
+
+.menu-btn {
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--bone);
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.menu-btn svg { width: 20px; height: 20px; }
+.menu-btn:hover,
+header.menu-open .menu-btn { border-color: var(--ember); color: var(--ember); }
+.menu-btn:focus-visible,
+.seg button:focus-visible,
+nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+@media (max-width: 1179px) {
   header {
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 12px 16px;
   }
 
-  .controls {
-    gap: 6px;
+  .brand { margin-right: auto; }
+  .brand .role { display: none; }
+  .controls { gap: 6px; }
+  .menu-btn { display: grid; }
+
+  /* The nav becomes a panel that drops from the header. */
+  nav.links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    max-height: calc(100dvh - 100%);
+    overflow-y: auto;
+    padding: 8px 16px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--graphite);
+    box-shadow: 0 24px 48px -24px rgba(0, 0, 0, .6);
+  }
+  header.menu-open nav.links {
+    display: flex;
+    animation: menu-in .22s var(--ease, ease) both;
   }
 
+  nav.links a {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--bone);
+    font-size: 14px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .menu-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: block;
+    background: rgba(5, 6, 8, .55);
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* Small phones: the header keeps only brand + menu; the controls move into the panel. */
+@media (max-width: 560px) {
+  .header-controls { display: none; }
+
+  .menu-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 18px;
+  }
+  .menu-controls .seg button {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+  .menu-controls .seg.theme button { padding: 0 14px; }
+}
+
+/* Touch screens: language, site/admin and theme buttons get a finger-sized target. */
+@media (pointer: coarse) {
   .seg button {
-    padding: 6px 8px;
-    font-size: 10px;
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
   }
+}
 
-  .seg#theme button {
-    padding: 6px 7px;
-  }
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header.menu-open nav.links { animation: none; }
+  .menu-btn { transition: none; }
 }

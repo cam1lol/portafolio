@@ -9,6 +9,8 @@ import { Project } from '../../core/data/project.model';
 import { InlineMarkupPipe } from '../../shared/site-text/inline-markup.pipe';
 import { ProjectMediaComponent, hasProjectMedia } from '../../shared/media/project-media.component';
 import { relatedProjects } from '../../core/data/project-details';
+import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
+import { SwipeBackDirective } from '../../shared/gestures/swipe-back.directive';
 import { ProjectVideosComponent } from './project-videos.component';
 
 const SITE_NAME = 'Camilo Ayala';
@@ -17,14 +19,15 @@ const SITE_NAME = 'Camilo Ayala';
 @Component({
   selector: 'app-project-page',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent],
+  imports: [RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent, SwipeBackDirective],
   templateUrl: './project-page.component.html',
-  styleUrl: './project-page.component.css',
+  styleUrls: ['./project-page.component.css', './project-page-details.component.css'],
 })
 export class ProjectPageComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly vt = inject(ProjectTransitionService);
 
   private readonly slug = toSignal(inject(ActivatedRoute).paramMap.pipe(map((params) => params.get('slug') ?? '')), { initialValue: '' });
   private readonly projects = toSignal(inject(ProjectsService).getPublished(), { initialValue: null });
@@ -56,6 +59,12 @@ export class ProjectPageComponent {
   protected readonly photo = computed(() => this.project()?.gallery[this.photoIndex()] ?? null);
 
   constructor() {
+    // Going back, the list card of this project carries the shared names, so the page shrinks into it.
+    effect(() => {
+      const slug = this.slug();
+      if (slug) this.vt.activeSlug.set(slug);
+    });
+
     // Title and description per language, for sharing and search engines.
     effect(() => {
       const project = this.project();

@@ -1,5 +1,5 @@
 .block {
-  padding: 96px 0;
+  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -20,7 +20,7 @@
 .sec-head h2 {
   font-family: "Archivo";
   font-weight: 800;
-  font-size: clamp(26px, 3.4vw, 40px);
+  font-size: clamp(26px, 3.4vw, calc(var(--maxw) * .0323));
   letter-spacing: -.02em;
   text-transform: uppercase;
 }
@@ -177,3 +177,10 @@
 .xp-card:hover .more app-icon {
   transform: translateX(4px);
 }
+
+/* Second place to download the CV, after the timeline; collapses when there is no PDF. */
+.xp-cv { display: flex; justify-content: center; margin-top: 40px; }
+.xp-cv:not(:has(a)) { display: none; }
+
+/* Keyboard / TV remote focus: thick ember ring, readable from a distance. */
+.xp-card:focus-visible { outline: 3px solid var(--ember); outline-offset: 4px; }

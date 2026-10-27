@@ -10,6 +10,7 @@ import { noControlCharsValidator } from '../../../shared/validators/no-control-c
 import { SITE_TEXT_GROUPS, SiteTextField, SiteTextGroup } from './site-texts.config';
 import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
+import { PdfUploadComponent } from '../../../shared/pdf-upload/pdf-upload.component';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -18,7 +19,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 @Component({
   selector: 'app-admin-site-texts',
   standalone: true,
-  imports: [AdminPageHeaderComponent, ReactiveFormsModule, UpperCasePipe, FieldHintComponent],
+  imports: [AdminPageHeaderComponent, ReactiveFormsModule, UpperCasePipe, FieldHintComponent, PdfUploadComponent],
   templateUrl: './admin-site-texts.component.html',
   styleUrl: './admin-site-texts.component.css',
 })
@@ -90,6 +91,13 @@ export class AdminSiteTextsComponent implements OnInit {
     const es = String(this.translations.es[field.referenceI18nKey] ?? '');
     const en = String(this.translations.en[field.referenceI18nKey] ?? '');
     return es === en ? es : `ES: ${es} · EN: ${en}`;
+  }
+
+  /** Values set by a widget instead of an input (the PDF upload). */
+  protected setValue(groupId: string, column: string, value: string): void {
+    const control = this.forms[groupId].controls[column];
+    control.setValue(value);
+    control.markAsDirty();
   }
 
   hasUnsavedChanges(): boolean {

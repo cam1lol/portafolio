@@ -4,7 +4,7 @@
 <app-hud></app-hud>
 <app-modal></app-modal>
 
-<header>
+<header #siteHeader [class.menu-open]="menuOpen()">
   <div class="brand">
     <div class="glyph">CA</div>
     <div>
@@ -13,66 +13,51 @@
     </div>
   </div>
 
-  <nav class="links">
+  <!-- Inline on desktop; below 1180px it becomes the panel opened by the menu button. -->
+  <nav class="links" id="site-menu" [attr.aria-label]="'nav_menu' | transloco" (click)="onMenuClick($event)" (keydown)="onMenuKeydown($event)">
     <a routerLink="/" fragment="work">{{ 'nav_work' | transloco }}</a>
     <a routerLink="/proyectos">{{ 'nav_projects' | transloco }}</a>
     <a routerLink="/" fragment="experience">{{ 'nav_xp' | transloco }}</a>
     <a routerLink="/" fragment="services">{{ 'nav_services' | transloco }}</a>
     <a routerLink="/" fragment="contact">{{ 'nav_contact' | transloco }}</a>
+    <!-- On small phones the controls move into the panel so the header fits at 320px. -->
+    <div class="menu-controls"><ng-container *ngTemplateOutlet="controls" /></div>
   </nav>
 
-  <div class="controls">
-    <div class="seg" id="lang">
-      <button
-        type="button"
-        [class.on]="transloco.getActiveLang() === 'es'"
-        (click)="setLang('es')"
-      >
-        ES
-      </button>
-      <button
-        type="button"
-        [class.on]="transloco.getActiveLang() === 'en'"
-        (click)="setLang('en')"
-      >
-        EN
-      </button>
-    </div>
+  <div class="controls header-controls"><ng-container *ngTemplateOutlet="controls" /></div>
 
-    <div class="seg signal" id="screen">
-      <button type="button" [class.on]="!isAdminScreen()" (click)="goTo('site')">
-        {{ 'sw_site' | transloco }}
-      </button>
-      <button type="button" [class.on]="isAdminScreen()" (click)="goTo('admin')">
-        {{ 'sw_admin' | transloco }}
-      </button>
-    </div>
-
-    <div class="seg" id="theme">
-      <button
-        type="button"
-        aria-label="Modo dia"
-        [class.on]="themeService.theme() === 'day'"
-        (click)="setTheme('day')"
-      >
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        aria-label="Modo noche"
-        [class.on]="themeService.theme() === 'night'"
-        (click)="setTheme('night')"
-      >
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" />
-        </svg>
-      </button>
-    </div>
-  </div>
+  <button #menuButton type="button" class="menu-btn" aria-controls="site-menu" [attr.aria-expanded]="menuOpen()"
+    [attr.aria-label]="(menuOpen() ? 'nav_close' : 'nav_menu') | transloco" (click)="toggleMenu()" (keydown)="onMenuKeydown($event)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      @if (menuOpen()) { <path d="M6 6l12 12M18 6L6 18" /> } @else { <path d="M4 7h16M4 12h16M4 17h10" /> }
+    </svg>
+  </button>
 </header>
+@if (menuOpen()) { <div class="menu-scrim" (click)="closeMenu()" aria-hidden="true"></div> }
+
+<ng-template #controls>
+  <div class="seg lang">
+    <button type="button" [class.on]="transloco.getActiveLang() === 'es'" [attr.aria-pressed]="transloco.getActiveLang() === 'es'" (click)="setLang('es')">ES</button>
+    <button type="button" [class.on]="transloco.getActiveLang() === 'en'" [attr.aria-pressed]="transloco.getActiveLang() === 'en'" (click)="setLang('en')">EN</button>
+  </div>
+  <div class="seg signal screen">
+    <button type="button" [class.on]="!isAdminScreen()" (click)="goTo('site')">{{ 'sw_site' | transloco }}</button>
+    <button type="button" [class.on]="isAdminScreen()" (click)="goTo('admin')">{{ 'sw_admin' | transloco }}</button>
+  </div>
+  <div class="seg theme">
+    <button type="button" aria-label="Modo dia" [class.on]="themeService.theme() === 'day'" [attr.aria-pressed]="themeService.theme() === 'day'" (click)="setTheme('day')">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+      </svg>
+    </button>
+    <button type="button" aria-label="Modo noche" [class.on]="themeService.theme() === 'night'" [attr.aria-pressed]="themeService.theme() === 'night'" (click)="setTheme('night')">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z" />
+      </svg>
+    </button>
+  </div>
+</ng-template>
 
 <main>
   <router-outlet></router-outlet>

@@ -25,17 +25,21 @@
                 <label [for]="column">
                   {{ field.label }}
                   @if (field.bilingual) { <span class="lang mono">{{ column.endsWith('_en') ? 'EN' : 'ES' }}</span> }
-                  @if (field.required) { <span class="req" aria-hidden="true">*</span> }
+                  @if (isRequired(field, column)) { <span class="req" aria-hidden="true">*</span> }
                 </label>
-                @if (field.multiline) {
-                  <textarea [id]="column" rows="4" [formControlName]="column" [attr.aria-required]="field.required || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
+                @if (field.kind === 'image') {
+                  <app-image-upload [value]="form.controls[column].value" (valueChange)="setValue(column, $event)" />
+                } @else if (field.multiline) {
+                  <textarea [id]="column" rows="4" [formControlName]="column" [attr.aria-required]="isRequired(field, column) || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
                 } @else {
-                  <input [id]="column" type="text" [formControlName]="column" [attr.aria-required]="field.required || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''" />
+                  <input [id]="column" [type]="field.kind === 'url' ? 'url' : 'text'" [formControlName]="column" [attr.aria-required]="isRequired(field, column) || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''" />
                 }
                 @if (hasError(column)) {
                   <span class="field-error mono" role="alert">{{ errorText(field, column) }}</span>
                 }
-                <app-field-hint [control]="form.controls[column]" [max]="field.maxLength" [where]="field.where ?? ''" />
+                @if (field.kind !== 'image') {
+                  <app-field-hint [control]="form.controls[column]" [max]="field.maxLength" [where]="field.where ?? ''" />
+                }
               </div>
             }
           </div>

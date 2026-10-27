@@ -38,8 +38,8 @@
     <ul class="list">
       @for (p of filtered(); track p.id; let i = $index) {
         <li class="item">
-          <a class="item-link" [class.no-media]="!p.previewVideo && !p.previewImage" [routerLink]="['/proyectos', p.slug]">
-            <div class="media">
+          <a class="item-link" [class.no-media]="!p.previewVideo && !p.previewImage" [routerLink]="['/proyectos', p.slug]" (click)="vt.activeSlug.set(p.slug)">
+            <div class="media" [style.view-transition-name]="vt.name(p.slug, 'media')">
               @if (p.previewVideo) {
                 <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'" muted loop playsinline aria-hidden="true"></video>
               } @else if (p.previewImage) {
@@ -51,7 +51,7 @@
             </div>
             <div class="body">
               <span class="meta mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
-              <h2>{{ p.name }}</h2>
+              <h2 [style.view-transition-name]="vt.name(p.slug, 'title')">{{ p.name }}</h2>
               @if (factsLine(p)) { <span class="facts mono">{{ factsLine(p) }}</span> }
               <p class="summary">{{ loc(p.summaryEs, p.summaryEn) }}</p>
               @if (p.results.length) {

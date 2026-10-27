@@ -7,6 +7,7 @@
 
 .hero-grid {
   display: grid;
+  /* The text column grows to fit the title at full size (desktop); mobile goes to one minmax(0,1fr) column. */
   grid-template-columns: 1fr 1.05fr;
   gap: 56px;
   width: 100%;
@@ -17,7 +18,7 @@
   font-family: "Archivo";
   font-weight: 900;
   line-height: .92;
-  font-size: clamp(46px, 7vw, 104px);
+  font-size: clamp(46px, 7vw, calc(var(--maxw) * .084)); /* cap follows the content width */
   letter-spacing: -.03em;
   text-transform: uppercase;
 }
@@ -100,7 +101,7 @@
 @media (max-width: 900px) {
 
   .hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hero-grid > :last-child {
@@ -110,4 +111,29 @@
   app-hero-scene {
     --scene-height: 300px;
   }
+}
+
+/* Availability pill above the eyebrow; collapses when hidden. */
+.hero-avail:not(:empty) { margin-bottom: 22px; }
+
+/* Small phones: the widest title word (MOVIMIENTO) must fit the column at 320px. */
+@media (max-width: 480px) {
+  .hero h1 { font-size: min(46px, 11.5vw); }
+}
+
+/* Large screens: intro, figures and eyebrow grow with the title. */
+@media (min-width: 1600px) {
+  .hero .lead { max-width: 520px; font-size: 18px; }
+  .meta-row .b .v { font-size: 24px; }
+  .meta-row .b .k { font-size: 12px; }
+}
+@media (min-width: 2400px) {
+  .hero .lead { max-width: 640px; font-size: 22px; }
+  .meta-row .b .v { font-size: 30px; }
+  .meta-row .b .k { font-size: 14px; }
+}
+@media (min-width: 3200px) {
+  .hero .lead { max-width: 900px; font-size: 30px; }
+  .meta-row .b .v { font-size: 42px; }
+  .meta-row .b .k { font-size: 18px; }
 }

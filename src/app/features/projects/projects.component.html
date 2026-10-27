@@ -20,21 +20,23 @@
 
   <div class="grid-cards">
     @for (p of filtered(); track p.id; let i = $index) {
-      <div class="card" appReveal [style.transition-delay.ms]="i * 60" (click)="openProject(p)">
+      <!-- Keyboard and TV remotes: focusable, opens with Enter or Space like a button. -->
+      <div class="card" appReveal [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
+        role="button" tabindex="0" [attr.aria-label]="p.name" (keydown.enter)="openProject(p)" (keydown.space)="$event.preventDefault(); openProject(p)">
         @if (p.previewVideo) {
-          <div class="media">
+          <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')">
             <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
               muted loop playsinline aria-hidden="true"></video>
           </div>
         } @else if (p.previewImage) {
-          <div class="media"><img [src]="p.previewImage" alt="" loading="lazy" /></div>
+          <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')"><img [src]="p.previewImage" alt="" loading="lazy" /></div>
         }
         <span class="corner mono">0{{ i + 1 }}</span>
         <div class="ic">
           <app-icon [name]="p.icon" />
         </div>
         <div class="ptype mono">{{ p.typeLabel }}</div>
-        <h3>{{ p.name }}</h3>
+        <h3 [style.view-transition-name]="cardName(p.slug, 'title')">{{ p.name }}</h3>
         <p class="pd">{{ description(p) }}</p>
         <div class="stack">
           @for (item of p.stack; track item) {

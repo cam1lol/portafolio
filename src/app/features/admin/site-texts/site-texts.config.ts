@@ -7,7 +7,10 @@ export interface SiteTextField {
   multiline?: boolean;
   /** Accepts the inline markup rendered by `InlineMarkupPipe`. */
   markup?: boolean;
-  kind?: 'text' | 'number' | 'email';
+  /** `select` uses `options`; `pdf` uploads a file to Supabase Storage and stores its public URL. */
+  kind?: 'text' | 'number' | 'email' | 'select' | 'pdf';
+  options?: { value: string; label: string }[];
+  placeholder?: string;
   hint?: string;
   /** Value shown when neither Supabase nor i18n has one (keys that never lived in i18n). */
   fallback?: string;
@@ -45,6 +48,41 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
     ],
   },
   {
+    id: 'availability',
+    title: 'Disponibilidad',
+    help: 'La etiqueta con un punto de color que aparece en el hero y en Contacto. Elige "Ocultar" o deja el texto vacío para no mostrarla.',
+    fields: [
+      {
+        key: 'availability_state',
+        label: 'Estado',
+        bilingual: false,
+        maxLength: 10,
+        kind: 'select',
+        fallback: 'hidden',
+        options: [
+          { value: 'open', label: 'Disponible · punto verde' },
+          { value: 'limited', label: 'Agenda limitada · punto naranja' },
+          { value: 'closed', label: 'No disponible · punto gris' },
+          { value: 'hidden', label: 'Ocultar' },
+        ],
+      },
+      {
+        key: 'availability_text',
+        label: 'Texto',
+        bilingual: true,
+        maxLength: 80,
+        placeholder: 'Disponible para proyectos desde noviembre',
+        hint: 'Corto y concreto: qué buscas y desde cuándo.',
+      },
+    ],
+  },
+  {
+    id: 'cv',
+    title: 'CV',
+    help: 'El PDF que descarga el botón "Descargar CV" del hero y de Experiencia, según el idioma activo. Si falta el de inglés se descarga el de español; sin ninguno, el botón no aparece.',
+    fields: [{ key: 'cv_url', label: 'Hoja de vida (PDF, máx. 10 MB)', bilingual: true, maxLength: 2000, kind: 'pdf' }],
+  },
+  {
     id: 'manifesto',
     title: 'Manifiesto',
     help: 'El párrafo grande bajo el hero.',
@@ -57,7 +95,7 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
   {
     id: 'heads',
     title: 'Encabezados de sección',
-    help: 'Título y descripción corta que acompañan a Proyectos, Experiencia, Servicios, Roadmap y Comentarios.',
+    help: 'Título y descripción corta que acompañan a Proyectos, Experiencia, Clientes, Testimonios, Servicios, Roadmap y Comentarios.',
     fields: [
       { key: 'wk_h', label: 'Proyectos · título', bilingual: true, maxLength: 60 },
       { key: 'wk_d', label: 'Proyectos · descripción', bilingual: true, maxLength: 160 },
@@ -67,6 +105,9 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
       { key: 'sv_d', label: 'Servicios · descripción', bilingual: true, maxLength: 160 },
       { key: 'rd_h', label: 'Roadmap · título', bilingual: true, maxLength: 60 },
       { key: 'rd_d', label: 'Roadmap · descripción', bilingual: true, maxLength: 160 },
+      { key: 'cl_h', label: 'Clientes · etiqueta de la franja', bilingual: true, maxLength: 60 },
+      { key: 'ts_h', label: 'Testimonios · título', bilingual: true, maxLength: 60 },
+      { key: 'ts_d', label: 'Testimonios · descripción', bilingual: true, maxLength: 160 },
       { key: 'cm_h', label: 'Comentarios · título', bilingual: true, maxLength: 60 },
       { key: 'cm_d', label: 'Comentarios · descripción', bilingual: true, maxLength: 160 },
     ],

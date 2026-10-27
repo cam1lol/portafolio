@@ -15,7 +15,8 @@
           appReveal
           [style.transition-delay.ms]="i * 90"
         >
-          <div class="xp-card" (click)="openExperience(x)">
+          <div class="xp-card" (click)="openExperience(x)" role="button" tabindex="0" [attr.aria-label]="role(x) + ' · ' + x.company"
+            (keydown.enter)="openExperience(x)" (keydown.space)="$event.preventDefault(); openExperience(x)">
             <div class="when">
               {{ period(x) }}
               <span class="tagrole">{{ tag(x) }}</span>
@@ -37,4 +38,6 @@
       }
     </div>
   </div>
+
+  <div class="xp-cv reveal" appReveal><app-cv-button /></div>
 </section>

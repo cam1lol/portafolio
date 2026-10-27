@@ -91,3 +91,8 @@ app-visits-chart { display: block; margin-bottom: 20px; }
 .when.is-new { color: var(--ember); }
 .empty { margin: 4px 0 10px; color: var(--steel); font-size: 12px; }
 @media (max-width: 900px) { .activity { grid-template-columns: minmax(0, 1fr); } }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .more { display: inline-flex; align-items: center; min-height: 40px; }
+}

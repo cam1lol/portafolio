@@ -13,6 +13,12 @@
       @case ('projects') {
         @if (visibility()['projects'] !== false) { <app-projects /> }
       }
+      @case ('clients') {
+        @if (visibility()['clients'] !== false) { <app-clients /> }
+      }
+      @case ('testimonials') {
+        @if (visibility()['testimonials'] !== false) { <app-testimonials /> }
+      }
       @case ('experience') {
         @if (visibility()['experience'] !== false) { <app-experience /> }
       }

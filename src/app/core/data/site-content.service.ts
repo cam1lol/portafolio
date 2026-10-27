@@ -32,6 +32,16 @@ export class SiteContentService {
     });
   }
 
+  /**
+   * Value for a language, falling back to Spanish. For keys that never live in i18n (CV URLs,
+   * availability): read inside a computed() so it follows the language and the loaded content.
+   */
+  valueFor(key: string, lang: string): string {
+    const row = this.content()[key];
+    if (!row) return '';
+    return ((lang === 'en' ? row.en : row.es) || row.es || '').trim();
+  }
+
   getAll(): Observable<SiteContentRow[]> {
     return from(this.supabase.client.from('site_content').select('key, value_es, value_en')).pipe(
       map(({ data, error }) => {

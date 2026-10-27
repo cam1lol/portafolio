@@ -13,7 +13,7 @@
   --ember-soft: rgba(242, 84, 27, .10);
   --good: #46C68B;
   --r: 2px;
-  --maxw: 1240px;
+  --maxw: 1240px; /* wider on large screens, see the end of this file */
   --ease: cubic-bezier(.2, .7, .2, 1);
   --scrim: rgba(10, 11, 13, .72);
 }
@@ -45,6 +45,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Anchor jumps (#contact, #work...) land below the sticky header instead of under it. */
+  scroll-padding-top: calc(var(--site-header-h) + 12px);
 }
 
 body {
@@ -151,3 +153,79 @@ app-root {
 
 /* Height of the sticky site header, so other sticky bars (admin) sit just below it. */
 :root { --site-header-h: 69px; }
+
+/* Large screens: the content column grows with the screen so it does not look boxed in a
+   narrow strip; headings scale with it (their clamp() caps are sized for the widest column). */
+@media (min-width: 1600px) { :root { --maxw: 1440px; } }
+@media (min-width: 1880px) { :root { --maxw: 1600px; } }
+/* TVs and very large monitors (2400 CSS px and up). */
+@media (min-width: 2400px) { :root { --maxw: 2000px; } }
+@media (min-width: 3200px) { :root { --maxw: 2800px; } }
+
+/* ---------------------------------------------------------------------------
+   View transitions: project card <-> project page, and home card <-> modal.
+   ProjectTransitionService sets html.vt-forward / html.vt-back (route changes) or
+   html.vt-modal (home modal); the card, modal and page title / media share a name.
+   --------------------------------------------------------------------------- */
+
+/* Chrome that must not slide with the page. */
+app-root > header { view-transition-name: site-header; }
+app-ring-layer { view-transition-name: site-bg; }
+app-hud { view-transition-name: site-hud; }
+
+/* Shared title / media: morph from one position and size to the other. */
+::view-transition-group(*) {
+  animation-duration: .45s;
+  animation-timing-function: var(--ease);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .42s;
+  animation-timing-function: var(--ease);
+}
+
+/* Desktop and tablet: the page fades out and the new one rises in; back sinks out. */
+html.vt-forward::view-transition-old(root) { animation-name: vt-fade-out; }
+html.vt-forward::view-transition-new(root) { animation-name: vt-rise-in; }
+html.vt-back::view-transition-old(root) { animation-name: vt-sink-out; }
+html.vt-back::view-transition-new(root) { animation-name: vt-fade-in; }
+
+/* Project page content enters in steps under the morphing title. */
+html.vt-forward app-project-page main > :not(.head) {
+  animation: vt-rise-in .55s var(--ease) both;
+}
+html.vt-forward app-project-page main > :nth-child(3) { animation-delay: .06s; }
+html.vt-forward app-project-page main > :nth-child(4) { animation-delay: .12s; }
+html.vt-forward app-project-page main > :nth-child(n + 5) { animation-delay: .18s; }
+
+/* Home modal: quick cross-fade around the title / media morph. */
+html.vt-modal::view-transition-old(root) { animation: vt-fade-out .25s var(--ease) both; }
+html.vt-modal::view-transition-new(root) { animation: vt-fade-in .25s var(--ease) both; }
+
+/* Phones: app-like push. The whole screen slides, so nothing morphs on its own. */
+@media (max-width: 760px) {
+  [style*='view-transition-name'] { view-transition-name: none !important; }
+
+  html.vt-forward::view-transition-old(root) { animation: vt-push-out .38s var(--ease) both; }
+  html.vt-forward::view-transition-new(root) { animation: vt-push-in .38s var(--ease) both; }
+  html.vt-back::view-transition-old(root) { z-index: 1; animation: vt-pop-out .34s var(--ease) both; }
+  html.vt-back::view-transition-new(root) { animation: vt-pop-in .34s var(--ease) both; }
+  html.vt-forward app-project-page main > :not(.head) { animation: none; }
+}
+
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+@keyframes vt-rise-in { from { opacity: 0; transform: translateY(28px); } }
+@keyframes vt-sink-out { to { opacity: 0; transform: translateY(28px); } }
+@keyframes vt-push-in { from { transform: translateX(100%); } }
+@keyframes vt-push-out { to { opacity: .35; transform: translateX(-28%); } }
+@keyframes vt-pop-out { to { transform: translateX(100%); } }
+@keyframes vt-pop-in { from { opacity: .35; transform: translateX(-28%); } }
+
+/* Reduced motion: no movement, just a short cross-fade. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) { animation: none !important; }
+  ::view-transition-old(*) { animation: vt-fade-out .15s linear both !important; }
+  ::view-transition-new(*) { animation: vt-fade-in .15s linear both !important; }
+  html.vt-forward app-project-page main > * { animation: none !important; }
+}

@@ -5,6 +5,8 @@
   display: grid;
   place-items: center;
   pointer-events: none;
+  /* The rings bleed past the screen on purpose; clip them so they never add a sideways scroll. */
+  overflow: hidden;
 }
 
 .rings {

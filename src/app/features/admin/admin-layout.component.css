@@ -121,7 +121,11 @@
     gap: 14px;
     padding: 12px;
     overflow-x: auto;
+    scrollbar-width: none;
+    /* Fading edges hint that the strip scrolls sideways. */
+    mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent);
   }
+  .admin-nav::-webkit-scrollbar { display: none; }
 
   .nav-group {
     display: flex;
@@ -135,6 +139,7 @@
   }
 
   .admin-nav a {
+    min-height: 40px;
     padding: 7px 10px;
     border-left: 0;
     border-bottom: 2px solid transparent;

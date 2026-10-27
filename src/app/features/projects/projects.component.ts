@@ -9,6 +9,7 @@ import { IconComponent } from '../../shared/icons/icon.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
 import { RouterLink } from '@angular/router';
+import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 import { homeProjects } from '../../core/data/project-details';
 
 type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
@@ -23,6 +24,7 @@ type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 export class ProjectsComponent {
   private readonly transloco = inject(TranslocoService);
   private readonly modalService = inject(ModalService);
+  private readonly vt = inject(ProjectTransitionService);
   private readonly projectsService = inject(ProjectsService);
 
   private readonly allProjects = toSignal(this.projectsService.getPublished(), { initialValue: [] });
@@ -62,7 +64,14 @@ export class ProjectsComponent {
     this.filter.set(value);
   }
 
+  /** The card title morphs into the modal title: open as a view transition (see ProjectTransitionService). */
   openProject(project: Project): void {
-    this.modalService.openProject(project);
+    this.vt.activeSlug.set(project.slug);
+    this.vt.run(() => this.modalService.openProject(project));
+  }
+
+  /** Shared names leave the card while the modal shows it (names must be unique on the page). */
+  protected cardName(slug: string, part: 'title' | 'media'): string | null {
+    return this.modalService.active() ? null : this.vt.name(slug, part);
   }
 }

@@ -45,6 +45,8 @@ export const ADMIN_ROUTES: Routes = [
       ...collectionRoutes('services'),
       ...collectionRoutes('roadmap'),
       ...collectionRoutes('ticker'),
+      ...collectionRoutes('clients'),
+      ...collectionRoutes('testimonials'),
       { path: 'site-texts', component: AdminSiteTextsComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'structure', component: AdminStructureComponent },
       // Visibility, home order and the blocks list now live together in "structure".

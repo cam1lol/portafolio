@@ -8,6 +8,7 @@ import { ProjectsService } from '../../core/data/projects.service';
 import { Project } from '../../core/data/project.model';
 import { ProjectFilters, allTechnologies, filterProjects } from '../../core/data/project-details';
 import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
+import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 import { IconComponent } from '../../shared/icons/icon.component';
 
 const SITE_NAME = 'Camilo Ayala';
@@ -22,6 +23,8 @@ const SITE_NAME = 'Camilo Ayala';
 })
 export class ProjectsIndexComponent {
   private readonly transloco = inject(TranslocoService);
+  /** Shared-element names for the open / back transition with the project page. */
+  protected readonly vt = inject(ProjectTransitionService);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
 

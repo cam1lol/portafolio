@@ -19,7 +19,7 @@
         @switch (state.kind) {
           @case ('project') {
             @if (hasMedia(state.data)) {
-              <app-project-media class="preview media-preview" [project]="state.data" />
+              <app-project-media class="preview media-preview" [project]="state.data" [style.view-transition-name]="vt.name(state.data.slug, 'media')" />
             } @else if (state.data.kind === 'back') {
               <div class="preview">
                 <div class="flow">
@@ -87,7 +87,7 @@
               </div>
             }
 
-            <div class="mtitle">{{ state.data.name }}</div>
+            <div class="mtitle" [style.view-transition-name]="vt.name(state.data.slug, 'title')">{{ state.data.name }}</div>
             <div class="msub">{{ statusLabel(state.data.status) }} · {{ state.data.type.toUpperCase() }}</div>
             @if (caseStudy(state.data)) {
               <div class="mtabs mono" role="tablist">
@@ -112,7 +112,7 @@
                 }
               </div>
             }
-            <a class="project-page-link mono" [routerLink]="['/proyectos', state.data.slug]" (click)="close()">
+            <a class="project-page-link mono" [routerLink]="['/proyectos', state.data.slug]" (click)="closeForNavigation()">
               {{ projectPageLabel() }}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </a>

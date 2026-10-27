@@ -1,0 +1,26 @@
+@if (clients().length) {
+  <section class="clients wrap" id="clients" [attr.aria-label]="'cl_h' | siteText">
+    <div class="eyebrow mono reveal" appReveal>{{ 'cl_h' | siteText }}</div>
+    <ul class="logos">
+      @for (client of clients(); track client.id; let i = $index) {
+        <li class="reveal" appReveal [style.transition-delay.ms]="i * 60">
+          @if (client.url) {
+            <a [href]="client.url" target="_blank" rel="noopener" [attr.aria-label]="client.name">
+              <ng-container *ngTemplateOutlet="mark; context: { $implicit: client }" />
+            </a>
+          } @else {
+            <ng-container *ngTemplateOutlet="mark; context: { $implicit: client }" />
+          }
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+<ng-template #mark let-client>
+  @if (client.logo) {
+    <img [src]="client.logo" [alt]="client.name" loading="lazy" decoding="async" />
+  } @else {
+    <span class="name">{{ client.name }}</span>
+  }
+</ng-template>

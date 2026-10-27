@@ -1,0 +1,66 @@
+.clients {
+  display: grid;
+  gap: 26px;
+  padding-top: 56px;
+  padding-bottom: 56px;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.eyebrow {
+  color: var(--steel);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-align: center;
+}
+
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 26px 56px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logos a {
+  display: block;
+  border-radius: var(--r);
+}
+.logos a:focus-visible { outline: 2px solid var(--ember); outline-offset: 6px; }
+
+/* Monochrome by default so mixed brand colors read as one row; full color on hover. */
+img {
+  display: block;
+  width: auto;
+  max-width: 150px;
+  height: 34px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: .7;
+  transition: filter .3s, opacity .3s;
+}
+.logos li:hover img,
+.logos a:focus-visible img { filter: none; opacity: 1; }
+
+.name {
+  color: var(--steel);
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  transition: color .3s;
+}
+.logos li:hover .name { color: var(--bone); }
+
+@media (max-width: 600px) {
+  .logos { gap: 22px 36px; }
+  img { max-width: 120px; height: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  img, .name { transition: none; }
+}

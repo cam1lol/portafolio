@@ -1,12 +1,12 @@
 .contact {
   text-align: center;
-  padding: 120px 0;
+  padding-block: 120px; /* vertical only: .wrap keeps the side gutter */
 }
 
 .contact h2 {
   font-family: "Archivo";
   font-weight: 900;
-  font-size: clamp(36px, 6vw, 82px);
+  font-size: clamp(36px, 6vw, calc(var(--maxw) * .066));
   letter-spacing: -.03em;
   text-transform: uppercase;
   line-height: .95;
@@ -73,4 +73,11 @@
 .direct a:hover,
 .direct a:focus-visible {
   color: var(--ember);
+}
+
+.contact-avail:not(:empty) { margin-bottom: 28px; }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .direct a { display: inline-block; padding: 12px 2px; }
 }

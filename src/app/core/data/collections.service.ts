@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
-/** Simple ordered lists editable from the admin (migration 0005). */
-export type CollectionTable = 'services' | 'roadmap_items' | 'ticker_items';
+/** Simple ordered lists editable from the admin (migrations 0005 and 0012). */
+export type CollectionTable = 'services' | 'roadmap_items' | 'ticker_items' | 'clients' | 'testimonials';
 
 /** Rows keep Supabase's snake_case column names; field names in the admin config match them 1:1. */
 export interface CollectionRow {

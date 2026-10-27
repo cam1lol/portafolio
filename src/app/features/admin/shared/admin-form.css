@@ -248,3 +248,8 @@
 .video-tips ul { margin: 6px 0 0; padding-left: 18px; }
 .grid-video-title { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 110px); gap: 0 18px; }
 @media (max-width: 760px) { .grid-video-title { grid-template-columns: minmax(0, 1fr); } }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .remove-btn, .add-btn { min-height: 40px; }
+}

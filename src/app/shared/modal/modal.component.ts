@@ -1,10 +1,11 @@
-import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { InlineMarkupPipe } from '../site-text/inline-markup.pipe';
 import { ProjectMediaComponent, hasProjectMedia } from '../media/project-media.component';
 import { TranslocoService } from '@jsverse/transloco';
 import { ModalService } from '../../core/modal/modal.service';
 import { Project } from '../../core/data/project.model';
+import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 import { Experience } from '../../core/data/experience.model';
 
 @Component({
@@ -16,6 +17,7 @@ import { Experience } from '../../core/data/experience.model';
 })
 export class ModalComponent {
   protected readonly modalService = inject(ModalService);
+  protected readonly vt = inject(ProjectTransitionService);
   private readonly transloco = inject(TranslocoService);
 
   protected readonly active = this.modalService.active;
@@ -27,11 +29,26 @@ export class ModalComponent {
 
   protected readonly tab = signal<'summary' | 'how'>('summary');
 
+  private readonly host = inject(ElementRef<HTMLElement>);
+  /** Element focused before opening (the card), to return focus to it on close. */
+  private opener: HTMLElement | null = null;
+
   constructor() {
     // Every time a different item opens, start on the summary tab.
     effect(() => {
       this.active();
       this.tab.set('summary');
+    });
+
+    // Keyboard and TV remotes: focus moves into the dialog on open and back to the card on close.
+    effect(() => {
+      if (this.active()) {
+        if (!this.opener) this.opener = document.activeElement as HTMLElement | null;
+        setTimeout(() => this.focusables()[0]?.focus());
+      } else if (this.opener) {
+        this.opener.focus();
+        this.opener = null;
+      }
     });
   }
 
@@ -67,7 +84,14 @@ export class ModalComponent {
     return `EXPERIENCE // ${this.period(state.data)}`;
   });
 
+  /** Closing a project morphs its title back into the home card. */
   close(): void {
+    if (this.active()?.kind === 'project') this.vt.run(() => this.modalService.close());
+    else this.modalService.close();
+  }
+
+  /** "Open project page": the router runs its own transition, so close without one. */
+  protected closeForNavigation(): void {
     this.modalService.close();
   }
 
@@ -75,6 +99,31 @@ export class ModalComponent {
     if (event.target === event.currentTarget) {
       this.close();
     }
+  }
+
+  /** Keeps Tab inside the open dialog. */
+  @HostListener('keydown.tab', ['$event'])
+  @HostListener('keydown.shift.tab', ['$event'])
+  onTab(event: Event): void {
+    if (!this.active()) return;
+    const items = this.focusables();
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    const shift = (event as KeyboardEvent).shiftKey;
+    if (shift && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!shift && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  private focusables(): HTMLElement[] {
+    const dialog = (this.host.nativeElement as HTMLElement).querySelector('[role=dialog]');
+    if (!dialog) return [];
+    return Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), video[controls], [tabindex]:not([tabindex="-1"])')).filter((el) => el.offsetParent !== null);
   }
 
   @HostListener('document:keydown.escape')

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, map } from 'rxjs';
+import { Observable, from, map, shareReplay, tap } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Project } from './project.model';
 import { ProjectDetails, detailsFromRow, detailsToRow } from './project-details';
@@ -69,9 +69,15 @@ export type ProjectInput = Omit<AdminProject, 'id' | 'sortOrder'>;
 export class ProjectsService {
   private readonly supabase = inject(SupabaseService);
 
+  /**
+   * Session cache of the public list: home, /proyectos and each project page share one request, so a
+   * project page renders instantly (inside the open transition). Any admin write clears it.
+   */
+  private published$: Observable<Project[]> | null = null;
+
   /** Public site read: only `published=true`, ordered for display. */
   getPublished(): Observable<Project[]> {
-    return from(
+    return (this.published$ ??= from(
       this.supabase.client
         .from('projects')
         .select('*')
@@ -81,11 +87,17 @@ export class ProjectsService {
       map(({ data, error }) => {
         if (error) {
           console.error('Failed to load projects from Supabase', error);
+          this.published$ = null; // retry on the next read instead of caching the failure
           return [];
         }
         return ((data ?? []) as ProjectRow[]).map((row) => this.toProject(row));
       }),
-    );
+      shareReplay(1),
+    ));
+  }
+
+  private clearCache(): void {
+    this.published$ = null;
   }
 
   /** Admin listing: every row (published or not), ordered by `sort_order`. */
@@ -124,6 +136,7 @@ export class ProjectsService {
         }
         return this.toAdminProject(data as ProjectRow);
       }),
+      tap(() => this.clearCache()),
     );
   }
 
@@ -143,6 +156,7 @@ export class ProjectsService {
         }
         return this.toAdminProject(data as ProjectRow);
       }),
+      tap(() => this.clearCache()),
     );
   }
 
@@ -153,6 +167,7 @@ export class ProjectsService {
           console.error('Failed to delete project', error);
         }
       }),
+      tap(() => this.clearCache()),
     );
   }
 
@@ -171,6 +186,7 @@ export class ProjectsService {
           console.error('Failed to reorder projects', failed.error);
         }
       }),
+      tap(() => this.clearCache()),
     );
   }
 

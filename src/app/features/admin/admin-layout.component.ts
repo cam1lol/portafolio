@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { InboxService } from '../../core/data/inbox.service';
@@ -23,6 +23,8 @@ const NAV_GROUPS: NavGroup[] = [
       { path: 'services', label: 'Servicios', icon: 'tag' },
       { path: 'roadmap', label: 'Roadmap', icon: 'map' },
       { path: 'ticker', label: 'Ticker', icon: 'rows' },
+      { path: 'clients', label: 'Clientes', icon: 'users' },
+      { path: 'testimonials', label: 'Testimonios', icon: 'quote' },
       { path: 'site-texts', label: 'Textos del sitio', icon: 'type' },
     ],
   },
@@ -56,6 +58,19 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   onActivate(page: unknown): void {
     this.activePage = page as Partial<HasUnsavedChanges>;
+    // After routerLinkActive has marked the new link.
+    setTimeout(() => this.revealActiveLink());
+  }
+
+  private readonly nav = viewChild<ElementRef<HTMLElement>>('adminNav');
+
+  /** Mobile: the menu is a horizontal strip; scroll it so the current section is centered, not cut. */
+  private revealActiveLink(): void {
+    const nav = this.nav()?.nativeElement;
+    const active = nav?.querySelector<HTMLElement>('a.on');
+    if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
+    const left = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+    nav.scrollTo({ left: Math.max(0, left), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
   @HostListener('window:beforeunload', ['$event'])

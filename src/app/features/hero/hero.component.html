@@ -1,6 +1,7 @@
 <section class="hero wrap">
   <div class="hero-grid">
     <div>
+      <app-availability class="hero-avail reveal" appReveal />
       <div class="eyebrow reveal" style="margin-bottom: 22px" appReveal>{{ 'hero_eyebrow' | siteText }}</div>
       <h1>
         <span class="clip-wrap"><span class="clip" appReveal>{{ 'hero_l1' | siteText }}</span></span>
@@ -27,10 +28,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           {{ 'cta1' | siteText }}
         </a>
-        <a class="btn mag" href="#" appMagnetic>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
-          {{ 'cta2' | siteText }}
-        </a>
+        <app-cv-button />
       </div>
     </div>
     @defer (on viewport) {

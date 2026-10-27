@@ -1,5 +1,5 @@
 .block {
-  padding: 96px 0;
+  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
   border-top: 1px solid var(--line-soft);
 }
 

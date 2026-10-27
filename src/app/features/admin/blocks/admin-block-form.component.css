@@ -177,3 +177,8 @@ form { display: flex; flex-direction: column; }
 @media (prefers-reduced-motion: reduce) {
   .type-card { transition: none; }
 }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .link-action { min-height: 40px; }
+}

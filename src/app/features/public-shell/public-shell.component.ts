@@ -9,13 +9,15 @@ import { ServicesComponent } from '../services/services.component';
 import { RoadmapComponent } from '../roadmap/roadmap.component';
 import { ContactComponent } from '../contact/contact.component';
 import { CommentsComponent } from '../comments/comments.component';
+import { ClientsComponent } from '../clients/clients.component';
+import { TestimonialsComponent } from '../testimonials/testimonials.component';
 import { SectionVisibilityService } from '../../core/data/section-visibility.service';
 import { BlocksService } from '../../core/data/blocks.service';
 import { Block } from '../../core/data/block.model';
 import { BlockDispatcherComponent } from '../../shared/blocks/block-dispatcher.component';
 import { PageItem, PageItemsService } from '../../core/data/page-items.service';
 
-const SECTION_ORDER = ['hero', 'ticker', 'manifesto', 'projects', 'experience', 'services', 'roadmap', 'comments', 'contact'];
+const SECTION_ORDER = ['hero', 'ticker', 'manifesto', 'projects', 'clients', 'experience', 'testimonials', 'services', 'roadmap', 'comments', 'contact'];
 
 type RenderItem =
   | { key: string; kind: 'section'; sectionKey: string }
@@ -33,6 +35,8 @@ type RenderItem =
     RoadmapComponent,
     ContactComponent,
     CommentsComponent,
+    ClientsComponent,
+    TestimonialsComponent,
     BlockDispatcherComponent,
   ],
   templateUrl: './public-shell.component.html',

@@ -140,5 +140,10 @@
   "pp_play": "Play",
   "pp_loading": "Loading video",
   "pp_prev_video": "Previous video",
-  "pp_next_video": "Next video"
+  "pp_next_video": "Next video",
+  "cl_h": "// TRUSTED BY",
+  "ts_h": "TESTIMONIALS",
+  "ts_d": "What people I have worked with say",
+  "nav_menu": "Menu",
+  "nav_close": "Close menu"
 }

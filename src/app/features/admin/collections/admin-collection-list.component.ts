@@ -88,7 +88,7 @@ export class AdminCollectionListComponent implements OnInit {
       },
       error: () => {
         this.errorMessage.set(
-          `No se pudo cargar ${this.config.title}. Si es la primera vez, aplica la migración 0005_site_content.sql en Supabase.`,
+          `No se pudo cargar ${this.config.title}. Si es la primera vez, aplica la migración ${this.config.migration ?? '0005_site_content.sql'} en Supabase.`,
         );
         this.loading.set(false);
       },

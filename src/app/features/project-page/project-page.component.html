@@ -1,4 +1,5 @@
-<main class="project-page wrap">
+<!-- Touch: swipe from the left edge to go back (to the previous screen, or /proyectos). -->
+<main class="project-page wrap" appSwipeBack="/proyectos">
   @if (loaded()) {
     @if (project(); as p) {
       <a class="back mono" routerLink="/proyectos">
@@ -8,7 +9,7 @@
 
       <header class="head">
         <span class="eyebrow mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
-        <h1>{{ p.name }}</h1>
+        <h1 [style.view-transition-name]="'project-title-' + p.slug">{{ p.name }}</h1>
         <p class="lead">{{ summary(p) }}</p>
         @if (p.liveUrl || p.repoUrl) {
           <div class="links">
@@ -29,7 +30,7 @@
       }
 
       @if (hasMedia(p)) {
-        <app-project-media class="media" [project]="p" />
+        <app-project-media class="media" [project]="p" [style.view-transition-name]="'project-media-' + p.slug" />
       }
 
       @if (p.results.length) {

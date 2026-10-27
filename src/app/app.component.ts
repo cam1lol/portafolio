@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { NgTemplateOutlet, ViewportScroller } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -11,7 +12,7 @@ import { SupabaseService } from './core/supabase/supabase.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
+  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, HudComponent, RingLayerComponent, ModalComponent, TranslocoPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -54,6 +55,68 @@ export class AppComponent implements OnInit {
   );
 
   protected readonly isAdminScreen = computed(() => this.currentUrl().startsWith('/admin'));
+
+  // ---- Mobile menu (below 1180px the nav links live in a panel opened from the header)
+
+  protected readonly menuOpen = signal(false);
+  private readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>('menuButton');
+  private readonly siteHeader = viewChild<ElementRef<HTMLElement>>('siteHeader');
+
+  constructor() {
+    // Router anchor jumps (/#contact) land below the sticky header, whatever its height on this screen.
+    inject(ViewportScroller).setOffset(() => [0, (this.siteHeader()?.nativeElement.offsetHeight ?? 69) + 12]);
+    // Any navigation (a link, back button, Sitio/Admin) closes the panel.
+    effect(() => {
+      this.currentUrl();
+      this.menuOpen.set(false);
+    });
+    // Growing past the breakpoint (rotating a tablet) must not leave a hidden panel "open".
+    const desktop = window.matchMedia('(min-width: 1180px)');
+    const onChange = (event: MediaQueryListEvent) => event.matches && this.menuOpen.set(false);
+    desktop.addEventListener('change', onChange);
+    inject(DestroyRef).onDestroy(() => desktop.removeEventListener('change', onChange));
+  }
+
+  protected toggleMenu(): void {
+    this.menuOpen.update((open) => !open);
+    // After the panel is rendered (a microtask is too early: it is still display:none).
+    if (this.menuOpen()) setTimeout(() => this.menuItems()[0]?.focus());
+  }
+
+  protected closeMenu(returnFocus = false): void {
+    if (!this.menuOpen()) return;
+    this.menuOpen.set(false);
+    if (returnFocus) this.menuButton()?.nativeElement.focus();
+  }
+
+  /** Choosing a link closes the panel; the controls (language, theme) keep it open. */
+  protected onMenuClick(event: MouseEvent): void {
+    if ((event.target as HTMLElement).closest('a')) this.closeMenu();
+  }
+
+  /** Keeps Tab inside the button + panel while the panel is open. */
+  protected onMenuKeydown(event: KeyboardEvent): void {
+    if (!this.menuOpen() || event.key !== 'Tab') return;
+    const focusables = [this.menuButton()?.nativeElement, ...this.menuItems()].filter((el): el is HTMLElement => !!el);
+    const index = focusables.indexOf(document.activeElement as HTMLElement);
+    const next = event.shiftKey ? index - 1 : index + 1;
+    if (next < 0 || next >= focusables.length) {
+      event.preventDefault();
+      focusables[event.shiftKey ? focusables.length - 1 : 0].focus();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    this.closeMenu(true);
+  }
+
+  /** Visible links and buttons of the panel, in tab order. */
+  private menuItems(): HTMLElement[] {
+    const nav = this.siteHeader()?.nativeElement.querySelector('#site-menu');
+    if (!nav) return [];
+    return Array.from(nav.querySelectorAll<HTMLElement>('a, button')).filter((el) => el.offsetParent !== null);
+  }
 
   setLang(lang: 'es' | 'en'): void {
     this.transloco.setActiveLang(lang);

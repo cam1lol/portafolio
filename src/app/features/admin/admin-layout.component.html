@@ -14,7 +14,7 @@
   </div>
 
   <div class="admin-body">
-    <nav class="admin-nav" aria-label="Secciones del panel">
+    <nav #adminNav class="admin-nav" aria-label="Secciones del panel">
       @for (group of navGroups; track group.label) {
         <div class="nav-group">
           <span class="nav-group-label mono">{{ group.label }}</span>

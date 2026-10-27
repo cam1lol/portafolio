@@ -9,7 +9,7 @@ h1 {
   margin: 14px 0 18px;
   color: var(--bone);
   font-family: 'Archivo', sans-serif;
-  font-size: clamp(44px, 8vw, 104px);
+  font-size: clamp(44px, 8vw, calc(var(--maxw) * .084));
   font-weight: 900;
   line-height: .92;
   letter-spacing: -.03em;

@@ -79,6 +79,7 @@
 .lang { padding: 1px 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--bone-dim); font-size: 9px; }
 
 .field input,
+.field select,
 .field textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -92,6 +93,7 @@
 
 .field textarea { resize: vertical; }
 .field input:focus,
+.field select:focus,
 .field textarea:focus { outline: none; border-color: var(--ember); }
 
 .field-error { display: block; margin-top: 6px; color: var(--ember); font-size: 10px; }
@@ -131,3 +133,8 @@
 .state.dirty { color: var(--ember); }
 /* Jump targets clear the sticky group index. */
 .group-card { scroll-margin-top: calc(var(--site-header-h) + 72px); }
+
+/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+@media (pointer: coarse) {
+  .group-index button { min-height: 40px; }
+}
