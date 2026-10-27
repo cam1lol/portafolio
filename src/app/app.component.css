@@ -125,9 +125,11 @@ footer .mono {
   letter-spacing: .1em;
 }
 
-/* Narrow desktops: the subtitle would wrap and make the header taller. */
-@media (max-width: 1279px) {
+/* Narrow desktops: keep the header on one line (subtitle hidden, tighter links, icon-only search). */
+@media (max-width: 1439px) {
   .brand .role { display: none; }
+  nav.links { gap: 18px; }
+  .cmd-btn span { display: none; }
 }
 
 /* ---- Mobile menu: hidden on desktop, where the links sit inline in the header. */
@@ -157,7 +159,7 @@ header.menu-open .menu-btn { border-color: var(--ember); color: var(--ember); }
 .seg button:focus-visible,
 nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
-@media (max-width: 1179px) {
+@media (max-width: 1279px) {
   header {
     gap: 10px;
     padding: 12px 16px;
@@ -243,4 +245,31 @@ nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px
 @media (prefers-reduced-motion: reduce) {
   header.menu-open nav.links { animation: none; }
   .menu-btn { transition: none; }
+}
+
+/* Command palette and sound buttons (in the controls group: header on wide screens, menu on phones). */
+.cmd-btn,
+.sound-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 31px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--steel);
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.cmd-btn svg,
+.sound-btn svg { width: 14px; height: 14px; }
+.cmd-btn span { font-size: 9px; letter-spacing: .1em; }
+.cmd-btn:hover,
+.sound-btn:hover,
+.sound-btn[aria-pressed='true'] { border-color: var(--ember); color: var(--ember); }
+.cmd-btn:focus-visible,
+.sound-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+@media (pointer: coarse) {
+  .cmd-btn, .sound-btn { min-height: 40px; }
 }

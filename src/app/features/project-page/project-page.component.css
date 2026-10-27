@@ -58,6 +58,11 @@ h1 {
 .btn:focus-visible, .back:focus-visible, .pager-link:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 
 .media { margin-bottom: 56px; border: 1px solid var(--line); border-radius: var(--r); }
+/* Full-bleed hero media (edge to edge); the host clips the scrollbar overflow of 100vw. */
+:host { display: block; overflow-x: clip; }
+.media-hero { position: relative; width: 100vw; margin: 0 calc(50% - 50vw) 48px; aspect-ratio: 21 / 9; max-height: 72vh; border: 0; border-block: 1px solid var(--line); border-radius: 0; }
+.media-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 40%; background: linear-gradient(transparent, var(--ink)); pointer-events: none; }
+@media (max-width: 760px) { .media-hero { aspect-ratio: 16 / 9; margin-bottom: 32px; } }
 
 .content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 56px; align-items: start; }
 .content:has(> :only-child) { grid-template-columns: minmax(0, 820px); }

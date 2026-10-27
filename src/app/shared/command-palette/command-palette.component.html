@@ -1,0 +1,40 @@
+<dialog #dialog class="palette" [attr.aria-label]="'cmd_title' | transloco" (click)="onDialogClick($event)">
+  <div class="panel">
+    <i class="tick tl" aria-hidden="true"></i><i class="tick tr" aria-hidden="true"></i>
+    <i class="tick bl" aria-hidden="true"></i><i class="tick br" aria-hidden="true"></i>
+
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+      <input #input type="text" role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
+        [attr.aria-activedescendant]="results().length ? 'cmd-' + results()[active()].id : null"
+        [placeholder]="'cmd_placeholder' | transloco" [value]="query()" (input)="onInput($any($event.target).value)" (keydown)="onKey($event)" />
+      <kbd class="mono">ESC</kbd>
+    </div>
+
+    <div class="list" id="palette-list" role="listbox" [attr.aria-label]="'cmd_title' | transloco">
+      @for (group of groups(); track group.group) {
+        <div class="group mono" role="presentation">{{ groupLabel(group.group) }}</div>
+        @for (command of group.items; track command.id) {
+          <button type="button" role="option" class="item" [id]="'cmd-' + command.id" [attr.aria-selected]="indexOf(command) === active()"
+            tabindex="-1" (click)="execute(command)" (mousemove)="active.set(indexOf(command))">
+            <app-icon [name]="command.icon" />
+            <span class="label">{{ command.label }}</span>
+            @if (command.id === 'email' && copied()) {
+              <span class="hint ok mono">{{ 'cmd_copied' | transloco }}</span>
+            } @else if (command.hint) {
+              <span class="hint mono">{{ command.hint }}</span>
+            }
+          </button>
+        }
+      } @empty {
+        <p class="empty mono">{{ 'cmd_empty' | transloco }}</p>
+      }
+    </div>
+
+    <div class="foot mono" aria-hidden="true">
+      <span><kbd>↑</kbd><kbd>↓</kbd> {{ 'cmd_move' | transloco }}</span>
+      <span><kbd>↵</kbd> {{ 'cmd_run' | transloco }}</span>
+      <span><kbd>CTRL</kbd><kbd>K</kbd></span>
+    </div>
+  </div>
+</dialog>

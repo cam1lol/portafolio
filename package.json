@@ -8,6 +8,7 @@
     "media": "node scripts/media-server.mjs",
     "prebuild": "node scripts/media-manifest.mjs",
     "build": "ng build",
+    "postbuild": "node scripts/seo.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

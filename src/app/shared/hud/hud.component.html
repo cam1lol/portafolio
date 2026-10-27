@@ -4,4 +4,5 @@
   <!-- Scroll progress under the sticky header; section index on the home page (public site only). -->
   <span #progress class="progress" [hidden]="isAdmin()"></span>
   <span #index class="index" [hidden]="isAdmin() || !isHome()"></span>
+  @if (ritual()) { <span class="ritual mono" role="status">// RITUAL DESBLOQUEADO</span> }
 </div>

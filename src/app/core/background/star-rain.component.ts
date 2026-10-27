@@ -40,7 +40,8 @@ export class StarRainComponent implements AfterViewInit {
   private last = 0;
 
   ngAfterViewInit(): void {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // No rain with reduced motion or on modest hardware (fx-lite, see main.ts).
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('fx-lite')) return;
     const canvas = this.canvas().nativeElement;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -59,7 +60,9 @@ export class StarRainComponent implements AfterViewInit {
       const schedule = () => {
         const wait = 1600 + Math.random() * 2800;
         this.spawnTimer = setTimeout(() => {
-          if (!document.hidden) {
+          // Not during a page transition: the browser is busy enough animating the snapshots.
+          const transitioning = /vt-(forward|back|modal)/.test(document.documentElement.className);
+          if (!document.hidden && !transitioning) {
             const count = 1 + Math.floor(Math.random() * (phone ? 2 : 3));
             for (let i = 0; i < count; i++) this.meteors.push(this.newMeteor(i * 140));
             this.start(ctx);

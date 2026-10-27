@@ -1,4 +1,5 @@
 <section class="block wrap manifesto" id="about">
   <app-section-head index="01" headingKey="ab_h" descKey="ab_d" />
-  <p class="reveal" appReveal [innerHTML]="'ab_body' | siteText | inlineMarkup"></p>
+  @let body = 'ab_body' | siteText | inlineMarkup;
+  <p [appLineReveal]="body" [innerHTML]="body"></p>
 </section>

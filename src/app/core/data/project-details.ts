@@ -74,10 +74,24 @@ export interface ProjectVersion {
   notesEn: string;
 }
 
+/**
+ * Case study in three steps (problem, process, result), shown as a numbered HUD strip on the
+ * project page. Stored inside the `facts` jsonb column, so it needs no migration. Optional.
+ */
+export interface ProjectStory {
+  challengeEs: string;
+  challengeEn: string;
+  approachEs: string;
+  approachEn: string;
+  outcomeEs: string;
+  outcomeEn: string;
+}
+
 export interface ProjectDetails {
   /** Shown on the home page; /proyectos shows every published project. */
   featured: boolean;
   facts: ProjectFacts;
+  story: ProjectStory;
   results: ProjectResult[];
   screens: ProjectScreen[];
   gallery: ProjectPhoto[];
@@ -93,8 +107,12 @@ export function emptyFacts(): ProjectFacts {
   return { year: '', durationEs: '', durationEn: '', roleEs: '', roleEn: '', client: '', team: '' };
 }
 
+export function emptyStory(): ProjectStory {
+  return { challengeEs: '', challengeEn: '', approachEs: '', approachEn: '', outcomeEs: '', outcomeEn: '' };
+}
+
 export function emptyDetails(): ProjectDetails {
-  return { featured: false, facts: emptyFacts(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [] };
+  return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [] };
 }
 
 // ---- Row mapping (jsonb keys are snake_case, like `experience.subprojects`) ----
@@ -127,12 +145,14 @@ const SCREEN_KEYS: (keyof ProjectScreen)[] = ['titleEs', 'titleEn', 'descEs', 'd
 const PHOTO_KEYS: (keyof ProjectPhoto)[] = ['image', 'captionEs', 'captionEn'];
 const DOC_KEYS: (keyof ProjectDoc)[] = ['titleEs', 'titleEn', 'file', 'url'];
 const VERSION_KEYS: (keyof ProjectVersion)[] = ['version', 'date', 'notesEs', 'notesEn'];
+const STORY_KEYS: (keyof ProjectStory)[] = ['challengeEs', 'challengeEn', 'approachEs', 'approachEn', 'outcomeEs', 'outcomeEn'];
 const VIDEO_KEYS: (keyof ProjectVideo)[] = ['titleEs', 'titleEn', 'descEs', 'descEn', 'video', 'poster', 'preview', 'duration'];
 
 export function detailsFromRow(row: Json): ProjectDetails {
   return {
     featured: row['featured'] === true,
     facts: readItem<ProjectFacts>(object(row['facts']), FACT_KEYS),
+    story: readItem<ProjectStory>(object(row['facts']), STORY_KEYS),
     results: list(row['results']).map((item) => readItem<ProjectResult>(item, RESULT_KEYS)),
     screens: list(row['screens']).map((item) => readItem<ProjectScreen>(item, SCREEN_KEYS)),
     gallery: list(row['gallery']).map((item) => readItem<ProjectPhoto>(item, PHOTO_KEYS)),
@@ -150,7 +170,8 @@ export function detailsToRow(details: ProjectDetails): Json {
   const items = <T extends object>(values: T[]): Json[] => values.filter(hasContent).map(writeItem);
   return {
     featured: details.featured,
-    facts: writeItem(details.facts),
+    // The story shares the facts column (no migration): its keys never collide with the fact keys.
+    facts: { ...writeItem(details.facts), ...writeItem(details.story) },
     results: items(details.results),
     screens: items(details.screens),
     gallery: details.gallery.filter((photo) => photo.image.trim()).map(writeItem),

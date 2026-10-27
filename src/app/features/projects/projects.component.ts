@@ -29,7 +29,10 @@ export class ProjectsComponent {
   private readonly vt = inject(ProjectTransitionService);
   private readonly projectsService = inject(ProjectsService);
 
-  private readonly allProjects = toSignal(this.projectsService.getPublished(), { initialValue: [] });
+  /** undefined while loading (skeleton cards), then the list. */
+  private readonly loadedProjects = toSignal(this.projectsService.getPublished());
+  protected readonly loading = computed(() => this.loadedProjects() === undefined);
+  private readonly allProjects = computed(() => this.loadedProjects() ?? []);
   /** Home shows the featured projects (all of them while none is marked); /proyectos lists everything. */
   private readonly projects = computed(() => homeProjects(this.allProjects()));
   protected readonly totalCount = computed(() => this.allProjects().length);

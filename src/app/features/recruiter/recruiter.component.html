@@ -1,0 +1,61 @@
+<main class="recruiter wrap">
+  <header class="head">
+    <span class="eyebrow mono">// {{ 'rc_title' | transloco }}</span>
+    <h1>CAMILO AYALA</h1>
+    <p class="role mono">{{ 'role' | transloco }}</p>
+    <app-availability class="avail" />
+    <p class="lead">{{ 'hero_lead' | siteText }}</p>
+    <div class="actions">
+      <app-cv-button />
+      <a class="btn" routerLink="/" fragment="contact">{{ 'rc_contact' | transloco }}</a>
+      <button type="button" class="btn ghost" (click)="print()">{{ 'rc_print' | transloco }}</button>
+    </div>
+  </header>
+
+  <section class="figures" [attr.aria-label]="'rc_figures' | transloco">
+    <div><strong>{{ 'hero_m1_value' | siteText: '3' }}+</strong><span class="mono">{{ 'm1k' | siteText }} · {{ 'm1u' | siteText }}</span></div>
+    <div><strong>{{ 'hero_m2_value' | siteText: '11' }}+</strong><span class="mono">{{ 'm2k' | siteText }}</span></div>
+    <div><strong>{{ 'hero_m3_value' | siteText: '14' }}</strong><span class="mono">{{ 'm3k' | siteText }}</span></div>
+  </section>
+
+  @if (stack().length) {
+    <section class="block">
+      <h2 class="mono">{{ 'rc_stack' | transloco }}</h2>
+      <div class="chips">
+        @for (item of stack(); track item) { <span class="chip mono">{{ item }}</span> }
+      </div>
+    </section>
+  }
+
+  <div class="columns">
+    <section class="block">
+      <h2 class="mono">{{ 'rc_projects' | transloco }}</h2>
+      <ul class="projects">
+        @for (p of featured(); track p.id) {
+          <li>
+            <a [routerLink]="['/proyectos', p.slug]">
+              <app-icon [name]="p.icon" />
+              <span class="name">{{ p.name }}</span>
+              <span class="meta mono">{{ p.typeLabel }}</span>
+            </a>
+            <p>{{ loc(p.summaryEs, p.summaryEn) }}</p>
+          </li>
+        }
+      </ul>
+      <a class="more mono" routerLink="/proyectos">{{ 'rc_all_projects' | transloco }}</a>
+    </section>
+
+    <section class="block">
+      <h2 class="mono">{{ 'rc_experience' | transloco }}</h2>
+      <ol class="experience">
+        @for (x of experience(); track x.id) {
+          <li [class.now]="x.isCurrent">
+            <span class="period mono">{{ loc(x.periodEs, x.periodEn) }}</span>
+            <strong>{{ loc(x.roleEs, x.roleEn) }}</strong>
+            <span class="company">{{ x.company }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+  </div>
+</main>

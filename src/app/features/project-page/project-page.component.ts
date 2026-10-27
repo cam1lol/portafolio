@@ -12,6 +12,7 @@ import { relatedProjects } from '../../core/data/project-details';
 import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 import { SwipeBackDirective } from '../../shared/gestures/swipe-back.directive';
 import { ScrambleDirective } from '../../shared/directives/scramble.directive';
+import { LineRevealDirective } from '../../shared/directives/line-reveal.directive';
 import { ProjectVideosComponent } from './project-videos.component';
 
 const SITE_NAME = 'Camilo Ayala';
@@ -20,7 +21,7 @@ const SITE_NAME = 'Camilo Ayala';
 @Component({
   selector: 'app-project-page',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent, SwipeBackDirective, ScrambleDirective],
+  imports: [LineRevealDirective, RouterLink, TranslocoPipe, InlineMarkupPipe, ProjectMediaComponent, ProjectVideosComponent, SwipeBackDirective, ScrambleDirective],
   templateUrl: './project-page.component.html',
   styleUrls: ['./project-page.component.css', './project-page-details.component.css'],
 })
@@ -79,6 +80,20 @@ export class ProjectPageComponent {
   }
 
   /** Localized text: the English value when browsing in English, falling back to Spanish. */
+  /** Problem / process / result steps that have text in the current language (ES fallback). */
+  protected storySteps(p: Project): { key: string; label: string; text: string }[] {
+    const s = p.story;
+    return [
+      { key: 'challenge', label: 'pp_story_challenge', text: this.loc(s.challengeEs, s.challengeEn) },
+      { key: 'approach', label: 'pp_story_approach', text: this.loc(s.approachEs, s.approachEn) },
+      { key: 'outcome', label: 'pp_story_outcome', text: this.loc(s.outcomeEs, s.outcomeEn) },
+    ].filter((step) => step.text);
+  }
+
+  protected hasStory(p: Project): boolean {
+    return this.storySteps(p).length > 0;
+  }
+
   protected loc(es: string, en: string): string {
     return (this.isEn() ? en || es : es).trim();
   }

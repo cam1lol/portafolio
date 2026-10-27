@@ -1,20 +1,50 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, NgZone, inject } from '@angular/core';
 import { HeroSceneComponent } from '../hero-scene/hero-scene.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 import { CounterDirective } from '../../shared/directives/counter.directive';
 import { SiteTextPipe } from '../../shared/site-text/site-text.pipe';
 import { AvailabilityComponent } from '../../shared/availability/availability.component';
+import { LineRevealDirective } from '../../shared/directives/line-reveal.directive';
 import { CvButtonComponent } from '../../shared/cv-button/cv-button.component';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports: [SiteTextPipe, HeroSceneComponent, RevealDirective, MagneticDirective, CounterDirective, AvailabilityComponent, CvButtonComponent],
+  imports: [LineRevealDirective, SiteTextPipe, HeroSceneComponent, RevealDirective, MagneticDirective, CounterDirective, AvailabilityComponent, CvButtonComponent],
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.css',
 })
-export class HeroComponent {
+export class HeroComponent implements AfterViewInit {
+  private readonly host = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
+  private readonly zone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
+
+  /**
+   * Scroll parallax: --hp goes 0 -> 1 while the hero scrolls away; the CSS splits the title lines
+   * apart, fades the text and sends the 3D object back. Only touches one CSS variable per frame.
+   */
+  ngAfterViewInit(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let scheduled = false;
+    const update = () => {
+      scheduled = false;
+      const height = this.host.offsetHeight || window.innerHeight;
+      const progress = Math.min(1, Math.max(0, window.scrollY / (height * 0.9)));
+      this.host.style.setProperty('--hp', progress.toFixed(3));
+    };
+    const onScroll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    };
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      update();
+    });
+    this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+  }
+
   /** Hero stats are stored as text in `site_content`; non-numeric input shows 0. */
   protected toCount(value: string): number {
     const parsed = Number.parseInt(value, 10);

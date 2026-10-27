@@ -5,6 +5,7 @@ import {
   ProjectDetails,
   ProjectDoc,
   ProjectFacts,
+  ProjectStory,
   ProjectImprovement,
   ProjectPhoto,
   ProjectResult,
@@ -12,6 +13,7 @@ import {
   ProjectVersion,
   ProjectVideo,
   emptyFacts,
+  emptyStory,
 } from '../../../core/data/project-details';
 
 /** Form controls for the optional detail sections of a project (0010). Every field may stay empty. */
@@ -20,6 +22,7 @@ const SHORT = 80;
 const TITLE = 120;
 const CAPTION = 300;
 const NOTE = 600;
+const STORY = 1200;
 const PATH = 500;
 export const MAX_ITEMS = 30;
 
@@ -40,6 +43,18 @@ export type ImprovementGroup = FormGroup<Controls<ProjectImprovement>>;
 export type DocGroup = FormGroup<Controls<ProjectDoc>>;
 export type VersionGroup = FormGroup<Controls<ProjectVersion>>;
 export type VideoGroup = FormGroup<Controls<ProjectVideo>>;
+
+/** Problem / process / result, bilingual (empty = the strip is not shown). */
+export function storyGroup(story: ProjectStory = emptyStory()): FormGroup<Controls<ProjectStory>> {
+  return new FormGroup({
+    challengeEs: optional(STORY, true, story.challengeEs),
+    challengeEn: optional(STORY, true, story.challengeEn),
+    approachEs: optional(STORY, true, story.approachEs),
+    approachEn: optional(STORY, true, story.approachEn),
+    outcomeEs: optional(STORY, true, story.outcomeEs),
+    outcomeEn: optional(STORY, true, story.outcomeEn),
+  });
+}
 
 export function factsGroup(facts: ProjectFacts = emptyFacts()): FactsGroup {
   return new FormGroup({
@@ -140,6 +155,7 @@ export function detailControls() {
   return {
     featured: new FormControl(false, { nonNullable: true }),
     facts: factsGroup(),
+    story: storyGroup(),
     results: new FormArray<ResultGroup>([]),
     screens: new FormArray<ScreenGroup>([]),
     gallery: new FormArray<PhotoGroup>([]),
@@ -161,6 +177,7 @@ function fill<G extends FormGroup, T>(array: FormArray<G>, items: T[], create: (
 export function patchDetails(controls: DetailControls, details: ProjectDetails): void {
   controls.featured.setValue(details.featured);
   controls.facts.setValue(details.facts);
+  controls.story.setValue(details.story);
   fill(controls.results, details.results, resultGroup);
   fill(controls.screens, details.screens, screenGroup);
   fill(controls.gallery, details.gallery, photoGroup);
@@ -175,6 +192,7 @@ export function readDetails(controls: DetailControls): ProjectDetails {
   return {
     featured: controls.featured.value,
     facts: controls.facts.getRawValue(),
+    story: controls.story.getRawValue(),
     results: controls.results.getRawValue(),
     screens: controls.screens.getRawValue(),
     gallery: controls.gallery.getRawValue(),

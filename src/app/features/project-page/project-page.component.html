@@ -9,14 +9,19 @@
         {{ 'pp_all' | transloco }}
       </a>
 
+      <!-- Full-width hero: the card thumbnail grows into it when the project opens. -->
+      @if (hasMedia(p)) {
+        <app-project-media class="media" [class.media-hero]="!p.demoVideoUrl" [class.cover]="!p.demoVideoUrl" [project]="p" [style.view-transition-name]="'project-media'" />
+      }
+
       <header class="head">
         <span class="eyebrow mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
         <h1 [style.view-transition-name]="'project-title'" [appScramble]="p.name"></h1>
         <p class="lead">{{ summary(p) }}</p>
         @if (p.liveUrl || p.repoUrl) {
           <div class="links">
-            @if (p.liveUrl) { <a class="btn primary" [href]="p.liveUrl" target="_blank" rel="noopener">{{ 'pp_live' | transloco }}</a> }
-            @if (p.repoUrl) { <a class="btn" [href]="p.repoUrl" target="_blank" rel="noopener">{{ 'pp_repo' | transloco }}</a> }
+            @if (p.liveUrl) { <a class="btn primary fx-fill fx-ext" [href]="p.liveUrl" target="_blank" rel="noopener">{{ 'pp_live' | transloco }}</a> }
+            @if (p.repoUrl) { <a class="btn fx-fill fx-ext" [href]="p.repoUrl" target="_blank" rel="noopener">{{ 'pp_repo' | transloco }}</a> }
           </div>
         }
       </header>
@@ -31,8 +36,16 @@
         </dl>
       }
 
-      @if (hasMedia(p)) {
-        <app-project-media class="media" [project]="p" [style.view-transition-name]="'project-media'" />
+      @if (hasStory(p)) {
+        <section class="story" [attr.aria-label]="'pp_story' | transloco">
+          @for (step of storySteps(p); track step.key; let i = $index) {
+            <div class="story-step">
+              <span class="story-no mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <h2 class="mono">{{ step.label | transloco }}</h2>
+              <p>{{ step.text }}</p>
+            </div>
+          }
+        </section>
       }
 
       @if (p.results.length) {
@@ -49,7 +62,7 @@
 
       <div class="content">
         <section class="overview">
-          @if (longText(p)) { <div class="long" [innerHTML]="longText(p) | inlineMarkup"></div> }
+          @if (longText(p)) { <div class="long" [appLineReveal]="longText(p)" [innerHTML]="longText(p) | inlineMarkup"></div> }
           @if (highlights(p).length) {
             <h2 class="mono">{{ 'pp_highlights' | transloco }}</h2>
             <ul class="highlights">
@@ -65,7 +78,7 @@
         @if (caseStudy(p)) {
           <section class="how">
             <h2 class="mono">{{ 'pp_how' | transloco }}</h2>
-            <div class="case-study" [innerHTML]="caseStudy(p) | inlineMarkup"></div>
+            <div class="case-study" [appLineReveal]="caseStudy(p)" [innerHTML]="caseStudy(p) | inlineMarkup"></div>
           </section>
         }
       </div>

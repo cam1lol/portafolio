@@ -15,14 +15,21 @@
   width: 108vmin;
   height: 108vmin;
   opacity: .78;
-  /* The glow is applied once to the whole stack; the layers below only move,
-     so the browser composites them on the GPU without repainting. */
-  filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
-  transition: opacity .9s ease;
+  /* No filter here: a glow on the parent of spinning layers is recomputed over the whole area
+     every frame (it made page transitions stutter). Each layer carries its own glow instead. */
+  transition: opacity .9s ease, transform 1.2s cubic-bezier(.2, .7, .2, 1), filter 1.2s ease;
+}
+
+/* Easter egg (RITUAL_EVENT): the circle comes alive for a few seconds. */
+.rings.ritual {
+  opacity: 1;
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 14px rgba(242, 84, 27, .9)) drop-shadow(0 0 48px rgba(242, 84, 27, .5)) brightness(1.35);
 }
 
 /* Over text-heavy sections (set from the component) the circle steps back. */
 .rings.dimmed { opacity: .32; }
+.rings.ritual.dimmed { opacity: 1; }
 
 /* Cursor parallax: --px / --py come from the component, --d is each layer's depth. */
 .depth {
@@ -36,6 +43,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  /* Painted with its glow once, then only rotated on the GPU (cheap at any spin speed). */
+  filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
   overflow: visible;
   transform-origin: 50% 50%;
   backface-visibility: hidden;
@@ -77,8 +86,8 @@
 /* Day mode: softer on a light background */
 :host-context([data-theme="day"]) .rings {
   opacity: .25;
-  filter: none;
 }
+:host-context([data-theme="day"]) .layer { filter: none; }
 
 :host-context([data-theme="day"]) .rings.dimmed { opacity: .12; }
 

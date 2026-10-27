@@ -30,6 +30,8 @@ export function hasProjectMedia(project: Project): boolean {
     :host { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
     video, img { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
     img { object-fit: cover; }
+    /* .cover (full-bleed hero): the looping clip fills the frame too. */
+    :host(.cover) video { object-fit: cover; }
   `,
 })
 export class ProjectMediaComponent {

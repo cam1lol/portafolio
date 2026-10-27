@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, NgZone, computed, inject, viewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, NgZone, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
+import { RITUAL_EVENT } from '../../core/background/ring-layer.component';
 
 /**
  * Fixed HUD layer: corner ticks, a scroll progress line under the header and, on the home page,
@@ -31,6 +32,8 @@ export class HudComponent implements AfterViewInit {
   );
   protected readonly isAdmin = computed(() => this.url().startsWith('/admin'));
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
+  /** Easter egg label, shown while the rings run their ritual. */
+  protected readonly ritual = signal(false);
 
   ngAfterViewInit(): void {
     const bar = this.progress().nativeElement;
@@ -69,12 +72,21 @@ export class HudComponent implements AfterViewInit {
       // New page or late content (data, deferred sections): recompute.
       const sub = this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => setTimeout(schedule, 50));
       const interval = setInterval(schedule, 2000);
+      let ritualTimer: ReturnType<typeof setTimeout> | undefined;
+      const onRitual = () => this.zone.run(() => {
+        this.ritual.set(true);
+        clearTimeout(ritualTimer);
+        ritualTimer = setTimeout(() => this.zone.run(() => this.ritual.set(false)), 3800);
+      });
+      window.addEventListener(RITUAL_EVENT, onRitual);
       schedule();
       this.destroyRef.onDestroy(() => {
         window.removeEventListener('scroll', schedule);
         window.removeEventListener('resize', schedule);
         sub.unsubscribe();
         clearInterval(interval);
+        clearTimeout(ritualTimer);
+        window.removeEventListener(RITUAL_EVENT, onRitual);
       });
     });
   }

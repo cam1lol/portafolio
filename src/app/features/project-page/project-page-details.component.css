@@ -138,3 +138,13 @@
   .tour-list button, .thumb img, .related-card { transition: none; }
   .thumb:hover img { transform: none; }
 }
+
+/* Case study strip: problem -> process -> result, numbered and joined by a line. */
+.story { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 0 0 56px; }
+.story-step { position: relative; padding: 22px 22px 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
+.story-step + .story-step::before {
+  content: ''; position: absolute; top: 33px; left: -15px; width: 15px; height: 1px; background: var(--ember);
+}
+.story-no { color: var(--ember); font-size: 11px; letter-spacing: .1em; }
+.story-step h2 { margin: 8px 0 10px; color: var(--bone); font-size: 11px; letter-spacing: .16em; }
+.story-step p { margin: 0; color: var(--bone-dim); font-size: 15px; line-height: 1.6; white-space: pre-line; }

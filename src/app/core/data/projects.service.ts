@@ -4,7 +4,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { Project } from './project.model';
 import { ProjectDetails, detailsFromRow, detailsToRow } from './project-details';
 
-const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos'];
+const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'story', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos'];
 
 /**
  * Row shape returned by the Supabase `projects` table (snake_case),

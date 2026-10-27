@@ -38,7 +38,7 @@
     <ul class="list">
       @for (p of filtered(); track p.id; let i = $index) {
         <li class="item">
-          <a class="item-link" appTilt [class.no-media]="!p.previewVideo && !p.previewImage" [routerLink]="['/proyectos', p.slug]" (click)="vt.activeSlug.set(p.slug)"
+          <a class="item-link" appTilt [class.no-media]="!p.previewVideo && !p.previewImage" [routerLink]="['/proyectos', p.slug]" (click)="vt.select(p.slug, p.name, i)"
             [style.view-transition-name]="vt.name(p.slug, 'card')">
             <div class="media" [style.view-transition-name]="vt.name(p.slug, 'media')">
               @if (p.previewVideo) {
@@ -78,5 +78,9 @@
         </li>
       }
     </ul>
+  } @else {
+    <div class="skel-list" aria-hidden="true">
+      @for (n of [1, 2, 3]; track n) { <div class="skel skel-row"><i></i><i></i><i></i></div> }
+    </div>
   }
 </main>

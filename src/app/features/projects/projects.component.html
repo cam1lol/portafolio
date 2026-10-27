@@ -19,6 +19,9 @@
   </div>
 
   <div class="grid-cards">
+    @if (loading()) {
+      @for (n of [1, 2, 3]; track n) { <div class="skel skel-card" aria-hidden="true"><i></i><i></i><i></i><i></i></div> }
+    }
     @for (p of filtered(); track p.id; let i = $index) {
       <!-- Keyboard and TV remotes: focusable, opens with Enter or Space like a button. -->
       <div class="card" appReveal appTilt [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
@@ -55,7 +58,7 @@
 
   @if (totalCount()) {
     <div class="see-all-row" appReveal>
-      <a class="see-all mono" routerLink="/proyectos">
+      <a class="see-all mono fx-fill" routerLink="/proyectos">
         {{ 'wk_all' | transloco: { n: totalCount() } }}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </a>

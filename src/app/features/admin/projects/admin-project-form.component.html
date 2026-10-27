@@ -248,6 +248,41 @@
           </div>
         </div>
 
+        <h3 class="list-title">Caso de estudio · problema → proceso → resultado</h3>
+        <p class="step-hint">Opcional. Se muestra como tres pasos numerados en la página del proyecto; si los dejas vacíos, no aparece.</p>
+        <div formGroupName="story">
+          <div class="grid-2">
+            <div class="field">
+              <label for="story-challengeEs">Problema <span class="lang">ES</span></label>
+              <textarea id="story-challengeEs" formControlName="challengeEs" rows="3" maxlength="1200" placeholder="Qué había que resolver y por qué importaba."></textarea>
+            </div>
+            <div class="field">
+              <label for="story-challengeEn">Problema <span class="lang">EN</span></label>
+              <textarea id="story-challengeEn" formControlName="challengeEn" rows="3" maxlength="1200"></textarea>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="story-approachEs">Proceso <span class="lang">ES</span></label>
+              <textarea id="story-approachEs" formControlName="approachEs" rows="3" maxlength="1200" placeholder="Cómo lo abordaste: decisiones, tecnología, iteraciones."></textarea>
+            </div>
+            <div class="field">
+              <label for="story-approachEn">Proceso <span class="lang">EN</span></label>
+              <textarea id="story-approachEn" formControlName="approachEn" rows="3" maxlength="1200"></textarea>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="story-outcomeEs">Resultado <span class="lang">ES</span></label>
+              <textarea id="story-outcomeEs" formControlName="outcomeEs" rows="3" maxlength="1200" placeholder="Qué se logró. Si tienes cifras, ponlas también en Resultados."></textarea>
+            </div>
+            <div class="field">
+              <label for="story-outcomeEn">Resultado <span class="lang">EN</span></label>
+              <textarea id="story-outcomeEn" formControlName="outcomeEn" rows="3" maxlength="1200"></textarea>
+            </div>
+          </div>
+        </div>
+
         <h3 class="list-title">Resultados con cifras <span class="list-count mono">{{ form.controls.results.length }}</span></h3>
         <p class="step-hint">Una cifra y su contexto, por ejemplo "-40 %" · "tiempo de carga" · "tras optimizar imágenes y lazy loading". Usa solo datos reales.</p>
         <div formArrayName="results">

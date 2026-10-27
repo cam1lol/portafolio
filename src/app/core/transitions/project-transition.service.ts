@@ -23,6 +23,8 @@ export class ProjectTransitionService {
 
   /** Project whose card should carry the shared names: the one just opened, or the one we come back from. */
   readonly activeSlug = signal<string | null>(null);
+  /** HUD label shown in the middle of the screen while a project opens ("PROYECTO 03 // NAME"). */
+  readonly interstitial = signal<{ index: string; name: string } | null>(null);
   /** True while a project transition runs; the page title waits for it before its decode effect. */
   readonly transitioning = signal(false);
 
@@ -56,6 +58,12 @@ export class ProjectTransitionService {
   /** Shared `view-transition-name`, only on the active project's card (names must be unique on a page). */
   name(slug: string, part: SharedPart): string | null {
     return this.activeSlug() === slug ? `project-${part}` : null;
+  }
+
+  /** A card was chosen: it carries the shared names, and its name/number feed the HUD label. */
+  select(slug: string, name?: string, position?: number): void {
+    this.activeSlug.set(slug);
+    this.interstitial.set(name ? { index: String((position ?? 0) + 1).padStart(2, '0'), name } : null);
   }
 
   skipNextTransition(): void {
@@ -117,6 +125,7 @@ export class ProjectTransitionService {
     finished.finally(() => {
       root.remove(className);
       this.transitioning.set(false);
+      this.interstitial.set(null);
     });
   }
 }

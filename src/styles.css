@@ -216,16 +216,19 @@ html.vt-back .vt-frame { opacity: 1; }
   top: var(--vt-y);
   left: var(--vt-x);
   z-index: 60;
-  width: 0;
-  height: 0;
+  /* Grown with transform (compositor only, no layout per frame); 60vmax x5 reaches the same
+     radius as the circular reveal while keeping the GPU texture small. */
+  display: none;
+  width: 60vmax;
+  height: 60vmax;
   border: 2px solid var(--ember);
   border-radius: 50%;
   box-shadow: 0 0 24px 4px rgba(242, 84, 27, .55), inset 0 0 24px 2px rgba(242, 84, 27, .35);
   opacity: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0);
   pointer-events: none;
 }
-html.vt-forward .vt-ring { animation: vt-ring .78s cubic-bezier(.3, .7, .2, 1) both; }
+html.vt-forward .vt-ring { display: block; animation: vt-ring .78s cubic-bezier(.3, .7, .2, 1) both; }
 
 /* Navigations that should not animate (same page, admin, after the swipe gesture): instant. */
 html.vt-instant::view-transition-group(*),
@@ -297,15 +300,15 @@ html.vt-modal::view-transition-new(project-card) { animation: vt-fade-in .3s eas
 
 @keyframes vt-fade-out { to { opacity: 0; } }
 @keyframes vt-fade-in { from { opacity: 0; } }
-@keyframes vt-dim-out { to { opacity: 0; filter: brightness(.4) blur(2px); transform: scale(.97); } }
+@keyframes vt-dim-out { to { opacity: 0; transform: scale(.97); } }
 @keyframes vt-reveal {
   from { clip-path: circle(0 at var(--vt-x) var(--vt-y)); }
   to { clip-path: circle(150vmax at var(--vt-x) var(--vt-y)); }
 }
 @keyframes vt-ring {
-  0% { width: 0; height: 0; opacity: 1; }
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
   70% { opacity: .9; }
-  100% { width: 300vmax; height: 300vmax; opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
 }
 @keyframes vt-frame-in-out {
   0% { opacity: 0; }
@@ -392,3 +395,166 @@ app-icon[data-anim='rocket'] svg path:first-child { animation: icon-flame .5s st
   app-icon[data-anim] svg * { animation: none !important; }
 }
 
+
+/* ---------------------------------------------------------------------------
+   Line reveal (shared/directives/line-reveal.directive): words rise line by line.
+   --------------------------------------------------------------------------- */
+.lr-pending { opacity: 0; }
+.lr-play .lr-w { display: inline-block; animation: lr-rise .7s var(--ease) both; }
+@keyframes lr-rise { from { opacity: 0; transform: translateY(.7em); } }
+@media (prefers-reduced-motion: reduce) {
+  .lr-pending { opacity: 1; }
+  .lr-play .lr-w { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons: .fx-fill rises a fill from the bottom on hover (ember on outlined
+   buttons, bone on ember ones). .fx-ext adds an animated diagonal arrow to links
+   that open another site. Opt-in classes, so component button styles stay intact.
+   --------------------------------------------------------------------------- */
+.fx-fill { position: relative; z-index: 0; overflow: hidden; }
+.fx-fill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ember);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .35s var(--ease);
+}
+.fx-fill.primary::before { background: var(--bone); }
+.fx-fill.fx-fill:hover,
+.fx-fill.fx-fill:focus-visible { color: var(--ink); border-color: var(--ember); }
+.fx-fill:hover::before,
+.fx-fill:focus-visible::before { transform: scaleY(1); }
+.fx-fill svg { transition: transform .35s var(--ease); }
+.fx-fill:hover svg { transform: translateX(3px); }
+
+.fx-ext::after {
+  content: '';
+  display: inline-block;
+  width: .75em;
+  height: .75em;
+  margin-left: .45em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M7 17L17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M7 17L17 7M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform .3s var(--ease);
+}
+.fx-ext:hover::after,
+.fx-ext:focus-visible::after { transform: translate(3px, -3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-fill::before, .fx-fill svg, .fx-ext::after { transition: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Film grain: a barely visible static noise over the whole site, so flat dark
+   surfaces do not read as "plain digital". Pure SVG turbulence, no image request.
+   --------------------------------------------------------------------------- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .045;
+}
+[data-theme='day'] body::after { opacity: .03; filter: invert(1); }
+
+/* ---------------------------------------------------------------------------
+   Loading skeletons: ghost cards with an ember scan sweep, while data arrives.
+   --------------------------------------------------------------------------- */
+.skel {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  overflow: hidden;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--graphite);
+}
+.skel i { display: block; height: 10px; border-radius: 2px; background: var(--graphite-2); }
+.skel i:nth-child(1) { width: 34px; height: 34px; margin-bottom: 8px; }
+.skel i:nth-child(2) { width: 60%; height: 18px; }
+.skel i:nth-child(3) { width: 90%; }
+.skel i:nth-child(4) { width: 70%; }
+.skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(242, 84, 27, .08) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: skel-scan 1.6s ease-in-out infinite;
+}
+.skel-card { min-height: 260px; }
+.skel-row { min-height: 120px; margin-bottom: 14px; }
+.skel-row i:nth-child(1) { width: 120px; height: 10px; margin-bottom: 4px; }
+@keyframes skel-scan { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skel::after { animation: none; } }
+
+/* Printing (recruiter mode one-pager): no site chrome or effects, plain white page. */
+@media print {
+  body { background: #fff; }
+  body::after, app-root > header, app-hud, app-ring-layer, app-star-rain, app-boot, footer, .vt-ring, .menu-scrim { display: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Interstitial: HUD label in the middle of the open-project transition
+   ("PROYECTO 03 // NAME"). Its own transition layer on top; visible only while a
+   forward transition runs. To turn it off, set .vt-interstitial { display: none }.
+   --------------------------------------------------------------------------- */
+.vt-interstitial {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 80;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 28px 44px;
+  color: var(--bone);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  view-transition-name: vt-interstitial;
+}
+html.vt-forward .vt-interstitial { opacity: 1; }
+.vt-interstitial .k { color: var(--ember); font-size: 11px; letter-spacing: .3em; }
+.vt-interstitial strong { font: 900 clamp(34px, 5vw, 64px)/1 'Archivo', sans-serif; letter-spacing: -.02em; text-transform: uppercase; }
+.vt-interstitial .s { color: var(--steel); font-size: 10px; letter-spacing: .2em; }
+.vt-interstitial .c { position: absolute; width: 14px; height: 14px; border: 1.5px solid var(--ember); animation: vt-corner .45s var(--ease) both; }
+.vt-interstitial .tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.vt-interstitial .tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.vt-interstitial .bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.vt-interstitial .br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+@keyframes vt-corner { from { opacity: 0; transform: scale(2.2); } }
+
+/* Only the new (live) snapshot is shown: appear fast, hold, leave as the page settles. */
+::view-transition-old(vt-interstitial) { display: none; }
+::view-transition-group(vt-interstitial) { animation: none; }
+::view-transition-new(vt-interstitial) { animation: vt-interstitial .8s var(--ease) both; }
+@keyframes vt-interstitial {
+  0% { opacity: 0; transform: scale(.96); }
+  18%, 58% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: scale(1.04); }
+}
+@media (max-width: 760px), (prefers-reduced-motion: reduce) {
+  .vt-interstitial { display: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   fx-lite (modest hardware, set in main.ts): same site, cheaper effects. The open
+   transition keeps the card morph and the content rise, without the circular reveal,
+   the ember ring or the HUD label; simpler ring glow; no grain.
+   --------------------------------------------------------------------------- */
+html.fx-lite.vt-forward::view-transition-new(root) { animation: vt-fade-in .4s var(--ease) both; }
+html.fx-lite .vt-ring,
+html.fx-lite .vt-interstitial,
+html.fx-lite body::after { display: none; }
+html.fx-lite app-ring-layer .layer { filter: none; }

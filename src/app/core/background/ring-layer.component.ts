@@ -1,6 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, NgZone, inject, viewChild } from '@angular/core';
 import { RING_BURST_EVENT } from '../transitions/project-transition.service';
 
+/** Easter egg (Konami code or typing "ritual", see AppComponent): the circle comes alive for a moment. */
+export const RITUAL_EVENT = 'portfolio:ritual';
+
 const RUNES = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛏᛒᛖᛗᛚᛜᛞᛟ·';
 
 /** Sections with long text: the circle fades while one of them crosses the middle of the screen. */
@@ -234,6 +237,8 @@ export class RingLayerComponent implements AfterViewInit {
     // Opening a project: a sudden spin-up that settles back on its own (same slow ease as scrolling).
     const onBurst = () => (rate = Math.max(rate, 8));
     window.addEventListener(RING_BURST_EVENT, onBurst);
+    const onRitual = () => (rate = 14);
+    window.addEventListener(RITUAL_EVENT, onRitual);
 
     const frame = (now: number) => {
       const dt = Math.max(16, now - lastT);
@@ -264,6 +269,7 @@ export class RingLayerComponent implements AfterViewInit {
       window.removeEventListener('pointermove', onPointer);
       document.removeEventListener('mouseout', onLeave);
       window.removeEventListener(RING_BURST_EVENT, onBurst);
+      window.removeEventListener(RITUAL_EVENT, onRitual);
     });
   }
 
@@ -326,9 +332,25 @@ export class RingLayerComponent implements AfterViewInit {
     // Opening a project fires a quicker pulse right away (and restarts the irregular timer).
     const onBurst = () => fire(1600);
     window.addEventListener(RING_BURST_EVENT, onBurst);
+    // Ritual: three quick pulses, every rune lit, the whole circle glowing for a few seconds.
+    const ritualTimers: ReturnType<typeof setTimeout>[] = [];
+    const onRitual = () => {
+      root.classList.add('ritual');
+      root.querySelectorAll('.rune').forEach((rune) => rune.classList.add('lit'));
+      [0, 700, 1400].forEach((delay) => ritualTimers.push(setTimeout(() => fire(1500), delay)));
+      ritualTimers.push(
+        setTimeout(() => {
+          root.classList.remove('ritual');
+          root.querySelectorAll('.rune.lit').forEach((rune) => rune.classList.remove('lit'));
+        }, 4200),
+      );
+    };
+    window.addEventListener(RITUAL_EVENT, onRitual);
     this.destroyRef.onDestroy(() => {
       clearTimeout(timeout);
+      ritualTimers.forEach(clearTimeout);
       window.removeEventListener(RING_BURST_EVENT, onBurst);
+      window.removeEventListener(RITUAL_EVENT, onRitual);
     });
   }
 

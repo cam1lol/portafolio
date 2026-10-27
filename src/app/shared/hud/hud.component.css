@@ -68,3 +68,21 @@
 @media (max-width: 760px) {
   .index { display: none; }
 }
+
+/* Easter egg label (Konami code or typing "ritual"). */
+.ritual {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: var(--ember);
+  font-size: 12px;
+  letter-spacing: .3em;
+  text-shadow: 0 0 18px rgba(242, 84, 27, .8);
+  transform: translate(-50%, -50%);
+  animation: ritual-label 3.8s ease both;
+}
+@keyframes ritual-label {
+  0% { opacity: 0; letter-spacing: .8em; }
+  15%, 80% { opacity: 1; letter-spacing: .3em; }
+  100% { opacity: 0; }
+}

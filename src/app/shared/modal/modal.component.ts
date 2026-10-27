@@ -98,6 +98,8 @@ export class ModalComponent {
 
   /** "Open project page": the router runs its own transition, so close without one. */
   protected closeForNavigation(): void {
+    const state = this.active();
+    if (state?.kind === 'project') this.vt.select(state.data.slug, state.data.name);
     this.modalService.close();
   }
 

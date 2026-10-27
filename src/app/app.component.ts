@@ -6,15 +6,19 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { filter, map, startWith } from 'rxjs';
 import { HudComponent } from './shared/hud/hud.component';
 import { BootComponent } from './shared/boot/boot.component';
+import { CommandPaletteComponent } from './shared/command-palette/command-palette.component';
+import { SoundService } from './core/sound/sound.service';
+import { ProjectTransitionService, RING_BURST_EVENT } from './core/transitions/project-transition.service';
 import { ThemeService } from './core/theme/theme.service';
 import { RingLayerComponent } from './core/background/ring-layer.component';
 import { StarRainComponent } from './core/background/star-rain.component';
+import { RITUAL_EVENT } from './core/background/ring-layer.component';
 import { ModalComponent } from './shared/modal/modal.component';
 import { SupabaseService } from './core/supabase/supabase.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, HudComponent, BootComponent, RingLayerComponent, StarRainComponent, ModalComponent, TranslocoPipe],
+  imports: [RouterOutlet, RouterLink, NgTemplateOutlet, HudComponent, BootComponent, CommandPaletteComponent, RingLayerComponent, StarRainComponent, ModalComponent, TranslocoPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -23,6 +27,8 @@ export class AppComponent implements OnInit {
   private readonly supabase = inject(SupabaseService);
   protected readonly transloco = inject(TranslocoService);
   protected readonly themeService = inject(ThemeService);
+  protected readonly sound = inject(SoundService);
+  protected readonly vt = inject(ProjectTransitionService);
 
   ngOnInit(): void {
     this.trackVisit();
@@ -61,13 +67,15 @@ export class AppComponent implements OnInit {
   /** First-visit intro on the home page (see BootComponent). */
   protected readonly showBoot = signal(BootComponent.shouldShow(location.pathname));
 
-  // ---- Mobile menu (below 1180px the nav links live in a panel opened from the header)
+  // ---- Mobile menu (below 1280px the nav links live in a panel opened from the header)
 
   protected readonly menuOpen = signal(false);
   private readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>('menuButton');
   private readonly siteHeader = viewChild<ElementRef<HTMLElement>>('siteHeader');
 
   constructor() {
+    this.wireSounds();
+
     // Router anchor jumps (/#contact) land below the sticky header, whatever its height on this screen.
     inject(ViewportScroller).setOffset(() => [0, (this.siteHeader()?.nativeElement.offsetHeight ?? 69) + 12]);
     // Any navigation (a link, back button, Sitio/Admin) closes the panel.
@@ -76,7 +84,7 @@ export class AppComponent implements OnInit {
       this.menuOpen.set(false);
     });
     // Growing past the breakpoint (rotating a tablet) must not leave a hidden panel "open".
-    const desktop = window.matchMedia('(min-width: 1180px)');
+    const desktop = window.matchMedia('(min-width: 1280px)');
     const onChange = (event: MediaQueryListEvent) => event.matches && this.menuOpen.set(false);
     desktop.addEventListener('change', onChange);
     inject(DestroyRef).onDestroy(() => desktop.removeEventListener('change', onChange));
@@ -108,6 +116,40 @@ export class AppComponent implements OnInit {
     if (next < 0 || next >= focusables.length) {
       event.preventDefault();
       focusables[event.shiftKey ? focusables.length - 1 : 0].focus();
+    }
+  }
+
+  /** Interface sounds (only when the visitor turned sound on; SoundService checks it). */
+  private wireSounds(): void {
+    const interactive = 'a, button, [role="button"]';
+    let lastTarget: Element | null = null;
+    document.addEventListener('pointerover', (event) => {
+      const hit = (event.target as Element | null)?.closest?.(interactive) ?? null;
+      if (hit && hit !== lastTarget && event.pointerType === 'mouse') this.sound.tick();
+      lastTarget = hit;
+    }, { passive: true });
+    document.addEventListener('click', (event) => {
+      if ((event.target as Element | null)?.closest?.(interactive)) this.sound.click();
+    }, { passive: true, capture: true });
+    window.addEventListener(RING_BURST_EVENT, () => this.sound.whoosh());
+    window.addEventListener(RITUAL_EVENT, () => this.sound.ritual());
+  }
+
+  // ---- Easter egg: Konami code, or typing "ritual" outside form fields.
+
+  private keyTrail: string[] = [];
+
+  @HostListener('document:keydown', ['$event'])
+  protected onSecretKey(event: KeyboardEvent): void {
+    const target = event.target;
+    const typing = target instanceof Element && !!target.closest('input, textarea, select, [contenteditable]');
+    if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
+    this.keyTrail = [...this.keyTrail, event.key.toLowerCase()].slice(-10);
+    const trail = this.keyTrail.join(' ');
+    const konami = 'arrowup arrowup arrowdown arrowdown arrowleft arrowright arrowleft arrowright b a';
+    if (trail.endsWith(konami) || this.keyTrail.slice(-6).join('') === 'ritual') {
+      this.keyTrail = [];
+      window.dispatchEvent(new Event(RITUAL_EVENT));
     }
   }
 

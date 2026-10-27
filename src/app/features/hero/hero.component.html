@@ -8,7 +8,8 @@
         <span class="clip-wrap"><span class="clip out" appReveal>{{ 'hero_l2' | siteText }}</span></span>
         <span class="clip-wrap"><span class="clip" appReveal>{{ 'hero_l3' | siteText }}</span></span>
       </h1>
-      <p class="lead reveal" appReveal>{{ 'hero_lead' | siteText }}</p>
+      @let lead = 'hero_lead' | siteText;
+      <p class="lead" [appLineReveal]="lead" [textContent]="lead"></p>
       <div class="meta-row reveal" appReveal>
         <div class="b">
           <div class="k eyebrow">{{ 'm1k' | siteText }}</div>
@@ -24,14 +25,15 @@
         </div>
       </div>
       <div class="cta-row reveal" appReveal>
-        <a class="btn primary mag" href="#work" appMagnetic>
+        <a class="btn primary mag fx-fill" href="#work" appMagnetic>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           {{ 'cta1' | siteText }}
         </a>
         <app-cv-button />
       </div>
     </div>
-    @defer (on viewport) {
+    <!-- After first paint: the title (largest element) shows before three.js downloads. -->
+    @defer (on idle) {
       <app-hero-scene />
     } @placeholder {
       <div style="min-height: 300px"></div>

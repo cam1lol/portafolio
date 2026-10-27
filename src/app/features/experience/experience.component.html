@@ -8,6 +8,9 @@
   <div class="tl" #timeline>
     <div class="tl-line"></div>
     <div>
+      @if (loading()) {
+        @for (n of [1, 2]; track n) { <div class="skel skel-row" aria-hidden="true"><i></i><i></i><i></i></div> }
+      }
       @for (x of EXPERIENCE(); track x.id; let i = $index) {
         <div
           class="tl-node reveal"

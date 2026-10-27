@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <!-- Inline on desktop; below 1180px it becomes the panel opened by the menu button. -->
+  <!-- Inline on desktop; below 1280px it becomes the panel opened by the menu button. -->
   <nav class="links" id="site-menu" [attr.aria-label]="'nav_menu' | transloco" (click)="onMenuClick($event)" (keydown)="onMenuKeydown($event)">
     <a routerLink="/" fragment="work">{{ 'nav_work' | transloco }}</a>
     <a routerLink="/proyectos">{{ 'nav_projects' | transloco }}</a>
@@ -37,9 +37,29 @@
 </header>
 <!-- Ember ring that rides the edge of the circular reveal when a project opens (styles.css). -->
 <div class="vt-ring" aria-hidden="true"></div>
+<app-command-palette #palette />
+<!-- HUD label in the middle of the open-project transition (styles.css, "Interstitial"). -->
+@if (vt.interstitial(); as label) {
+  <div class="vt-interstitial" aria-hidden="true">
+    <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+    <span class="k mono">{{ 'vt_project' | transloco }} {{ label.index }}</span>
+    <strong>{{ label.name }}</strong>
+    <span class="s mono">// {{ 'vt_case_study' | transloco }}</span>
+  </div>
+}
 @if (menuOpen()) { <div class="menu-scrim" (click)="closeMenu()" aria-hidden="true"></div> }
 
 <ng-template #controls>
+  <button type="button" class="cmd-btn" (click)="palette.open()" [attr.aria-label]="'cmd_title' | transloco">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+    <span class="mono">CTRL K</span>
+  </button>
+  <button type="button" class="sound-btn" (click)="sound.toggle()" [attr.aria-pressed]="sound.enabled()" [attr.aria-label]="(sound.enabled() ? 'cmd_sound_off' : 'cmd_sound_on') | transloco">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <path d="M11 5L6 9H2v6h4l5 4V5z" />
+      @if (sound.enabled()) { <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" /> } @else { <path d="M22 9l-6 6M16 9l6 6" /> }
+    </svg>
+  </button>
   <div class="seg lang">
     <button type="button" [class.on]="transloco.getActiveLang() === 'es'" [attr.aria-pressed]="transloco.getActiveLang() === 'es'" (click)="setLang('es')">ES</button>
     <button type="button" [class.on]="transloco.getActiveLang() === 'en'" [attr.aria-pressed]="transloco.getActiveLang() === 'en'" (click)="setLang('en')">EN</button>

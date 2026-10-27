@@ -29,7 +29,10 @@
         @if (visibility()['roadmap'] !== false) { <app-roadmap /> }
       }
       @case ('comments') {
-        @if (visibility()['comments'] !== false) { <app-comments /> }
+        <!-- Deferred (forms code); a placeholder keeps the page height so the layout does not jump. -->
+        @if (visibility()['comments'] !== false) {
+          @defer (on viewport; prefetch on idle) { <app-comments /> } @placeholder { <div style="min-height: 480px"></div> }
+        }
       }
       @case ('contact') {
         @if (visibility()['contact'] !== false) { <app-contact /> }

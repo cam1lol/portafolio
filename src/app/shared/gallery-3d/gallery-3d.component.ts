@@ -10,7 +10,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import * as THREE from 'three';
+// Named imports (not "* as THREE") so the build can drop the parts of three.js this file does not use.
+import { Box3, DirectionalLight, Group, HemisphereLight, Mesh, Object3D, PerspectiveCamera, SRGBColorSpace, Scene, Texture, Vector3, WebGLRenderer } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { SupabaseService } from '../../core/supabase/supabase.service';
@@ -42,11 +43,11 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
 
-  private renderer?: THREE.WebGLRenderer;
-  private scene?: THREE.Scene;
-  private camera?: THREE.PerspectiveCamera;
+  private renderer?: WebGLRenderer;
+  private scene?: Scene;
+  private camera?: PerspectiveCamera;
   private controls?: OrbitControls;
-  private model?: THREE.Object3D;
+  private model?: Object3D;
   private resizeObserver?: ResizeObserver;
   private intersectionObserver?: IntersectionObserver;
   private rafId?: number;
@@ -92,21 +93,21 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
     const host = this.host().nativeElement;
     const width = Math.max(host.clientWidth, 1);
     const height = Math.max(host.clientHeight, 1);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(width, height);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.outputColorSpace = SRGBColorSpace;
     host.appendChild(renderer.domElement);
     this.renderer = renderer;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(38, width / height, 0.1, 100);
     camera.position.set(0, 0, 4.4);
-    scene.add(new THREE.HemisphereLight(0xe9eaed, 0x171a21, 2.2));
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    scene.add(new HemisphereLight(0xe9eaed, 0x171a21, 2.2));
+    const keyLight = new DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(3, 4, 5);
     scene.add(keyLight);
-    const fillLight = new THREE.DirectionalLight(0xf2541b, 1.1);
+    const fillLight = new DirectionalLight(0xf2541b, 1.1);
     fillLight.position.set(-3, 1, -2);
     scene.add(fillLight);
 
@@ -158,7 +159,7 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
       if (version !== this.loadVersion) return;
 
-      const gltf = await new Promise<{ scene: THREE.Group }>((resolve, reject) => {
+      const gltf = await new Promise<{ scene: Group }>((resolve, reject) => {
         new GLTFLoader().parse(buffer, '', resolve, reject);
       });
       if (version !== this.loadVersion) {
@@ -167,8 +168,8 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
 
       const model = gltf.scene;
-      const initialBox = new THREE.Box3().setFromObject(model);
-      const initialSize = initialBox.getSize(new THREE.Vector3());
+      const initialBox = new Box3().setFromObject(model);
+      const initialSize = initialBox.getSize(new Vector3());
       const maxDimension = Math.max(initialSize.x, initialSize.y, initialSize.z);
       if (!Number.isFinite(maxDimension) || maxDimension <= 0) {
         this.disposeObject(model);
@@ -176,8 +177,8 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
 
       model.scale.setScalar(2.4 / maxDimension);
-      const scaledBox = new THREE.Box3().setFromObject(model);
-      model.position.sub(scaledBox.getCenter(new THREE.Vector3()));
+      const scaledBox = new Box3().setFromObject(model);
+      model.position.sub(scaledBox.getCenter(new Vector3()));
       this.scene?.add(model);
       this.model = model;
       this.loading.set(false);
@@ -248,14 +249,14 @@ export class Gallery3dComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.rafId = undefined;
   }
 
-  private disposeObject(root: THREE.Object3D): void {
+  private disposeObject(root: Object3D): void {
     root.traverse((object) => {
-      const mesh = object as THREE.Mesh;
+      const mesh = object as Mesh;
       mesh.geometry?.dispose();
       const materials = Array.isArray(mesh.material) ? mesh.material : mesh.material ? [mesh.material] : [];
       for (const material of materials) {
         for (const value of Object.values(material)) {
-          if (value instanceof THREE.Texture) value.dispose();
+          if (value instanceof Texture) value.dispose();
         }
         material.dispose();
       }

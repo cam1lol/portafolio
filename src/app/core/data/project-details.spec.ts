@@ -27,6 +27,20 @@ describe('project details mapping', () => {
     expect(details.improvements[0].status).toBe('planned');
   });
 
+  it('caso de estudio: se guarda dentro de facts sin pisar la ficha y se lee de vuelta', () => {
+    const story = { challengeEs: 'El reto', challengeEn: 'The challenge', approachEs: 'Cómo', approachEn: '', outcomeEs: 'Qué salió', outcomeEn: '' };
+    const facts = { ...emptyDetails().facts, year: '2025', client: 'Acme' };
+    const row = detailsToRow({ ...emptyDetails(), facts, story });
+    const stored = row['facts'] as Record<string, string>;
+    expect(stored['year']).toBe('2025');
+    expect(stored['challenge_es']).toBe('El reto');
+    const back = detailsFromRow(row);
+    expect(back.story).toEqual(story);
+    expect(back.facts.client).toBe('Acme');
+    // Projects saved before the story existed read an empty one.
+    expect(detailsFromRow({ facts: { year: '2020' } }).story.challengeEs).toBe('');
+  });
+
   it('videos: lee y escribe título, descripción, archivo, póster, vista previa y duración; descarta los que no tienen archivo', () => {
     const details = detailsFromRow({ videos: [{ title_es: 'Recorrido', title_en: 'Tour', desc_es: 'Todo el flujo', video: '/media/projects/x/tour.mp4', poster: '/media/projects/x/tour.webp', preview: '/media/projects/x/tour.preview.mp4', duration: '2:15' }] });
     expect(details.videos[0]).toEqual({ titleEs: 'Recorrido', titleEn: 'Tour', descEs: 'Todo el flujo', descEn: '', video: '/media/projects/x/tour.mp4', poster: '/media/projects/x/tour.webp', preview: '/media/projects/x/tour.preview.mp4', duration: '2:15' });
