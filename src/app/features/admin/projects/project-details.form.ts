@@ -2,6 +2,8 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Valida
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import {
   ImprovementStatus,
+  ResultsStyle,
+  StoryLayout,
   ProjectChapter,
   ProjectDetails,
   ProjectDoc,
@@ -10,6 +12,7 @@ import {
   ProjectImprovement,
   ProjectPhoto,
   ProjectResult,
+  ProjectHotspot,
   ProjectScreen,
   ProjectVersion,
   ProjectVideo,
@@ -49,6 +52,17 @@ export type DocGroup = FormGroup<Controls<ProjectDoc>>;
 export type VersionGroup = FormGroup<Controls<ProjectVersion>>;
 export type VideoGroup = FormGroup<Controls<ProjectVideo>>;
 export type ChapterGroup = FormGroup<Controls<ProjectChapter>>;
+export type HotspotGroup = FormGroup<Controls<ProjectHotspot>>;
+
+/** A point of interest: where it is (percent of the image) and its bilingual label. */
+export function hotspotGroup(item?: Partial<ProjectHotspot>): HotspotGroup {
+  return new FormGroup({
+    x: new FormControl(item?.x ?? 50, { nonNullable: true }),
+    y: new FormControl(item?.y ?? 50, { nonNullable: true }),
+    labelEs: optional(SHORT, false, item?.labelEs),
+    labelEn: optional(SHORT, false, item?.labelEn),
+  });
+}
 
 /** Problem / process / result, bilingual (empty = the strip is not shown). */
 export function storyGroup(story: ProjectStory = emptyStory()): FormGroup<Controls<ProjectStory>> {
@@ -232,6 +246,11 @@ export function detailControls() {
     chapters: new FormArray<ChapterGroup>([]),
     mediaFocus: new FormControl(DEFAULT_MEDIA_FOCUS, { nonNullable: true }),
     sectionOrder: new FormControl<string[]>([], { nonNullable: true }),
+    storyLayout: new FormControl<StoryLayout>('timeline', { nonNullable: true }),
+    resultsStyle: new FormControl<ResultsStyle>('numbers', { nonNullable: true }),
+    mobileVideo: optional(PATH),
+    mobileImages: new FormControl<string[]>([], { nonNullable: true }),
+    hotspots: new FormArray<HotspotGroup>([]),
   };
 }
 
@@ -257,6 +276,11 @@ export function patchDetails(controls: DetailControls, details: ProjectDetails):
   fill(controls.chapters, details.chapters, chapterGroup);
   controls.mediaFocus.setValue(details.mediaFocus || DEFAULT_MEDIA_FOCUS);
   controls.sectionOrder.setValue(details.sectionOrder ?? []);
+  controls.storyLayout.setValue(details.storyLayout ?? 'timeline');
+  controls.resultsStyle.setValue(details.resultsStyle ?? 'numbers');
+  controls.mobileVideo.setValue(details.mobileVideo ?? '');
+  controls.mobileImages.setValue(details.mobileImages ?? []);
+  fill(controls.hotspots, details.hotspots ?? [], hotspotGroup);
 }
 
 /** Reads the form back as `ProjectDetails` (empty items are dropped by the service mapping). */
@@ -275,6 +299,11 @@ export function readDetails(controls: DetailControls): ProjectDetails {
     chapters: controls.chapters.getRawValue(),
     mediaFocus: controls.mediaFocus.value,
     sectionOrder: controls.sectionOrder.value,
+    storyLayout: controls.storyLayout.value,
+    resultsStyle: controls.resultsStyle.value,
+    mobileVideo: controls.mobileVideo.value,
+    mobileImages: controls.mobileImages.value,
+    hotspots: controls.hotspots.getRawValue(),
   };
 }
 

@@ -9,6 +9,8 @@ function sectionHasContent(p: Project, id: string): boolean {
     case 's-demo': return !!p.demoVideoUrl && !!(p.previewVideo || p.previewImage);
     case 's-story': return Object.values(p.story).some((value) => value.trim());
     case 's-results': return p.results.length > 0;
+    case 's-devices': return !!p.mobileVideo.trim() || p.mobileImages.some((src) => src.trim());
+    case 's-hotspots': return !!p.previewImage?.trim() && p.hotspots.some((spot) => spot.labelEs.trim() || spot.labelEn.trim());
     case 's-overview': return !!(p.longEs.trim() || p.highlightsEs.length || p.stack.length);
     case 's-how': return !!p.caseStudyEs.trim();
     case 's-chapters': return p.chapters.length > 0;

@@ -1,0 +1,19 @@
+/* A11: horizontal run of project cards (wide screens, more than 3 projects). The run gets the
+   class .h-on and its height from projects.component.ts (driveRun); the track moves with transform. */
+.run-meta { display: none; }
+
+.run.h-on { position: relative; }
+.run.h-on .run-pin {
+  position: sticky; top: var(--site-header-h); display: flex; flex-direction: column; justify-content: center; gap: 22px;
+  height: calc(100vh - var(--site-header-h)); overflow: clip;
+  /* Full viewport width, so cards come in and leave at the screen edges; the padding keeps them aligned with the content. */
+  width: 100vw; margin-left: calc(50% - 50vw); padding-left: calc(50vw - 50%);
+}
+.run.h-on .grid-cards { display: flex; gap: 14px; width: max-content; will-change: transform; }
+.run.h-on .grid-cards > .card,
+.run.h-on .grid-cards > .skel { flex: none; width: min(400px, 30vw); }
+
+.run.h-on .run-meta { display: flex; align-items: center; gap: 18px; width: calc(200% - 100vw); color: var(--steel); font-size: 12px; }
+.run-count b { color: var(--ember); font-weight: 400; }
+.run-bar { flex: 1; height: 2px; background: var(--line); }
+.run-bar i { display: block; height: 100%; background: var(--ember); transform: scaleX(0); transform-origin: left; }

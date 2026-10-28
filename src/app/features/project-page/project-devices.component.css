@@ -1,0 +1,35 @@
+:host { display: block; }
+.stage { position: relative; aspect-ratio: 16 / 9; perspective: 1400px; }
+.desk, .phone { position: absolute; will-change: transform; }
+.desk { left: 2%; top: 4%; width: 74%; }
+.phone { right: 4%; top: 14%; width: 21%; }
+
+/* Mobile version only: the phone alone, centered. */
+.stage.solo { display: grid; place-items: center; aspect-ratio: auto; padding-block: 8px; }
+.stage.solo .phone { position: relative; inset: auto; width: min(280px, 62vw); }
+
+.browser { padding: 10px; border: 1px solid var(--line); background: var(--graphite); }
+.chrome { display: flex; align-items: center; gap: 10px; padding: 0 2px 8px; color: var(--steel); font-size: 10px; }
+.dots { display: inline-flex; gap: 5px; }
+.dots i { width: 7px; height: 7px; border: 1px solid var(--line); border-radius: 50%; }
+.dots i:first-child { border-color: var(--ember); }
+.url { flex: 1; overflow: hidden; padding: 3px 10px; border: 1px solid var(--line-soft); border-radius: 999px; background: var(--ink); text-overflow: ellipsis; white-space: nowrap; }
+.browser img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border: 1px solid var(--line-soft); background: var(--ink); }
+
+.body { padding: 7px; border: 1px solid var(--line); border-radius: 26px; background: var(--graphite); }
+.body img, .body video { display: block; width: 100%; aspect-ratio: 9 / 19; object-fit: cover; object-position: top; border-radius: 19px; background: var(--ink); }
+
+/* The other captures, as a row of smaller phones (slides sideways on narrow screens). */
+.row { display: flex; justify-content: safe center; gap: 16px; margin-top: 28px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 6px; }
+.body.small { flex: none; width: 150px; padding: 5px; border-radius: 20px; }
+.body.small img { border-radius: 15px; }
+
+@media (max-width: 620px) {
+  .stage:not(.solo) { aspect-ratio: 4 / 3; }
+  .desk { width: 82%; left: 0; }
+  .phone { width: 30%; right: 0; top: 6%; }
+  .body { border-radius: 18px; padding: 5px; }
+  .body img, .body video { border-radius: 13px; }
+
+  .body.small { width: 120px; }
+}

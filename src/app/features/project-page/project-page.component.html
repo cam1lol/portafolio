@@ -18,14 +18,27 @@
       <!-- ---- Hero: the text on one side, the media framed as a HUD screen on the other. -->
       @if (!focusSection()) {
       <section class="hero wrap">
+        <!-- Position of the project in the list, as a giant outline number behind the text. -->
+        @if (fileNo(); as no) { <span class="big-no" #bigNo aria-hidden="true">{{ no }}</span> }
         <div class="hero-text">
           @if (isDraft()) { <p class="draft-banner mono" role="status">{{ 'pp_draft' | transloco }}</p> }
           <a class="back mono" routerLink="/proyectos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
             {{ 'pp_all' | transloco }}
           </a>
+          @if (fileNo() || p.facts.year.trim()) {
+            <div class="stamps mono" aria-hidden="true">
+              @if (fileNo(); as no) { <span class="stamp">{{ 'pp_file' | transloco: { n: no, total: fileTotal() } }}</span> }
+              @if (p.facts.year.trim()) { <span class="stamp ghost">{{ p.facts.year }}</span> }
+            </div>
+          }
           <span class="eyebrow mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
-          <h1 [style.view-transition-name]="'project-title'" [appScramble]="p.name"></h1>
+          <!-- Kinetic title: the lines drift apart while the hero scrolls away. -->
+          <h1 #title [style.view-transition-name]="'project-title'" [attr.aria-label]="p.name">
+            @for (line of titleLines(p); track $index; let last = $last) {
+              <span class="tl-line" [class.outline]="last && !$first" aria-hidden="true" [appScramble]="line"></span>
+            }
+          </h1>
           <p class="lead">{{ summary(p) }}</p>
           @if (p.liveUrl || p.repoUrl) {
             <div class="links">
@@ -33,6 +46,7 @@
               @if (p.repoUrl) { <a class="btn fx-fill fx-ext" [href]="p.repoUrl" target="_blank" rel="noopener">{{ 'pp_repo' | transloco }}</a> }
             </div>
           }
+          <p class="coords mono" aria-hidden="true">{{ 'pp_coords' | transloco }}</p>
         </div>
 
         <div class="frame" [class.phone]="p.device === 'phone'">
@@ -58,15 +72,34 @@
       }
 
       <!-- ---- Fact sheet as a HUD data strip. -->
+      <!-- ---- Band with the name, sliding sideways with the scroll. -->
+      @if (!focusSection()) {
+        <div class="band" #band aria-hidden="true">
+          <div class="band-track" #bandTrack>
+            @for (copy of [0, 1]; track copy) {
+              <span>{{ p.name }}</span><b>/</b><span>{{ p.typeLabel || p.name }}</span><b>/</b>
+              <span>{{ p.name }}</span><b>/</b><span>{{ p.typeLabel || p.name }}</span><b>/</b>
+            }
+          </div>
+        </div>
+      }
+
       @if (factItems(p).length && !focusSection()) {
-        <dl class="facts wrap" [attr.aria-label]="'pp_facts' | transloco">
-          @for (fact of factItems(p); track fact.label; let i = $index) {
-            <div class="fact reveal" appReveal [style.transition-delay.ms]="i * 70">
-              <dt class="mono"><span class="fact-no">{{ (i + 1).toString().padStart(2, '0') }}</span>{{ fact.label | transloco }}</dt>
-              <dd>{{ fact.value }}</dd>
-            </div>
-          }
-        </dl>
+        <div class="facts-box wrap">
+          <dl class="facts" [attr.aria-label]="'pp_facts' | transloco">
+            @for (fact of factItems(p); track fact.label; let i = $index) {
+              <div class="fact reveal" appReveal [style.transition-delay.ms]="i * 70">
+                <dt class="mono"><span class="fact-no">{{ (i + 1).toString().padStart(2, '0') }}</span>{{ fact.label | transloco }}</dt>
+                <dd>{{ fact.value }}</dd>
+              </div>
+            }
+          </dl>
+          <!-- Classification seal: file number and the real status of the project. -->
+          <div class="seal mono" [attr.data-status]="p.status" aria-hidden="true">
+            @if (fileNo(); as no) { <span>{{ 'pp_file_short' | transloco }} {{ no }}</span> }
+            <strong>{{ 'pp_status_' + p.status | transloco }}</strong>
+          </div>
+        </div>
       }
 
       <div class="body wrap">
@@ -93,7 +126,10 @@
           @if (hasStory(p) && show('s-story')) {
             <section class="sec" id="s-story" [style.order]="orderOf('s-story')">
               <ng-container *ngTemplateOutlet="sectionHead; context: { id: 's-story', label: 'pp_story' }" />
-              <ol class="timeline">
+              @if (p.storyLayout === 'pinned') {
+                <app-project-story-pinned class="story-wide" [steps]="storySteps(p)" [images]="storyImages(p)" [icon]="p.icon" [name]="p.name" />
+              }
+              <ol class="timeline" [class.story-narrow]="p.storyLayout === 'pinned'">
                 @for (step of storySteps(p); track step.key; let i = $index) {
                   <li class="tl-step reveal" appReveal [style.transition-delay.ms]="i * 120">
                     <span class="tl-no" aria-hidden="true">{{ (i + 1).toString().padStart(2, '0') }}</span>
@@ -112,12 +148,36 @@
               <div class="results">
                 @for (result of p.results; track $index; let i = $index) {
                   <div class="result reveal" appReveal [style.transition-delay.ms]="i * 90">
-                    <strong [appScramble]="result.value" scrambleOnView></strong>
+                    @if (p.resultsStyle === 'rings' && ringAngle(result.value) !== null) {
+                      <!-- Ring that fills to the value: two half arcs rotating (transform only). -->
+                      <span class="ring" [style.--r1]="halfTurn(result.value, 0) + 'deg'" [style.--r2]="halfTurn(result.value, 1) + 'deg'">
+                        <span class="ring-half right" aria-hidden="true"><i></i></span>
+                        <span class="ring-half left" aria-hidden="true"><i></i></span>
+                        <strong [appScramble]="result.value" scrambleOnView></strong>
+                      </span>
+                    } @else {
+                      <strong [appScramble]="result.value" scrambleOnView></strong>
+                    }
                     <span class="result-label mono">{{ loc(result.labelEs, result.labelEn) }}</span>
                     @if (loc(result.contextEs, result.contextEn)) { <p>{{ loc(result.contextEs, result.contextEn) }}</p> }
                   </div>
                 }
               </div>
+            </section>
+          }
+
+          @if (hasDevices(p) && show('s-devices')) {
+            <section class="sec" id="s-devices" [style.order]="orderOf('s-devices')">
+              <ng-container *ngTemplateOutlet="sectionHead; context: { id: 's-devices', label: devicesLabel(p) }" />
+              <app-project-devices [desktop]="p.previewImage || ''" [video]="p.mobileVideo" [images]="p.mobileImages" [url]="displayUrl(p)"
+                [desktopAlt]="p.name + ' · ' + ('pp_desktop' | transloco)" [phoneAlt]="p.name + ' · ' + ('pp_phone' | transloco)" />
+            </section>
+          }
+
+          @if (hasHotspots(p) && show('s-hotspots')) {
+            <section class="sec" id="s-hotspots" [style.order]="orderOf('s-hotspots')">
+              <ng-container *ngTemplateOutlet="sectionHead; context: { id: 's-hotspots', label: 'pp_hotspots', count: p.hotspots.length }" />
+              <app-project-hotspots [image]="p.previewImage!" [hotspots]="p.hotspots" [alt]="p.name" />
             </section>
           }
 
@@ -178,7 +238,7 @@
                 </div>
                 @if (screen(); as s) {
                   <div class="tour-view" id="screen-panel" role="tabpanel" [attr.aria-labelledby]="'screen-tab-' + screenIndex()">
-                    <div class="tour-media">
+                    <div class="tour-media" appScanReveal>
                       @if (s.video) {
                         <video [src]="s.video" [attr.poster]="s.image || null" controls playsinline [attr.preload]="s.image ? 'none' : 'metadata'"></video>
                       } @else if (s.image) {
@@ -197,7 +257,7 @@
               <ng-container *ngTemplateOutlet="sectionHead; context: { id: 's-gallery', label: 'pp_gallery', count: p.gallery.length }" />
               <div class="gallery">
                 @for (item of p.gallery; track $index; let i = $index) {
-                  <button type="button" class="thumb reveal" appReveal [style.transition-delay.ms]="(i % 4) * 60" (click)="openPhoto(i)" [attr.aria-label]="loc(item.captionEs, item.captionEn) || ('pp_gallery' | transloco) + ' ' + (i + 1)">
+                  <button type="button" class="thumb reveal" appReveal appScanReveal [style.transition-delay.ms]="(i % 4) * 60" (click)="openPhoto(i)" [attr.aria-label]="loc(item.captionEs, item.captionEn) || ('pp_gallery' | transloco) + ' ' + (i + 1)">
                     <img [src]="item.image" alt="" loading="lazy" />
                   </button>
                 }
@@ -293,24 +353,32 @@
             </section>
           }
 
-          @if (!focusSection()) {
+          @if (!focusSection() && previous(); as prev) {
           <nav class="pager" style="order: 101" [attr.aria-label]="'pp_more' | transloco">
-            @if (previous(); as prev) {
-              <a class="pager-link" [routerLink]="['/proyectos', prev.slug]">
-                <span class="mono">{{ 'pp_prev' | transloco }}</span>
-                <strong>{{ prev.name }}</strong>
-              </a>
-            } @else { <span></span> }
-            @if (next(); as nxt) {
-              <a class="pager-link next" [routerLink]="['/proyectos', nxt.slug]">
-                <span class="mono">{{ 'pp_next' | transloco }}</span>
-                <strong>{{ nxt.name }}</strong>
-              </a>
-            }
+            <a class="pager-link" [routerLink]="['/proyectos', prev.slug]">
+              <span class="mono">{{ 'pp_prev' | transloco }}</span>
+              <strong>{{ prev.name }}</strong>
+            </a>
           </nav>
           }
         </div>
       </div>
+
+      <!-- ---- Next project as a full-width band that fills with the accent on hover. -->
+      @if (!focusSection() && next(); as nxt) {
+        <a class="next-band" [routerLink]="['/proyectos', nxt.slug]">
+          <span class="nb-fill" aria-hidden="true"></span>
+          <span class="nb-inner wrap">
+            <span class="nb-text">
+              <span class="nb-label mono">{{ 'pp_next_project' | transloco }} · {{ pad(index() + 2) }} / {{ fileTotal() }}</span>
+              <strong class="nb-name">{{ nxt.name }}</strong>
+            </span>
+            <span class="nb-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </span>
+          </span>
+        </a>
+      }
     } @else {
       <div class="not-found wrap">
         <h1>{{ 'pp_not_found' | transloco }}</h1>

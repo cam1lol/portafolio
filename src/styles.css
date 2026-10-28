@@ -110,6 +110,20 @@ app-root {
   transform: none;
 }
 
+/* Scan reveal (ScanRevealDirective): a cover lifts while an accent line sweeps down, once. */
+.scan-reveal { position: relative; overflow: hidden; }
+.scan-reveal:not(.scan-done)::before,
+.scan-reveal:not(.scan-done)::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.scan-reveal:not(.scan-done)::before { background: var(--ink); transform-origin: bottom; }
+.scan-reveal:not(.scan-done)::after {
+  background: linear-gradient(to bottom, transparent calc(100% - 48px), rgba(242, 84, 27, .14) calc(100% - 2px), var(--ember) calc(100% - 2px));
+  transform: translateY(-100%);
+}
+.scan-reveal.scan-go::before { animation: scan-cover 1.2s var(--ease) forwards; }
+.scan-reveal.scan-go::after { animation: scan-line 1.2s var(--ease) forwards; }
+@keyframes scan-cover { to { transform: scaleY(0); } }
+@keyframes scan-line { 85% { opacity: 1; } to { transform: translateY(0); opacity: 0; } }
+
 .clip {
   opacity: 0;
   transform: translateY(110%);

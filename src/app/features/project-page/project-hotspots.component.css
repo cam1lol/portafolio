@@ -1,0 +1,34 @@
+:host { display: block; }
+.shot { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); }
+.shot img { display: block; width: 100%; height: auto; }
+
+.spot { position: absolute; z-index: 1; width: 28px; height: 28px; margin: -14px 0 0 -14px; padding: 0; border: 0; background: none; cursor: pointer; }
+.dot {
+  position: relative; display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%;
+  background: var(--ember); color: var(--ink); font-size: 11px; font-weight: 700;
+}
+.dot::before {
+  content: ''; position: absolute; inset: -6px; border: 1px solid var(--ember); border-radius: 50%;
+  animation: spot-ping 2.2s ease-out 4 both;
+}
+@keyframes spot-ping { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+.lbl {
+  position: absolute; left: 36px; top: 50%; width: max-content; max-width: min(240px, 50vw); padding: 7px 10px;
+  border: 1px solid var(--line); background: var(--graphite-2); color: var(--bone); font: 13px / 1.4 'Space Grotesk', sans-serif; text-align: left;
+  opacity: 0; transform: translate(-4px, -50%); transition: opacity .25s, transform .25s; pointer-events: none;
+}
+.spot.flip .lbl { left: auto; right: 36px; transform: translate(4px, -50%); }
+.spot:hover .lbl, .spot:focus-visible .lbl, .spot:focus .lbl { opacity: 1; transform: translate(0, -50%); }
+.spot:hover, .spot:focus { z-index: 2; }
+.spot:focus-visible { outline: none; }
+.spot:focus-visible .dot { outline: 2px solid var(--bone); outline-offset: 3px; }
+
+.legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 8px 20px; margin: 16px 0 0; padding: 0; list-style: none; color: var(--bone-dim); font-size: 14px; }
+.legend li { display: flex; gap: 10px; }
+.legend span { flex: none; color: var(--ember); font-size: 11px; padding-top: 3px; }
+
+:host-context(html.fx-lite) .dot::before { animation: none; opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .dot::before { animation: none; opacity: 0; }
+  .lbl { transition: none; }
+}

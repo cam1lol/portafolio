@@ -1,0 +1,95 @@
+/* Dossier touches on the project page: giant file number, stamps, kinetic title, name band,
+   classification seal and the next-project band. Motion is transform-only and driven by the
+   shared ScrollFrameService (project-page.component.ts, driveHero). */
+
+/* ---- Giant outline number behind the hero text */
+.hero { position: relative; }
+.hero-text, .hero .frame { position: relative; z-index: 1; }
+.big-no {
+  position: absolute; z-index: 0; top: 4%; left: -1vw; color: transparent; pointer-events: none; user-select: none;
+  font: 900 clamp(160px, 26vw, 400px) / .8 'Archivo', sans-serif; letter-spacing: -.06em; -webkit-text-stroke: 1px #2b2e36;
+  will-change: transform;
+}
+
+/* ---- Stamps and coordinates */
+.stamps { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.stamp { padding: 4px 10px; border: 1px solid var(--ember); color: var(--ember); font-size: 10px; letter-spacing: .14em; transform: rotate(-2deg); }
+.stamp.ghost { border-color: var(--line); color: var(--steel); transform: none; }
+.coords { margin: 22px 0 0; color: var(--steel); font-size: 10px; letter-spacing: .12em; }
+
+/* ---- Kinetic title: one block per line, the last one in outline */
+.tl-line { display: block; will-change: transform; }
+.tl-line.outline { color: transparent; -webkit-text-stroke: 1.5px var(--bone); }
+
+/* ---- Band with the name */
+.band { margin-top: 48px; overflow: hidden; padding-block: 16px; border-block: 1px solid var(--line); }
+.band-track {
+  display: flex; gap: 40px; width: max-content; color: transparent; white-space: nowrap; will-change: transform;
+  font: 900 clamp(44px, 8vw, 112px) / 1 'Archivo', sans-serif; letter-spacing: -.03em; text-transform: uppercase; -webkit-text-stroke: 1px #3a3e48;
+}
+.band-track b { color: var(--ember); -webkit-text-stroke: 0; }
+.band + .facts-box .facts { margin-top: 0; border-top: 0; }
+
+/* ---- Classification seal on the fact strip */
+.facts-box { position: relative; }
+.seal {
+  position: absolute; right: max(16px, 2vw); bottom: -34px; display: grid; place-content: center; gap: 4px; width: 96px; height: 96px;
+  border: 1px solid var(--steel); border-radius: 50%; background: var(--ink); color: var(--steel); font-size: 9px; letter-spacing: .12em;
+  text-align: center; transform: rotate(-12deg); pointer-events: none;
+}
+.seal strong { font-weight: 700; font-size: 10px; }
+.seal[data-status='live'] { border-color: var(--good); color: var(--good); }
+.seal[data-status='wip'] { border-color: var(--ember); color: var(--ember); }
+
+/* ---- Next project band */
+.next-band { position: relative; display: block; margin-top: 24px; overflow: hidden; border-block: 1px solid var(--line); color: var(--bone); text-decoration: none; }
+.nb-fill { position: absolute; inset: 0; background: var(--ember); transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+.nb-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 48px; }
+.nb-text { display: grid; gap: 6px; min-width: 0; }
+.nb-label { color: var(--steel); font-size: 11px; letter-spacing: .14em; transition: color .3s; }
+.nb-name {
+  overflow-wrap: anywhere; font: 900 clamp(38px, 8vw, 110px) / .9 'Archivo', sans-serif; letter-spacing: -.04em; text-transform: uppercase; transition: color .3s;
+}
+.nb-arrow {
+  display: grid; flex: none; place-items: center; width: 64px; height: 64px; border: 1px solid var(--ember); border-radius: 50%; color: var(--ember);
+  transition: transform .3s cubic-bezier(.2, .7, .2, 1), background-color .3s;
+}
+.nb-arrow svg { width: 24px; height: 24px; }
+.next-band:hover .nb-fill, .next-band:focus-visible .nb-fill { transform: scaleY(1); }
+.next-band:hover .nb-name, .next-band:hover .nb-label, .next-band:focus-visible .nb-name, .next-band:focus-visible .nb-label { color: var(--ink); }
+.next-band:hover .nb-arrow, .next-band:focus-visible .nb-arrow { background: var(--ink); transform: translateX(6px); }
+.next-band:focus-visible { outline: 2px solid var(--bone); outline-offset: -4px; }
+
+@media (max-width: 860px) {
+  .big-no { top: -10px; font-size: clamp(140px, 44vw, 260px); }
+  .seal { display: none; }
+  .band { margin-top: 36px; }
+  .nb-inner { padding-block: 32px; }
+  .nb-arrow { width: 48px; height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nb-fill, .nb-label, .nb-name, .nb-arrow { transition: none; }
+}
+/* Admin panels: no dossier decoration competing with the form. */
+.in-preview .big-no, .in-preview .band { display: none; }
+
+/* ---- Story as a pinned screen (wide screens); the timeline stays on narrow ones */
+@media (max-width: 860px) { .story-wide { display: none; } }
+@media (min-width: 861px) { .timeline.story-narrow { display: none; } }
+
+/* ---- Result rings: two clipped half arcs rotate into place (compositor-only) */
+.ring { position: relative; display: grid; place-items: center; width: 112px; height: 112px; margin-bottom: 6px; border-radius: 50%; box-shadow: inset 0 0 0 6px var(--line); }
+.ring strong { font-size: 26px; }
+.ring-half { position: absolute; inset: 0; }
+.ring-half.right { clip-path: inset(0 0 0 50%); }
+.ring-half.left { clip-path: inset(0 50% 0 0); }
+.ring-half i { position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 6px var(--ember); transition: transform .7s linear; }
+.ring-half.right i { clip-path: inset(0 50% 0 0); }
+.ring-half.left i { clip-path: inset(0 0 0 50%); }
+.result.in .ring-half.right i { transform: rotate(var(--r1, 0deg)); }
+.result.in .ring-half.left i { transform: rotate(var(--r2, 0deg)); transition-delay: .7s; }
+@media (prefers-reduced-motion: reduce) {
+  .ring-half i { transition: none; }
+  .ring-half.right i { transform: rotate(var(--r1, 0deg)); }
+  .ring-half.left i { transform: rotate(var(--r2, 0deg)); }
+}

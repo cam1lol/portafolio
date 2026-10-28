@@ -19,6 +19,8 @@ import { HasUnsavedChanges } from '../shared/unsaved-changes.guard';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import { AdminProject, ProjectInput, ProjectsService } from '../../../core/data/projects.service';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
+import { HotspotEditorComponent } from './hotspot-editor.component';
+import { MAX_HOTSPOTS, MAX_MOBILE_IMAGES } from '../../../core/data/project-details';
 import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { TagInputComponent } from '../shared/tag-input.component';
@@ -120,7 +122,7 @@ function listItemControl(value = ''): FormControl<string> {
   imports: [
     ReactiveFormsModule, RouterLink, NgTemplateOutlet, DatePipe, ImageUploadComponent, MediaPickerComponent,
     FormStepsComponent, FieldHintComponent, TagInputComponent, RepeatHeadComponent, IconPickerComponent,
-    ProjectCardPreviewComponent, ModelUploadComponent, ProjectPageComponent, AutoTranslateDirective,
+    ProjectCardPreviewComponent, ModelUploadComponent, ProjectPageComponent, AutoTranslateDirective, HotspotEditorComponent,
     ComboboxComponent, DurationPickerComponent, TeamPickerComponent, BlockExampleComponent, ProjectChaptersComponent, PageOrganizerComponent,
   ],
   templateUrl: './admin-project-form.component.html',
@@ -445,6 +447,12 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   protected readonly focusPoints = MEDIA_FOCUS_POINTS;
   protected readonly focusLabels = ['Arriba a la izquierda', 'Arriba', 'Arriba a la derecha', 'Izquierda', 'Centro', 'Derecha', 'Abajo a la izquierda', 'Abajo', 'Abajo a la derecha'];
 
+  /** Segmented choices (story layout, results style): set the value and mark it for saving. */
+  protected setChoice<T>(control: FormControl<T>, value: T): void {
+    control.setValue(value);
+    control.markAsDirty();
+  }
+
   protected setFocus(point: string): void {
     this.form.controls.mediaFocus.setValue(point);
     this.form.controls.mediaFocus.markAsDirty();
@@ -753,6 +761,44 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
 
   stackHasErrors(): boolean {
     return this.stack.controls.some((control) => control.invalid);
+  }
+
+  protected readonly maxHotspots = MAX_HOTSPOTS;
+
+  // ---- Mobile version: a vertical clip and up to six vertical captures (empty ones are not saved).
+
+  protected readonly maxMobileImages = MAX_MOBILE_IMAGES;
+  protected readonly mobileImages = computed(() => this.value().mobileImages);
+  protected readonly firstMobileImage = computed(() => this.mobileImages().find((src) => src.trim()) ?? '');
+
+  onMobileVideoChange(path: string): void {
+    this.form.controls.mobileVideo.setValue(path);
+    this.form.markAsDirty();
+  }
+
+  protected addMobileImage(): void {
+    if (this.mobileImages().length < MAX_MOBILE_IMAGES) this.setMobileImages([...this.mobileImages(), '']);
+  }
+
+  protected setMobileImage(index: number, url: string): void {
+    this.setMobileImages(this.mobileImages().map((src, i) => (i === index ? url : src)));
+  }
+
+  protected moveMobileImage(index: number, delta: -1 | 1): void {
+    const images = [...this.mobileImages()];
+    const target = index + delta;
+    if (target < 0 || target >= images.length) return;
+    [images[index], images[target]] = [images[target], images[index]];
+    this.setMobileImages(images);
+  }
+
+  protected removeMobileImage(index: number): void {
+    this.setMobileImages(this.mobileImages().filter((_, i) => i !== index));
+  }
+
+  private setMobileImages(images: string[]): void {
+    this.form.controls.mobileImages.setValue(images);
+    this.form.controls.mobileImages.markAsDirty();
   }
 
   onPreviewImageChange(url: string): void {

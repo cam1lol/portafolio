@@ -18,7 +18,10 @@
     </button>
   </div>
 
-  <div class="grid-cards">
+  <!-- Wide screens with more than 3 projects: the cards run sideways while the section is pinned. -->
+  <div class="run" #run>
+  <div class="run-pin" #pin>
+  <div class="grid-cards" #track (focusin)="revealFocused($event)">
     @if (loading()) {
       @for (n of [1, 2, 3]; track n) { <div class="skel skel-card" aria-hidden="true"><i></i><i></i><i></i><i></i></div> }
     }
@@ -57,6 +60,12 @@
         </div>
       </div>
     }
+  </div>
+  <div class="run-meta mono" aria-hidden="true">
+    <span class="run-count"><b #runNo>01</b> / {{ (filtered().length < 10 ? '0' : '') + filtered().length }}</span>
+    <span class="run-bar"><i #runBar></i></span>
+  </div>
+  </div>
   </div>
 
   @if (totalCount()) {

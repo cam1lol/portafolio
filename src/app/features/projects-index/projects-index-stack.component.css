@@ -1,0 +1,16 @@
+/* A12: on wide screens the project rows stack: each one sticks a little lower than the previous
+   and the ones underneath shrink and dim as the next covers them (projects-index.component.ts,
+   stackFrames). Transform and opacity only. */
+@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+  .list.stacked { gap: 28px; padding-bottom: 8vh; }
+  .list.stacked .item {
+    position: sticky; top: calc(var(--site-header-h) + 20px + var(--i, 0) * 14px);
+    transform-origin: 50% 0; will-change: transform;
+  }
+  .list.stacked .item-link { box-shadow: 0 -18px 40px -24px rgba(0, 0, 0, .9); }
+}
+/* Shade over a row being covered (its opacity is written per frame; the row itself stays opaque). */
+.dim { display: none; }
+@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+  .list.stacked .dim { position: absolute; inset: 0; z-index: 2; display: block; border-radius: var(--r); background: var(--ink); opacity: 0; pointer-events: none; }
+}

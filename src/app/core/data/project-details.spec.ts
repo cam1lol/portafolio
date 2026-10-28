@@ -41,6 +41,35 @@ describe('project details mapping', () => {
     expect(detailsFromRow({ facts: { year: '2020' } }).story.challengeEs).toBe('');
   });
 
+  it('presentación de historia y resultados: se guarda en facts y por defecto queda la actual', () => {
+    const back = detailsFromRow(detailsToRow({ ...emptyDetails(), storyLayout: 'pinned', resultsStyle: 'rings' }));
+    expect(back.storyLayout).toBe('pinned');
+    expect(back.resultsStyle).toBe('rings');
+    const old = detailsFromRow({ facts: { year: '2020' } });
+    expect(old.storyLayout).toBe('timeline');
+    expect(old.resultsStyle).toBe('numbers');
+    expect(detailsFromRow({ facts: { story_layout: 'otra', results_style: 'x' } }).storyLayout).toBe('timeline');
+  });
+
+  it('puntos de interés: solo con texto, posiciones dentro de la imagen', () => {
+    const hotspots = [
+      { x: 12.34, y: 150, labelEs: 'Menú', labelEn: '' },
+      { x: 50, y: 50, labelEs: '  ', labelEn: '' },
+    ];
+    const back = detailsFromRow(detailsToRow({ ...emptyDetails(), hotspots }));
+    expect(back.hotspots).toEqual([{ x: 12.3, y: 100, labelEs: 'Menú', labelEn: '' }]);
+    expect(detailsFromRow({ facts: {} }).hotspots).toEqual([]);
+  });
+
+  it('versión móvil: video y capturas sin vacías, máximo 6, y lee la captura única anterior', () => {
+    const images = [' a.png ', '', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png'];
+    const back = detailsFromRow(detailsToRow({ ...emptyDetails(), mobileVideo: ' m.mp4 ', mobileImages: images }));
+    expect(back.mobileVideo).toBe('m.mp4');
+    expect(back.mobileImages).toEqual(['a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png']);
+    expect(detailsFromRow({ facts: { phone_image: 'viejo.png' } }).mobileImages).toEqual(['viejo.png']);
+    expect(detailsFromRow({ facts: {} }).mobileImages).toEqual([]);
+  });
+
   it('videos: lee y escribe título, descripción, archivo, póster, vista previa y duración; descarta los que no tienen archivo', () => {
     const details = detailsFromRow({ videos: [{ title_es: 'Recorrido', title_en: 'Tour', desc_es: 'Todo el flujo', video: '/media/projects/x/tour.mp4', poster: '/media/projects/x/tour.webp', preview: '/media/projects/x/tour.preview.mp4', duration: '2:15' }] });
     expect(details.videos[0]).toEqual({ titleEs: 'Recorrido', titleEn: 'Tour', descEs: 'Todo el flujo', descEn: '', video: '/media/projects/x/tour.mp4', poster: '/media/projects/x/tour.webp', preview: '/media/projects/x/tour.preview.mp4', duration: '2:15' });

@@ -146,6 +146,8 @@
             <ng-container *ngTemplateOutlet="cardPreview" />
           </div>
 
+          <h3 class="list-title">Versión web <span class="list-sub">escritorio · tarjeta, cabecera y demo</span></h3>
+
           <div class="field">
             <label>Imagen de vista previa</label>
             <app-image-upload [value]="form.controls.previewImage.value" (valueChange)="onPreviewImageChange($event)"></app-image-upload>
@@ -169,6 +171,14 @@
             </div>
           }
 
+          @if (value().previewImage) {
+            <div class="field">
+              <span class="label-like">Puntos de interés <span class="list-sub">opcional · {{ form.controls.hotspots.length }} / {{ maxHotspots }}</span></span>
+              <app-hotspot-editor [image]="value().previewImage!" [spots]="form.controls.hotspots" />
+              <span class="choice-hint">Se ven en la sección "Dentro del producto" de la página: puntos numerados sobre esta imagen que muestran su texto al pasar el ratón.</span>
+            </div>
+          }
+
           <div class="grid-2">
             <div class="field">
               <label for="preview-video">Clip de la tarjeta</label>
@@ -189,6 +199,53 @@
               <option value="browser">Navegador</option>
               <option value="phone">Teléfono</option>
             </select>
+          </div>
+
+          <h3 class="list-title">Versión móvil <span class="list-sub">opcional · si el proyecto tiene versión para teléfono</span></h3>
+          <p class="step-hint">Se ve en la sección "Escritorio y móvil" de la página. Con versión web y móvil, las dos pantallas se separan en 3D al bajar; con solo móvil, aparece el teléfono solo.</p>
+          <div class="mobile-block">
+            <div class="mobile-fields">
+              <div class="field">
+                <label for="mobile-video">Video móvil</label>
+                <app-media-picker [slug]="form.controls.slug.value" selectId="mobile-video" [value]="form.controls.mobileVideo.value" (valueChange)="onMobileVideoChange($event)" (uploaded)="onMobileVideoChange($event.path)"
+                  [recommendedMb]="8" hint="Grabación vertical de la app en el teléfono, 10 a 30 segundos, sin sonido, MP4 y menos de 8 MB. Se reproduce en bucle dentro del teléfono." />
+              </div>
+
+              <div class="field">
+                <span class="label-like">Capturas móviles <span class="list-sub">{{ mobileImages().length }} / {{ maxMobileImages }} · verticales</span></span>
+                <div class="mobile-shots">
+                  @for (src of mobileImages(); track $index; let i = $index; let first = $first; let last = $last) {
+                    <div class="mobile-shot">
+                      <div class="mobile-shot-head mono">
+                        <span>{{ (i + 1).toString().padStart(2, '0') }}{{ first ? ' · principal' : '' }}</span>
+                        <span class="mobile-shot-actions">
+                          <button type="button" [disabled]="first" (click)="moveMobileImage(i, -1)" [attr.aria-label]="'Mover captura ' + (i + 1) + ' antes'">&lsaquo;</button>
+                          <button type="button" [disabled]="last" (click)="moveMobileImage(i, 1)" [attr.aria-label]="'Mover captura ' + (i + 1) + ' después'">&rsaquo;</button>
+                          <button type="button" (click)="removeMobileImage(i)" [attr.aria-label]="'Quitar captura ' + (i + 1)">&times;</button>
+                        </span>
+                      </div>
+                      <app-image-upload [value]="src" (valueChange)="setMobileImage(i, $event)"></app-image-upload>
+                    </div>
+                  }
+                </div>
+                <button type="button" class="add-btn" (click)="addMobileImage()" [disabled]="mobileImages().length >= maxMobileImages">+ Agregar captura</button>
+                <span class="choice-hint">La primera es la que se ve en el teléfono cuando no hay video; con dos o más, el resto sale en una fila de teléfonos debajo.</span>
+              </div>
+            </div>
+
+            <!-- How the phone will look with what is filled in. -->
+            <div class="mobile-preview" aria-hidden="true">
+              <span class="label-like">Así se verá</span>
+              <div class="mobile-phone">
+                @if (value().mobileVideo) {
+                  <video [src]="value().mobileVideo" muted loop autoplay playsinline></video>
+                } @else if (firstMobileImage()) {
+                  <img [src]="firstMobileImage()" alt="" />
+                } @else {
+                  <span class="mobile-empty mono">SIN VERSIÓN MÓVIL</span>
+                }
+              </div>
+            </div>
           </div>
 
           <div class="grid-2">
@@ -245,6 +302,14 @@
           <h3 class="list-title">En tres pasos <span class="list-sub">problema, proceso, resultado</span> <button type="button" class="see-btn" [class.on]="exampleOpen() === 's-story'" [attr.aria-expanded]="exampleOpen() === 's-story'" (click)="toggleExample('s-story')">¿CÓMO SE VE?</button></h3>
           @if (exampleOpen() === 's-story') { <app-block-example [project]="previewProject()" section="s-story" /> }
           <p class="step-hint">Opcional y breve: se muestra como una franja de tres pasos numerados arriba de la página del proyecto. Si los dejas vacíos, no aparece.</p>
+          <div class="field choice">
+            <span class="choice-label" id="story-layout-label">Cómo se muestra</span>
+            <div class="seg" role="radiogroup" aria-labelledby="story-layout-label">
+              <button type="button" role="radio" [class.on]="form.controls.storyLayout.value === 'timeline'" [attr.aria-checked]="form.controls.storyLayout.value === 'timeline'" (click)="setChoice(form.controls.storyLayout, 'timeline')">LÍNEA DE TIEMPO</button>
+              <button type="button" role="radio" [class.on]="form.controls.storyLayout.value === 'pinned'" [attr.aria-checked]="form.controls.storyLayout.value === 'pinned'" (click)="setChoice(form.controls.storyLayout, 'pinned')">PANTALLA FIJA</button>
+            </div>
+            <span class="choice-hint">Pantalla fija: una captura se queda quieta y los tres pasos pasan al lado; la imagen cambia con cada paso (usa tus pantallas, la galería o la imagen de la tarjeta). En móvil siempre sale la línea de tiempo.</span>
+          </div>
           <div formGroupName="story">
             <div class="grid-2">
               <div class="field">
@@ -364,6 +429,14 @@
           <h3 class="list-title">Resultados con cifras <span class="list-count mono">{{ form.controls.results.length }}</span> <button type="button" class="see-btn" [class.on]="exampleOpen() === 's-results'" [attr.aria-expanded]="exampleOpen() === 's-results'" (click)="toggleExample('s-results')">¿CÓMO SE VE?</button></h3>
           @if (exampleOpen() === 's-results') { <app-block-example [project]="previewProject()" section="s-results" /> }
           <p class="step-hint">Una cifra y su contexto, por ejemplo "-40 %" · "tiempo de carga" · "tras optimizar imágenes y lazy loading". Usa solo datos reales.</p>
+          <div class="field choice">
+            <span class="choice-label" id="results-style-label">Cómo se muestran</span>
+            <div class="seg" role="radiogroup" aria-labelledby="results-style-label">
+              <button type="button" role="radio" [class.on]="form.controls.resultsStyle.value === 'numbers'" [attr.aria-checked]="form.controls.resultsStyle.value === 'numbers'" (click)="setChoice(form.controls.resultsStyle, 'numbers')">NÚMEROS</button>
+              <button type="button" role="radio" [class.on]="form.controls.resultsStyle.value === 'rings'" [attr.aria-checked]="form.controls.resultsStyle.value === 'rings'" (click)="setChoice(form.controls.resultsStyle, 'rings')">ANILLOS</button>
+            </div>
+            <span class="choice-hint">Anillos: se llenan hasta la cifra al aparecer. Solo para porcentajes ("94 %", "-40 %") o números de 0 a 100; las demás cifras se ven como número.</span>
+          </div>
           <div formArrayName="results">
             @for (result of form.controls.results.controls; track result; let i = $index) {
               <div class="repeat-card" [formGroupName]="i">

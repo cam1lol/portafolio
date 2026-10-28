@@ -19,6 +19,10 @@ import { NgTemplateOutlet } from '@angular/common';
 import { RichTextComponent } from '../../shared/site-text/rich-text.component';
 import { ProjectCoverArtComponent } from '../../shared/media/project-cover-art.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
+import { ProjectStoryPinnedComponent } from './project-story-pinned.component';
+import { ProjectDevicesComponent } from './project-devices.component';
+import { ProjectHotspotsComponent } from './project-hotspots.component';
+import { ScanRevealDirective } from '../../shared/directives/scan-reveal.directive';
 
 const SITE_NAME = 'Camilo Ayala';
 
@@ -26,9 +30,9 @@ const SITE_NAME = 'Camilo Ayala';
 @Component({
   selector: 'app-project-page',
   standalone: true,
-  imports: [RouterLink, TranslocoPipe, ProjectMediaComponent, ProjectVideosComponent, ProjectChaptersComponent, NgTemplateOutlet, RichTextComponent, ProjectCoverArtComponent, RevealDirective, SwipeBackDirective, ScrambleDirective],
+  imports: [RouterLink, TranslocoPipe, ProjectMediaComponent, ProjectVideosComponent, ProjectChaptersComponent, NgTemplateOutlet, RichTextComponent, ProjectCoverArtComponent, RevealDirective, SwipeBackDirective, ScrambleDirective, ProjectStoryPinnedComponent, ProjectDevicesComponent, ProjectHotspotsComponent, ScanRevealDirective],
   templateUrl: './project-page.component.html',
-  styleUrls: ['./project-page.component.css', './project-page-details.component.css'],
+  styleUrls: ['./project-page.component.css', './project-page-details.component.css', './project-page-dossier.component.css'],
 })
 export class ProjectPageComponent {
   private readonly transloco = inject(TranslocoService);
@@ -61,7 +65,7 @@ export class ProjectPageComponent {
   /** The draft fetched with the private token (undefined: not asked or still loading). */
   private readonly draft = signal<Project | null | undefined>(undefined);
 
-  private readonly index = computed(() => (this.projects() ?? []).findIndex((p) => p.slug === this.slug()));
+  protected readonly index = computed(() => (this.projects() ?? []).findIndex((p) => p.slug === this.slug()));
   private readonly published = computed<Project | null>(() => (this.projects() ?? [])[this.index()] ?? null);
   protected readonly project = computed<Project | null>(() => this.previewProject() ?? this.published() ?? this.draft() ?? null);
   /** Shown through the private link while not published: a banner says so and search engines skip it. */
@@ -75,6 +79,27 @@ export class ProjectPageComponent {
     const list = this.projects() ?? [];
     return this.index() >= 0 && this.index() < list.length - 1 ? list[this.index() + 1] : null;
   });
+
+  /** "02": position among the published projects (file number of the dossier). Empty for drafts and previews. */
+  protected readonly fileNo = computed(() => (this.index() >= 0 && !this.previewProject() ? this.pad(this.index() + 1) : ''));
+  protected readonly fileTotal = computed(() => this.pad((this.projects() ?? []).length));
+
+  protected pad(n: number): string {
+    return String(n).padStart(2, '0');
+  }
+
+  /** The name in one line, or two (the second drawn in outline) when it has several words. */
+  protected titleLines(project: Project): string[] {
+    const words = project.name.trim().split(/\s+/);
+    if (words.length < 2) return [project.name.trim()];
+    const cut = Math.ceil(words.length / 2);
+    return [words.slice(0, cut).join(' '), words.slice(cut).join(' ')];
+  }
+
+  private readonly bigNo = viewChild<ElementRef<HTMLElement>>('bigNo');
+  private readonly titleEl = viewChild<ElementRef<HTMLElement>>('title');
+  private readonly band = viewChild<ElementRef<HTMLElement>>('band');
+  private readonly bandTrack = viewChild<ElementRef<HTMLElement>>('bandTrack');
 
   private readonly isEn = computed(() => this.transloco.activeLang() === 'en');
   protected readonly lang = computed<'es' | 'en'>(() => (this.isEn() ? 'en' : 'es'));
@@ -124,6 +149,52 @@ export class ProjectPageComponent {
 
     this.trackReading();
     this.spySections();
+    this.driveHero();
+  }
+
+  /**
+   * Scroll-driven hero: the giant number drifts down, the title lines move apart and the name band
+   * slides sideways. Transforms only, written when they change and only while on screen (AGENTS 8.1).
+   */
+  private driveHero(): void {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    const last = { no: '', title: '', band: '' };
+    this.scrollFrames.register(
+      {
+        read: (frame) => {
+          const band = this.band()?.nativeElement;
+          const track = this.bandTrack()?.nativeElement;
+          const rect = band?.getBoundingClientRect();
+          const bandOn = !!rect && rect.bottom > 0 && rect.top < frame.viewportHeight;
+          return { bandOn, half: bandOn && track ? track.scrollWidth / 2 : 0 };
+        },
+        write: ({ bandOn, half }, frame) => {
+          const y = frame.scrollY;
+          const heroOn = y < frame.viewportHeight * 1.2;
+          const no = this.bigNo()?.nativeElement;
+          const noValue = `translate3d(0, ${Math.round(y * 0.25)}px, 0)`;
+          if (no && heroOn && noValue !== last.no) no.style.transform = last.no = noValue;
+
+          const title = this.titleEl()?.nativeElement;
+          const progress = Math.min(1, y / (frame.viewportHeight * 0.8));
+          const shift = Math.round(progress * Math.min(64, frame.viewportWidth * 0.06));
+          const titleValue = String(shift);
+          if (title && heroOn && title.children.length > 1 && titleValue !== last.title) {
+            last.title = titleValue;
+            (title.children[0] as HTMLElement).style.transform = `translate3d(${-shift}px, 0, 0)`;
+            (title.children[1] as HTMLElement).style.transform = `translate3d(${shift}px, 0, 0)`;
+          }
+
+          const track = this.bandTrack()?.nativeElement;
+          if (track && bandOn && half > 0) {
+            const bandValue = `translate3d(${-Math.round((y * 0.35) % half)}px, 0, 0)`;
+            if (bandValue !== last.band) track.style.transform = last.band = bandValue;
+          }
+        },
+      },
+      this.destroyRef,
+    );
   }
 
   /**
@@ -179,6 +250,30 @@ export class ProjectPageComponent {
     ].filter((step) => step.text);
   }
 
+  /** Images for the pinned story screen: the screens first, then the gallery, then the card image. */
+  protected storyImages(p: Project): string[] {
+    const images = [...p.screens.map((s) => s.image), ...p.gallery.map((g) => g.image), p.previewImage ?? ''].filter((src) => src.trim());
+    return images.slice(0, 3);
+  }
+
+  /**
+   * Degrees a result ring fills to: percentages ("-40 %", "94%") or plain numbers from 0 to 100.
+   * Anything else (e.g. "3x", "1.2 s") has no ring and shows as a big number.
+   */
+  protected ringAngle(value: string): number | null {
+    const match = value.trim().match(/^[-+]?\s*(\d+(?:[.,]\d+)?)\s*(%?)$/);
+    if (!match) return null;
+    const n = Number(match[1].replace(',', '.'));
+    if (!match[2] && n > 100) return null;
+    return Math.min(100, n) * 3.6;
+  }
+
+  /** Rotation of each half arc of the ring: the right half fills first, then the left one. */
+  protected halfTurn(value: string, half: 0 | 1): number {
+    const angle = this.ringAngle(value) ?? 0;
+    return half === 0 ? Math.min(angle, 180) : Math.max(0, angle - 180);
+  }
+
   protected hasStory(p: Project): boolean {
     return this.storySteps(p).length > 0;
   }
@@ -220,6 +315,8 @@ export class ProjectPageComponent {
       { id: 's-demo', label: 'pp_demo', show: !!p.demoVideoUrl && hasProjectVisual(p) },
       { id: 's-story', label: 'pp_story', show: this.hasStory(p) },
       { id: 's-results', label: 'pp_results', show: p.results.length > 0 },
+      { id: 's-devices', label: this.devicesLabel(p), show: this.hasDevices(p) },
+      { id: 's-hotspots', label: 'pp_hotspots', show: this.hasHotspots(p) },
       { id: 's-overview', label: 'pp_overview', show: this.hasOverview(p) },
       { id: 's-how', label: 'pp_how', show: !!this.caseStudy(p) },
       { id: 's-chapters', label: 'pp_chapters_title', show: p.chapters.length > 0 },
@@ -278,6 +375,21 @@ export class ProjectPageComponent {
     );
   }
 
+  /** Shown when the project has a mobile version (clip or captures); the desktop capture is optional. */
+  protected hasDevices(project: Project): boolean {
+    return !!project.mobileVideo.trim() || project.mobileImages.length > 0;
+  }
+
+  /** "Escritorio y móvil" with both versions, "Versión móvil" with the phone alone. */
+  protected devicesLabel(project: Project): string {
+    return project.previewImage?.trim() ? 'pp_devices' : 'pp_mobile_version';
+  }
+
+  /** Points of interest are placed on the card image. */
+  protected hasHotspots(project: Project): boolean {
+    return !!project.previewImage?.trim() && project.hotspots.length > 0;
+  }
+
   protected hasOverview(project: Project): boolean {
     return !!this.longText(project) || this.highlights(project).length > 0 || project.stack.length > 0;
   }
@@ -297,7 +409,7 @@ export class ProjectPageComponent {
   /** Team stored as a number by the admin picker: "Solo yo" / "4 personas" in the visitor's language. */
   protected teamText(team: string): string {
     const value = (team ?? '').trim();
-    if (!/^d+$/.test(value)) return value;
+    if (!/^\d+$/.test(value)) return value;
     const n = Number(value);
     return n === 1 ? this.transloco.translate('pp_team_solo') : this.transloco.translate('pp_team_n', { n });
   }

@@ -138,13 +138,40 @@ export interface ProjectDetails {
   mediaFocus: string;
   /** Order of the movable sections on the project page (ids of PAGE_SECTIONS); empty = default order. */
   sectionOrder: string[];
+  /** How the three-step story shows: numbered timeline (default) or a pinned screen with the steps scrolling by. */
+  storyLayout: StoryLayout;
+  /** How the results show: big numbers (default) or rings that fill (only for percentages and 0-100 values). */
+  resultsStyle: ResultsStyle;
+  /**
+   * Mobile version ("Escritorio y móvil"): a vertical clip played in the phone, and vertical
+   * captures (the first one is the phone's still when there is no clip). Both optional.
+   */
+  mobileVideo: string;
+  mobileImages: string[];
+  /** Labeled points on the card image ("Dentro del producto"), placed by clicking it in the admin. */
+  hotspots: ProjectHotspot[];
 }
+
+export type StoryLayout = 'timeline' | 'pinned';
+export type ResultsStyle = 'numbers' | 'rings';
+
+/** A point of interest on the card image: position in percent of its width / height and a label. */
+export interface ProjectHotspot {
+  x: number;
+  y: number;
+  labelEs: string;
+  labelEn: string;
+}
+
+export const MAX_HOTSPOTS = 8;
 
 /** Sections of the project page that can be reordered from the admin ("Organizar la página"), in default order. */
 export const PAGE_SECTIONS: { id: string; label: string }[] = [
   { id: 's-demo', label: 'Video demo' },
   { id: 's-story', label: 'Historia en tres pasos' },
   { id: 's-results', label: 'Resultados con cifras' },
+  { id: 's-devices', label: 'Escritorio y móvil' },
+  { id: 's-hotspots', label: 'Dentro del producto' },
   { id: 's-overview', label: 'Resumen y stack' },
   { id: 's-how', label: 'Cómo está hecho' },
   { id: 's-chapters', label: 'Capítulos' },
@@ -198,7 +225,7 @@ export function emptyStory(): ProjectStory {
 }
 
 export function emptyDetails(): ProjectDetails {
-  return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [], chapters: [], mediaFocus: DEFAULT_MEDIA_FOCUS, sectionOrder: [] };
+  return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [], chapters: [], mediaFocus: DEFAULT_MEDIA_FOCUS, sectionOrder: [], storyLayout: 'timeline', resultsStyle: 'numbers', mobileVideo: '', mobileImages: [], hotspots: [] };
 }
 
 // ---- Row mapping (jsonb keys are snake_case, like `experience.subprojects`) ----
@@ -235,6 +262,34 @@ const STORY_KEYS: (keyof ProjectStory)[] = ['challengeEs', 'challengeEn', 'appro
 const VIDEO_KEYS: (keyof ProjectVideo)[] = ['titleEs', 'titleEn', 'descEs', 'descEn', 'video', 'poster', 'preview', 'duration'];
 const CHAPTER_TEXT_KEYS = ['titleEs', 'titleEn', 'bodyEs', 'bodyEn', 'captionEs', 'captionEn', 'altEs', 'altEn', 'media', 'mediaAfter', 'author', 'code', 'language'] as const;
 
+export const MAX_MOBILE_IMAGES = 6;
+
+const cleanMobileImages = (images: string[]): string[] =>
+  images.map((src) => src.trim()).filter(Boolean).slice(0, MAX_MOBILE_IMAGES);
+
+/** Vertical captures; also reads the single `phone_image` of the first version of this section. */
+function readMobileImages(facts: Json): string[] {
+  const images = Array.isArray(facts['mobile_images']) ? facts['mobile_images'].filter((src): src is string => typeof src === 'string') : [];
+  return cleanMobileImages(images.length ? images : [text(facts, 'phone_image')]);
+}
+
+const percent = (value: unknown): number => Math.min(100, Math.max(0, Math.round(Number(value) * 10) / 10 || 0));
+
+/** Points with a label only, positions clamped to the image (0-100 %). */
+function readHotspots(value: unknown): ProjectHotspot[] {
+  return list(value)
+    .map((item) => ({ x: percent(item['x']), y: percent(item['y']), labelEs: text(item, 'label_es'), labelEn: text(item, 'label_en') }))
+    .filter((spot) => spot.labelEs.trim() || spot.labelEn.trim())
+    .slice(0, MAX_HOTSPOTS);
+}
+
+function writeHotspots(spots: ProjectHotspot[]): Json[] {
+  return spots
+    .filter((spot) => spot.labelEs.trim() || spot.labelEn.trim())
+    .slice(0, MAX_HOTSPOTS)
+    .map((spot) => ({ x: percent(spot.x), y: percent(spot.y), label_es: spot.labelEs.trim(), label_en: spot.labelEn.trim() }));
+}
+
 /** Unknown types are skipped (a newer admin, or a hand-edited row, must not break the page). */
 function readChapters(value: unknown): ProjectChapter[] {
   return list(value).flatMap((item) => {
@@ -263,6 +318,11 @@ export function detailsFromRow(row: Json): ProjectDetails {
     chapters: readChapters(row['chapters']),
     mediaFocus: MEDIA_FOCUS_POINTS.includes(text(object(row['facts']), 'media_focus')) ? text(object(row['facts']), 'media_focus') : DEFAULT_MEDIA_FOCUS,
     sectionOrder: text(object(row['facts']), 'section_order').split(',').map((id) => id.trim()).filter((id) => PAGE_SECTIONS.some((s) => s.id === id)),
+    storyLayout: text(object(row['facts']), 'story_layout') === 'pinned' ? 'pinned' : 'timeline',
+    resultsStyle: text(object(row['facts']), 'results_style') === 'rings' ? 'rings' : 'numbers',
+    mobileVideo: text(object(row['facts']), 'mobile_video'),
+    mobileImages: readMobileImages(object(row['facts'])),
+    hotspots: readHotspots(object(row['facts'])['hotspots']),
   };
 }
 
@@ -271,7 +331,8 @@ export function detailsToRow(details: ProjectDetails): Json {
   return {
     featured: details.featured,
     // The story shares the facts column (no migration): its keys never collide with the fact keys.
-    facts: { ...writeItem(details.facts), ...writeItem(details.story), media_focus: details.mediaFocus || DEFAULT_MEDIA_FOCUS, section_order: details.sectionOrder.join(',') },
+    facts: { ...writeItem(details.facts), ...writeItem(details.story), media_focus: details.mediaFocus || DEFAULT_MEDIA_FOCUS, section_order: details.sectionOrder.join(','), story_layout: details.storyLayout, results_style: details.resultsStyle,
+      mobile_video: details.mobileVideo.trim(), mobile_images: cleanMobileImages(details.mobileImages), hotspots: writeHotspots(details.hotspots) },
     results: items(details.results),
     screens: items(details.screens),
     gallery: details.gallery.filter((photo) => photo.image.trim()).map(writeItem),

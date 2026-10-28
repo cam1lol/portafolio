@@ -86,3 +86,27 @@
 
 .organize-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
 .organize-row .step-hint { margin: 0; }
+
+/* Segmented display choices (story layout, results style) */
+.choice { display: grid; justify-items: start; gap: 8px; margin: 4px 0 18px; }
+.choice-label { color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.choice-hint { max-width: 70ch; color: var(--steel); font-size: 12px; line-height: 1.5; }
+
+/* Mobile version: fields | phone preview */
+.mobile-block { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; align-items: start; margin-bottom: 18px; }
+.mobile-fields { min-width: 0; }
+.mobile-shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.mobile-shot { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--r); }
+.mobile-shot-head { display: flex; align-items: center; justify-content: space-between; color: var(--steel); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.mobile-shot-actions { display: flex; gap: 4px; }
+.mobile-shot-actions button { width: 26px; height: 26px; padding: 0; border: 1px solid var(--line); border-radius: var(--r); background: none; color: var(--steel); font-size: 15px; line-height: 1; cursor: pointer; }
+.mobile-shot-actions button:hover:not(:disabled), .mobile-shot-actions button:focus-visible { border-color: var(--ember); color: var(--ember); outline: none; }
+.mobile-shot-actions button:disabled { opacity: .3; cursor: default; }
+.mobile-preview { position: sticky; top: calc(var(--site-header-h) + 70px); display: grid; gap: 8px; }
+.mobile-phone { display: grid; place-items: center; aspect-ratio: 9 / 19; overflow: hidden; padding: 6px; border: 1px solid var(--line); border-radius: 24px; background: var(--graphite); }
+.mobile-phone video, .mobile-phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 18px; background: var(--ink); }
+.mobile-empty { padding: 12px; color: var(--steel); font-size: 9px; letter-spacing: .1em; text-align: center; }
+@media (max-width: 760px) {
+  .mobile-block { grid-template-columns: minmax(0, 1fr); }
+  .mobile-preview { position: static; width: 160px; }
+}

@@ -49,7 +49,7 @@ describe('ProjectPageComponent', () => {
 
   it('enlaza al proyecto anterior y al siguiente', async () => {
     const { root } = await render('cauce');
-    const links = Array.from(root.querySelectorAll<HTMLAnchorElement>('.pager a')).map((a) => a.getAttribute('href'));
+    const links = Array.from(root.querySelectorAll<HTMLAnchorElement>('.pager a, a.next-band')).map((a) => a.getAttribute('href'));
     expect(links).toEqual(['/proyectos/velamentum', '/proyectos/panel']);
   });
 
@@ -85,5 +85,50 @@ describe('ProjectPageComponent', () => {
   it('si el slug no existe muestra el aviso sin romperse', async () => {
     const { root } = await render('no-existe');
     expect(root.querySelector('.not-found')).not.toBeNull();
+  });
+
+  it('con pantalla fija y anillos: historia fija y anillo solo para porcentajes o 0-100', async () => {
+    const cauce: Project = {
+      ...project('cauce', 'Cauce'),
+      storyLayout: 'pinned',
+      resultsStyle: 'rings',
+      story: { ...emptyDetails().story, challengeEs: 'El reto' },
+      results: [
+        { value: '-40 %', labelEs: 'Carga', labelEn: '', contextEs: '', contextEn: '' },
+        { value: '3x', labelEs: 'Velocidad', labelEn: '', contextEs: '', contextEn: '' },
+        { value: '250', labelEs: 'Usuarios', labelEn: '', contextEs: '', contextEn: '' },
+      ],
+    };
+    const { root } = await render('cauce', [cauce]);
+    expect(root.querySelector('#s-story app-project-story-pinned')).not.toBeNull();
+    expect(root.querySelectorAll('#s-results .ring').length).toBe(1);
+    expect((root.querySelector('#s-results .ring') as HTMLElement).style.getPropertyValue('--r1')).toBe('144deg');
+  });
+
+  it('escritorio y móvil: las dos versiones, el resto de capturas en fila y puntos de interés', async () => {
+    const hotspots = [{ x: 20, y: 30, labelEs: 'Menú por roles', labelEn: '' }];
+    const full: Project = { ...project('cauce', 'Cauce'), previewImage: 'd.png', mobileImages: ['m1.png', 'm2.png', 'm3.png'], hotspots };
+    const { root } = await render('cauce', [full]);
+    expect(root.querySelector('#s-devices .desk')).not.toBeNull();
+    expect(root.querySelector('#s-devices .phone img')?.getAttribute('src')).toBe('m1.png');
+    expect(root.querySelectorAll('#s-devices .row img').length).toBe(2);
+    expect(root.querySelectorAll('#s-hotspots .spot').length).toBe(1);
+    expect((root.querySelector('#s-hotspots .spot') as HTMLElement).style.left).toBe('20%');
+  });
+
+  it('solo versión móvil: el teléfono solo con su video; sin imagen de escritorio no hay puntos', async () => {
+    const hotspots = [{ x: 20, y: 30, labelEs: 'Menú por roles', labelEn: '' }];
+    const mobile: Project = { ...project('cauce', 'Cauce'), mobileVideo: 'm.mp4', mobileImages: ['m1.png'], hotspots };
+    const { root } = await render('cauce', [mobile]);
+    expect(root.querySelector('#s-devices .stage.solo')).not.toBeNull();
+    expect(root.querySelector('#s-devices .desk')).toBeNull();
+    expect(root.querySelector('#s-devices .phone video')?.getAttribute('src')).toBe('m.mp4');
+    expect(root.querySelectorAll('#s-devices .row img').length).toBe(1);
+    expect(root.querySelector('#s-hotspots')).toBeNull();
+  });
+
+  it('sin versión móvil no aparece la sección', async () => {
+    const { root } = await render('cauce', [{ ...project('cauce', 'Cauce'), previewImage: 'd.png' }]);
+    expect(root.querySelector('#s-devices')).toBeNull();
   });
 });

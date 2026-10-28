@@ -35,9 +35,10 @@
       @if (hasFilters()) { · <button type="button" class="reset" (click)="reset()">{{ 'pi_reset' | transloco }}</button> }
     </p>
 
-    <ul class="list">
+    <ul class="list" [class.stacked]="filtered().length > 1">
       @for (p of filtered(); track p.id; let i = $index) {
-        <li class="item">
+        <li class="item" [style.--i]="i">
+          <span class="dim" aria-hidden="true"></span>
           <a class="item-link" appTilt [routerLink]="['/proyectos', p.slug]" (click)="vt.select(p.slug, p.name, i)"
             [style.view-transition-name]="vt.name(p.slug, 'card')">
             <div class="media" [style.view-transition-name]="vt.name(p.slug, 'media')">

@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, computed, effect, inject, signal } from '@angular/core';
+import { ScrollFrameService } from '../../shared/perf/scroll-frame.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
@@ -22,7 +23,7 @@ const SITE_NAME = 'Camilo Ayala';
   standalone: true,
   imports: [ProjectCoverArtComponent, RouterLink, TranslocoPipe, PreviewPlayDirective, UpperCasePipe, IconComponent, TiltDirective, ScrambleDirective],
   templateUrl: './projects-index.component.html',
-  styleUrl: './projects-index.component.css',
+  styleUrls: ['./projects-index.component.css', './projects-index-stack.component.css'],
 })
 export class ProjectsIndexComponent {
   private readonly transloco = inject(TranslocoService);
@@ -65,6 +66,51 @@ export class ProjectsIndexComponent {
       this.title.setTitle(`${this.pageTitle()} · ${SITE_NAME}`);
       this.meta.updateTag({ name: 'description', content: this.pageLead() });
     });
+    this.stackFrames();
+  }
+
+  /**
+   * A12: while a row is being covered by the next one it shrinks a little and dims. Measures every
+   * row first, then writes only the values that changed. Off on narrow screens and reduced motion
+   * (the CSS keeps the plain list there).
+   */
+  private stackFrames(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const host = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
+    const scrollFrames = inject(ScrollFrameService);
+    const written = new WeakMap<HTMLElement, string>();
+    effect(() => {
+      this.filtered();
+      scrollFrames.request();
+    });
+    scrollFrames.register(
+      {
+        read: (frame) => {
+          const items = Array.from(host.querySelectorAll<HTMLElement>('.list.stacked > .item'));
+          if (frame.viewportWidth < 861) return items.map((el) => ({ el, covered: 0 }));
+          const rects = items.map((el) => el.getBoundingClientRect());
+          return items.map((el, i) => {
+            const next = rects[i + 1];
+            if (!next) return { el, covered: 0 };
+            // 0 while the next row is a full row away, 1 once it sits on top of this one.
+            const gap = next.top - rects[i].top - 14;
+            return { el, covered: Math.min(1, Math.max(0, 1 - gap / rects[i].height)) };
+          });
+        },
+        write: (rows) => {
+          for (const { el, covered } of rows) {
+            const c = Math.round(covered * 100) / 100;
+            const key = String(c);
+            if (written.get(el) === key) continue;
+            written.set(el, key);
+            el.style.transform = c ? `scale(${(1 - c * 0.05).toFixed(3)})` : '';
+            const shade = el.firstElementChild as HTMLElement | null;
+            if (shade?.classList.contains('dim')) shade.style.opacity = c ? (c * 0.55).toFixed(2) : '';
+          }
+        },
+      },
+      inject(DestroyRef),
+    );
   }
 
   protected loc(es: string, en: string): string {
