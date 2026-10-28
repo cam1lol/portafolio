@@ -7,3 +7,102 @@ form {
   max-width: 900px;
 }
 
+/* Rail of steps | the step on screen | live card preview. */
+.form-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
+.layout-main { min-width: 0; max-width: none; }
+.layout-rail { position: sticky; top: calc(var(--site-header-h) + 16px); padding: 10px 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
+.layout-preview { position: sticky; top: calc(var(--site-header-h) + 16px); }
+.form-step[hidden] { display: none; }
+.form-step { margin-bottom: 0; }
+
+/* Below 1800 (the admin sidebar takes room) the preview moves into the "Tarjeta y portada" step;
+   below 1100 the rail becomes a strip on top. */
+.inline-preview { display: none; max-width: 340px; margin-bottom: 22px; }
+@media (max-width: 1800px) {
+  .form-layout { grid-template-columns: 210px minmax(0, 1fr); }
+  .layout-preview { display: none; }
+  .inline-preview { display: block; }
+}
+@media (max-width: 1100px) {
+  .form-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .layout-rail { position: static; padding: 0; border: 0; background: none; }
+}
+
+.list-sub { color: var(--steel); font: 11px 'Space Grotesk', sans-serif; font-weight: 400; letter-spacing: 0; }
+.repeat-body[hidden] { display: none; }
+.repeat-card:has(> app-repeat-head.folded) { padding-bottom: 0; }
+
+/* Step navigation inside the sticky bar: previous / position / next on the left, saving on the right. */
+.step-nav { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+.step-pos { color: var(--steel); font-size: 11px; letter-spacing: .08em; }
+.step-nav .btn:disabled { opacity: .35; cursor: default; }
+
+details.video-tips summary { color: var(--steel); font-size: 10px; letter-spacing: .1em; cursor: pointer; }
+details.video-tips[open] summary { margin-bottom: 4px; }
+
+/* Review: one row per public section, lit when it will show. */
+.review-list { margin: 0 0 22px; padding: 0; list-style: none; border-top: 1px solid var(--line-soft); }
+.review-list button {
+  display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 28px; align-items: center; gap: 12px; width: 100%;
+  padding: 11px 6px; border: 0; border-bottom: 1px solid var(--line-soft); background: none; color: var(--bone);
+  font: 13px 'Space Grotesk', sans-serif; text-align: left; cursor: pointer;
+}
+.review-list button:hover { background: var(--ink); }
+.review-list button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+.rv-dot { width: 8px; height: 8px; border: 1px solid var(--steel); border-radius: 50%; }
+.rv-dot.on { border-color: var(--good); background: var(--good); }
+.rv-state { color: var(--steel); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.rv-state.on { color: var(--bone-dim); }
+.rv-step { color: var(--steel); font-size: 10px; text-align: right; }
+
+.step-nav .btn { display: inline-flex; align-items: center; gap: 6px; }
+/* A narrow form column (whatever the screen): arrows only, so the whole bar fits in one row. */
+.layout-main { container-type: inline-size; }
+@container (max-width: 860px) { .step-nav .lbl { display: none; } .step-nav .btn { padding-inline: 11px; } }
+
+@media (max-width: 760px) {
+  /* Two rows: arrows + position + save state, then cancel / save. */
+  .step-nav { flex: 1 1 auto; margin-right: 0; }
+  .step-nav .btn { flex: none; padding: 9px 11px; }
+  .step-nav .lbl { display: none; }
+  .sticky-actions .save-state { flex-basis: auto; margin-left: auto; text-align: right; }
+  .review-list button { grid-template-columns: 10px minmax(0, 1fr) auto; }
+  .rv-step { display: none; }
+}
+
+/* ---- Editing tools bar */
+.form-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
+.tools-spacer { flex: 1; }
+.tool { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .08em; cursor: pointer; }
+.tool:hover:not(:disabled) { border-color: var(--steel); color: var(--bone); }
+.tool.on { border-color: var(--ember); color: var(--ember); }
+.tool:disabled { opacity: .45; cursor: default; }
+.tool:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.tool.translate:not(:disabled) { border-color: var(--ember); color: var(--ember); }
+.tool-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--ember); color: var(--ink); font-weight: 700; }
+.tools-note { color: var(--steel); font-size: 11px; }
+.lang-note { margin: 0; color: var(--steel); font-size: 12px; }
+.link { padding: 0; border: 0; background: none; color: var(--ember); font: inherit; text-decoration: underline; cursor: pointer; }
+
+/* ---- Spanish-only mode: English fields fold away (the translator fills them) and the grids close up. */
+.es-only .field:has(.lang.en) { display: none; }
+.es-only .grid-2:has(.lang.en) { grid-template-columns: minmax(0, 1fr); }
+.es-only .grid-3:has(.lang.en),
+.es-only .grid-video-title:has(.lang.en),
+.es-only .grid-improvement:has(.lang.en),
+.es-only .grid-code:has(.lang.en) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ---- Helps off: long explanations hidden; counters, errors and the translation badge stay. */
+.hints-off .step-hint,
+.hints-off .video-tips { display: none; }
+.hints-off { --hint-where: none; }
+
+/* ---- Bigger, calmer fields (this form only). */
+.layout-main .field { margin-bottom: 22px; }
+.layout-main .field input[type='text'],
+.layout-main .field input[type='url'],
+.layout-main .field select,
+.layout-main .field textarea { padding: 12px 14px; font-size: 15px; }
+.layout-main .field > label { font-size: 11px; }
+/* Text areas grow with their content (Chrome/Edge); elsewhere they keep their rows. */
+.layout-main .field textarea { field-sizing: content; min-height: 4.5lh; max-height: 60vh; }

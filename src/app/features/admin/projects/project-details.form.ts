@@ -1,7 +1,8 @@
-import { FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { noControlCharsValidator } from '../../../shared/validators/no-control-chars.validator';
 import {
   ImprovementStatus,
+  ProjectChapter,
   ProjectDetails,
   ProjectDoc,
   ProjectFacts,
@@ -12,6 +13,10 @@ import {
   ProjectScreen,
   ProjectVersion,
   ProjectVideo,
+  ChapterLayout,
+  ChapterType,
+  DEFAULT_MEDIA_FOCUS,
+  emptyChapter,
   emptyFacts,
   emptyStory,
 } from '../../../core/data/project-details';
@@ -43,6 +48,7 @@ export type ImprovementGroup = FormGroup<Controls<ProjectImprovement>>;
 export type DocGroup = FormGroup<Controls<ProjectDoc>>;
 export type VersionGroup = FormGroup<Controls<ProjectVersion>>;
 export type VideoGroup = FormGroup<Controls<ProjectVideo>>;
+export type ChapterGroup = FormGroup<Controls<ProjectChapter>>;
 
 /** Problem / process / result, bilingual (empty = the strip is not shown). */
 export function storyGroup(story: ProjectStory = emptyStory()): FormGroup<Controls<ProjectStory>> {
@@ -75,7 +81,7 @@ export function resultGroup(item?: ProjectResult): ResultGroup {
     labelEn: optional(SHORT, false, item?.labelEn),
     contextEs: optional(CAPTION, false, item?.contextEs),
     contextEn: optional(CAPTION, false, item?.contextEn),
-  });
+  }, { validators: needs('value', ['labelEs', 'labelEn', 'contextEs', 'contextEn'], 'needsValue') });
 }
 
 export function screenGroup(item?: ProjectScreen): ScreenGroup {
@@ -123,6 +129,66 @@ export function versionGroup(item?: ProjectVersion): VersionGroup {
   });
 }
 
+const CHAPTER_BODY = 6000;
+const CHAPTER_CODE = 12000;
+/** Code keeps tabs and line breaks; every other control character is rejected. */
+const CODE_CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/;
+const codeValidator: ValidatorFn = (control) => (typeof control.value === 'string' && CODE_CONTROL_CHARS.test(control.value) ? { controlChars: true } : null);
+
+const filled = (group: AbstractControl, key: string) => String(group.get(key)?.value ?? '').trim() !== '';
+
+/** Group check: once any of `when` has content, `key` must have it too (a half-filled item would be dropped). */
+function needs(key: string, when: string[], error: string): ValidatorFn {
+  return (group) => (!filled(group, key) && when.some((other) => filled(group, other)) ? { [error]: true } : null);
+}
+
+/** What each chapter type needs once it has started being filled. */
+const chapterValidator: ValidatorFn = (group) => {
+  const type = group.get('type')?.value as ChapterType;
+  const any = (...keys: string[]) => keys.some((key) => filled(group, key));
+  if (type === 'compare' && filled(group, 'media') !== filled(group, 'mediaAfter')) return { needsBothImages: true };
+  if (type === 'image' && !filled(group, 'media') && any('captionEs', 'captionEn', 'altEs', 'altEn')) return { needsImage: true };
+  if (type === 'code' && !filled(group, 'code') && any('captionEs', 'captionEn', 'language')) return { needsCode: true };
+  if (type === 'quote' && !any('bodyEs', 'bodyEn') && filled(group, 'author')) return { needsQuote: true };
+  if (type === 'model' && !filled(group, 'media') && any('captionEs', 'captionEn')) return { needsModel: true };
+  return null;
+};
+
+/** Message for an item-level error (shown inside the item and summarised in its folded header). */
+export function itemErrorMessage(group: AbstractControl): string | null {
+  const errors = group.errors ?? {};
+  if (errors['needsValue']) return 'Falta la cifra: un resultado sin número no se muestra.';
+  if (errors['needsVideo']) return 'Falta el archivo de video: sin él, este video no se guarda.';
+  if (errors['needsBothImages']) return 'Un antes y después necesita las dos imágenes.';
+  if (errors['needsImage']) return 'Falta la imagen de este capítulo.';
+  if (errors['needsCode']) return 'Falta el código de este capítulo.';
+  if (errors['needsQuote']) return 'Falta el texto de la cita.';
+  if (errors['needsModel']) return 'Elige o sube el modelo 3D.';
+  return null;
+}
+
+/** One case study chapter; a type name starts an empty chapter of that type. */
+export function chapterGroup(item: ProjectChapter | ChapterType): ChapterGroup {
+  const chapter = typeof item === 'string' ? emptyChapter(item) : item;
+  return new FormGroup({
+    type: new FormControl<ChapterType>(chapter.type, { nonNullable: true }),
+    layout: new FormControl<ChapterLayout>(chapter.layout, { nonNullable: true }),
+    titleEs: optional(TITLE, false, chapter.titleEs),
+    titleEn: optional(TITLE, false, chapter.titleEn),
+    bodyEs: optional(CHAPTER_BODY, true, chapter.bodyEs),
+    bodyEn: optional(CHAPTER_BODY, true, chapter.bodyEn),
+    captionEs: optional(CAPTION, false, chapter.captionEs),
+    captionEn: optional(CAPTION, false, chapter.captionEn),
+    altEs: optional(CAPTION, false, chapter.altEs),
+    altEn: optional(CAPTION, false, chapter.altEn),
+    media: optional(PATH, false, chapter.media),
+    mediaAfter: optional(PATH, false, chapter.mediaAfter),
+    author: optional(TITLE, false, chapter.author),
+    code: new FormControl(chapter.code, { nonNullable: true, validators: [Validators.maxLength(CHAPTER_CODE), codeValidator] }),
+    language: optional(30, false, chapter.language),
+  }, { validators: chapterValidator });
+}
+
 export function videoGroup(item?: ProjectVideo): VideoGroup {
   return new FormGroup({
     titleEs: optional(TITLE, false, item?.titleEs),
@@ -133,7 +199,7 @@ export function videoGroup(item?: ProjectVideo): VideoGroup {
     poster: optional(PATH, false, item?.poster),
     preview: optional(PATH, false, item?.preview),
     duration: optional(12, false, item?.duration),
-  });
+  }, { validators: needs('video', ['titleEs', 'titleEn', 'descEs', 'descEn', 'poster', 'duration'], 'needsVideo') });
 }
 
 /**
@@ -163,6 +229,9 @@ export function detailControls() {
     docs: new FormArray<DocGroup>([]),
     versions: new FormArray<VersionGroup>([]),
     videos: new FormArray<VideoGroup>([]),
+    chapters: new FormArray<ChapterGroup>([]),
+    mediaFocus: new FormControl(DEFAULT_MEDIA_FOCUS, { nonNullable: true }),
+    sectionOrder: new FormControl<string[]>([], { nonNullable: true }),
   };
 }
 
@@ -185,6 +254,9 @@ export function patchDetails(controls: DetailControls, details: ProjectDetails):
   fill(controls.docs, details.docs, docGroup);
   fill(controls.versions, details.versions, versionGroup);
   fill(controls.videos, details.videos, videoGroup);
+  fill(controls.chapters, details.chapters, chapterGroup);
+  controls.mediaFocus.setValue(details.mediaFocus || DEFAULT_MEDIA_FOCUS);
+  controls.sectionOrder.setValue(details.sectionOrder ?? []);
 }
 
 /** Reads the form back as `ProjectDetails` (empty items are dropped by the service mapping). */
@@ -200,6 +272,9 @@ export function readDetails(controls: DetailControls): ProjectDetails {
     docs: controls.docs.getRawValue(),
     versions: controls.versions.getRawValue(),
     videos: controls.videos.getRawValue(),
+    chapters: controls.chapters.getRawValue(),
+    mediaFocus: controls.mediaFocus.value,
+    sectionOrder: controls.sectionOrder.value,
   };
 }
 

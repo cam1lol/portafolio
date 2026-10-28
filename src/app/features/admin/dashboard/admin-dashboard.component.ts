@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DayCount, VisitsChartComponent, bucketVisitsByDay } from './visits-chart.component';
+import { ProjectStatsComponent } from './project-stats.component';
 import { TOPIC_LABELS } from '../../../core/data/inbox.service';
 import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
@@ -49,7 +50,7 @@ interface LanguageRow {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [AdminPageHeaderComponent, RouterLink, DatePipe, VisitsChartComponent],
+  imports: [AdminPageHeaderComponent, RouterLink, DatePipe, VisitsChartComponent, ProjectStatsComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })

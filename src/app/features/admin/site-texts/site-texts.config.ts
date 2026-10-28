@@ -83,6 +83,24 @@ export const SITE_TEXT_GROUPS: SiteTextGroup[] = [
     fields: [{ key: 'cv_url', label: 'Hoja de vida (PDF, máx. 10 MB)', bilingual: true, maxLength: 2000, kind: 'pdf' }],
   },
   {
+    id: 'lab',
+    title: 'Laboratorio',
+    help: 'Título y descripción de la sección de experimentos. Los experimentos se editan en Laboratorio.',
+    fields: [
+      { key: 'lab_h', label: 'Título de sección', bilingual: true, maxLength: 60 },
+      { key: 'lab_d', label: 'Descripción', bilingual: true, maxLength: 160 },
+    ],
+  },
+  {
+    id: 'log',
+    title: 'Bitácora',
+    help: 'Título y descripción del registro de notas. Las notas se editan en Bitácora.',
+    fields: [
+      { key: 'log_h', label: 'Título de sección', bilingual: true, maxLength: 60 },
+      { key: 'log_d', label: 'Descripción', bilingual: true, maxLength: 160 },
+    ],
+  },
+  {
     id: 'manifesto',
     title: 'Manifiesto',
     help: 'El párrafo grande bajo el hero.',

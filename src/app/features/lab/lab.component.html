@@ -1,0 +1,27 @@
+@if (items().length) {
+  <section class="block wrap" id="lab">
+    <app-section-head index="LAB" headingKey="lab_h" descKey="lab_d" />
+    <div class="grid">
+      @for (item of items(); track item.id; let i = $index) {
+        <article class="card reveal" appReveal [style.transition-delay.ms]="(i % 3) * 90">
+          <div class="media">
+            <video appPlayWhileVisible [src]="item.video" [attr.poster]="item.poster || null" muted loop playsinline preload="none" aria-hidden="true"></video>
+            <span class="idx mono">{{ index(i) }}</span>
+          </div>
+          <div class="body">
+            <h3>{{ item.title }}</h3>
+            @if (item.description) { <p>{{ item.description }}</p> }
+            @if (item.tags.length) {
+              <div class="tags">
+                @for (tag of item.tags; track tag) { <span class="chip">{{ tag }}</span> }
+              </div>
+            }
+            @if (item.url) {
+              <a class="open mono" [href]="item.url" target="_blank" rel="noopener" [attr.aria-label]="('lab_open' | transloco) + ': ' + item.title">{{ 'lab_open' | transloco }} <app-icon name="arrow" /></a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+}

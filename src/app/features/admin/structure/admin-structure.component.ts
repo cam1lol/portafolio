@@ -35,10 +35,12 @@ const SECTIONS: SectionDef[] = [
   { key: 'manifesto', label: 'Manifiesto', description: 'Introducción y enfoque', editLink: ['/admin/site-texts'], editFragment: 'manifesto' },
   { key: 'projects', label: 'Proyectos', description: 'Tabs de proyectos y modal de detalle', editLink: ['/admin/projects'] },
   { key: 'clients', label: 'Clientes', description: 'Franja de logos de clientes', editLink: ['/admin/clients'] },
+  { key: 'lab', label: 'Laboratorio', description: 'Experimentos en clips que se reproducen al verse', editLink: ['/admin/lab'] },
   { key: 'experience', label: 'Experiencia', description: 'Timeline profesional', editLink: ['/admin/experience'] },
   { key: 'testimonials', label: 'Testimonios', description: 'Citas de clientes y compañeros', editLink: ['/admin/testimonials'] },
   { key: 'services', label: 'Servicios', description: 'Servicios ofrecidos y precios', editLink: ['/admin/services'] },
   { key: 'roadmap', label: 'Roadmap', description: 'Planes y próximos pasos', editLink: ['/admin/roadmap'] },
+  { key: 'log', label: 'Bitácora', description: 'Notas recientes como registro HUD', editLink: ['/admin/log'] },
   { key: 'comments', label: 'Comentarios', description: 'Comentarios aprobados y formulario público', editLink: ['/admin/comments'] },
   { key: 'contact', label: 'Contacto', description: 'Cierre de la página y email', editLink: ['/admin/site-texts'], editFragment: 'contact' },
 ];

@@ -31,11 +31,12 @@
 .rings.dimmed { opacity: .32; }
 .rings.ritual.dimmed { opacity: 1; }
 
-/* Cursor parallax: --px / --py come from the component, --d is each layer's depth. */
+/* Cursor parallax: the component sets each layer's transform directly (scaled by its depth --d),
+   so moving the mouse only re-composites, with no style work on the SVG inside. */
 .depth {
   position: absolute;
   inset: 0;
-  transform: translate3d(calc(var(--px, 0) * var(--d, 1) * 1px), calc(var(--py, 0) * var(--d, 1) * 1px), 0);
+  will-change: transform;
 }
 
 .layer {
@@ -43,11 +44,27 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Painted with its glow once, then only rotated on the GPU (cheap at any spin speed). */
-  filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
   overflow: visible;
   transform-origin: 50% 50%;
   backface-visibility: hidden;
+}
+
+/* The glow sits on the shapes inside each SVG, not on the SVG that rotates: that way it is painted
+   once into the layer and the GPU only turns the finished image. A filter on the rotating element
+   itself is recomputed every frame over the whole layer (the main cause of lag on modest GPUs). */
+.layer > :not(defs) {
+  filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
+}
+/* The rune rings are tiny glyphs repainted when they light up: a single short glow looks the same
+   on them and costs a fraction of the double wide one. */
+.layer > text { filter: drop-shadow(0 0 6px rgba(215, 72, 35, .6)); }
+
+/* The animated wrappers (rotation, pulse): plain boxes, so the compositor can run their animation. */
+.spin,
+.pulse {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
 }
 
 .spin {
@@ -57,12 +74,13 @@
 }
 
 /* Independent rotations for each ring layer */
-.l1 { animation-name: cw;  animation-duration: 55s; }
-.l2 { animation-name: ccw; animation-duration: 40s; }
-.l3 { animation-name: cw;  animation-duration: 80s; }
-.l4 { animation-name: ccw; animation-duration: 100s; }
-.l5 { animation-name: cw;  animation-duration: 70s; }
-.l6 { animation-name: ccw; animation-duration: 35s; }
+/* --scene-spin: rhythm from the admin (Escena): 1.6 calm, 1 normal, .65 lively. */
+.l1 { animation-name: cw;  animation-duration: calc(55s * var(--scene-spin, 1)); }
+.l2 { animation-name: ccw; animation-duration: calc(40s * var(--scene-spin, 1)); }
+.l3 { animation-name: cw;  animation-duration: calc(80s * var(--scene-spin, 1)); }
+.l4 { animation-name: ccw; animation-duration: calc(100s * var(--scene-spin, 1)); }
+.l5 { animation-name: cw;  animation-duration: calc(70s * var(--scene-spin, 1)); }
+.l6 { animation-name: ccw; animation-duration: calc(35s * var(--scene-spin, 1)); }
 
 @keyframes cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
@@ -83,11 +101,19 @@
   .rings { width: 150vw; height: 150vw; }
 }
 
+/* Escena: softer rings, or none at all. */
+:host-context(html[data-scene-rings="soft"]) .rings { opacity: .42; }
+:host-context(html[data-scene-rings="soft"]) .rings.dimmed { opacity: .2; }
+:host-context(html[data-scene-rings="off"]) { display: none; }
+
 /* Day mode: softer on a light background */
 :host-context([data-theme="day"]) .rings {
   opacity: .25;
 }
-:host-context([data-theme="day"]) .layer { filter: none; }
+:host-context([data-theme="day"]) .layer > :not(defs) { filter: none; }
+
+/* fx-lite (modest hardware, see main.ts): no glow at all. */
+:host-context(html.fx-lite) .layer > :not(defs) { filter: none; }
 
 :host-context([data-theme="day"]) .rings.dimmed { opacity: .12; }
 

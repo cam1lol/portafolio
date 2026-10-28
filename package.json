@@ -10,7 +10,8 @@
     "build": "ng build",
     "postbuild": "node scripts/seo.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "perf": "node scripts/perf-check.mjs"
   },
   "prettier": {
     "printWidth": 100,

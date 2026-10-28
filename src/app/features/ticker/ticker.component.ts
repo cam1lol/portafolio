@@ -55,7 +55,9 @@ export class TickerComponent implements AfterViewInit {
    */
   ngAfterViewInit(): void {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const animations = () => this.track().nativeElement.getAnimations();
+    // Looked up once (getAnimations forces a style update); again only if the strip was re-rendered.
+    let cached: Animation[] = [];
+    const animations = () => (cached.length && cached[0].playState !== 'idle' ? cached : (cached = this.track().nativeElement.getAnimations()));
     let lastY = window.scrollY;
     let lastT = performance.now();
     let rate = 1;

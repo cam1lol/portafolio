@@ -1,0 +1,26 @@
+/* Buttons, sticky bar and save state come from ../shared/admin-form.css. */
+
+.scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px; }
+
+.scene-card { min-width: 0; margin: 0; padding: 16px 18px 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
+.scene-card legend { padding: 0 8px; color: var(--bone); font: 700 14px 'Space Grotesk', sans-serif; }
+.idx { margin-right: 4px; color: var(--ember); font-size: 11px; }
+.help { margin: 2px 0 14px; color: var(--steel); font-size: 12px; line-height: 1.5; }
+
+.choices { display: grid; gap: 6px; }
+.choice {
+  display: grid; grid-template-columns: 14px minmax(0, 1fr); grid-template-rows: auto auto; gap: 1px 10px; align-items: center;
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink);
+  color: var(--bone-dim); text-align: left; cursor: pointer; transition: border-color .18s, color .18s;
+}
+.choice:hover { border-color: var(--steel); color: var(--bone); }
+.choice:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.choice.on { border-color: var(--ember); color: var(--bone); }
+.dot { grid-row: span 2; width: 12px; height: 12px; border: 1px solid var(--steel); border-radius: 50%; }
+.choice.on .dot { border-color: var(--ember); background: radial-gradient(circle, var(--ember) 45%, transparent 50%); }
+.choice-label { font: 600 13px 'Space Grotesk', sans-serif; }
+.choice-hint { color: var(--steel); font-size: 11px; }
+
+.note { margin: 18px 0 0; color: var(--steel); font-size: 12px; line-height: 1.5; }
+
+@media (prefers-reduced-motion: reduce) { .choice { transition: none; } }

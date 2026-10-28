@@ -1,0 +1,88 @@
+/* Second stylesheet of the project form (the first one stays under the component style budget):
+   chapter editor, live preview panel and private draft link. */
+
+/* Chapters: type picker cards, layout switch and code editor. */
+.chapter-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 6px 0 12px; }
+.chapter-type {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: auto auto; gap: 2px 12px; align-items: center;
+  padding: 14px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); color: var(--bone); text-align: left; cursor: pointer;
+  transition: border-color .18s, transform .18s;
+}
+.chapter-type:hover { border-color: var(--ember); transform: translateY(-2px); }
+.chapter-type:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.ct-icon { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); color: var(--ember); }
+.ct-icon svg { width: 18px; height: 18px; }
+.ct-label { font: 700 13px 'Space Grotesk', sans-serif; }
+.ct-desc { color: var(--steel); font-size: 11px; line-height: 1.4; }
+.chapter-card { border-left: 2px solid var(--ember); }
+
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.seg button { padding: 8px 14px; border: 0; background: var(--ink); color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .08em; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--graphite-2); color: var(--ember); }
+.seg button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+
+.grid-code { display: grid; grid-template-columns: minmax(0, 120px) minmax(0, 1fr) minmax(0, 1fr); gap: 0 18px; }
+.code-input { font: 13px/1.6 'Space Mono', monospace; tab-size: 2; white-space: pre; }
+@media (max-width: 760px) { .grid-code { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .chapter-type { transition: none; } .chapter-type:hover { transform: none; } }
+
+/* Live preview: the real project page in a side panel, non-interactive (inert), updated as you type. */
+.head-actions .btn.on { border-color: var(--ember); color: var(--ember); }
+.live-preview {
+  position: fixed; top: var(--site-header-h); right: 0; bottom: 0; z-index: 40; display: flex; flex-direction: column;
+  width: min(1080px, 64vw); border-left: 1px solid var(--line); background: var(--ink); box-shadow: -30px 0 60px -30px rgba(0, 0, 0, .8);
+  animation: lp-in .35s var(--ease) both;
+}
+@keyframes lp-in { from { transform: translateX(40px); opacity: 0; } }
+.lp-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); color: var(--steel); font-size: 10px; letter-spacing: .1em; }
+.lp-scroll { flex: 1; overflow: auto; overscroll-behavior: contain; }
+.lp-loading { padding: 24px; color: var(--steel); font-size: 11px; }
+@media (max-width: 1100px) { .live-preview { width: 100vw; } }
+@media (prefers-reduced-motion: reduce) { .live-preview { animation: none; } }
+
+.draft-link { margin-bottom: 22px; }
+.draft-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.draft-row input { flex: 1 1 320px; min-width: 0; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); color: var(--bone-dim); font: 12px 'Space Mono', monospace; }
+
+/* Focus point: a 3 x 3 grid over the image; the chosen cell is lit. */
+.focus-picker { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 16px; align-items: center; }
+.focus-thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); }
+.focus-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.focus-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+.focus-grid button { border: 1px dashed rgba(233, 234, 237, .18); background: transparent; cursor: pointer; }
+.focus-grid button:hover { background: rgba(242, 84, 27, .15); }
+.focus-grid button.on { border: 2px solid var(--ember); background: rgba(242, 84, 27, .22); }
+.focus-grid button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+.focus-picker .step-hint { margin: 0; }
+@media (max-width: 760px) { .focus-picker { grid-template-columns: minmax(0, 1fr); } }
+
+/* Local draft offer and the quality checklist. */
+.draft-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 14px; border: 1px dashed var(--ember); border-radius: var(--r); color: var(--bone-dim); font-size: 13px; }
+.draft-offer span { flex: 1 1 260px; }
+.quality-list { margin: 0 0 22px; padding: 0; list-style: none; border-top: 1px solid var(--line-soft); }
+.quality-list button { display: grid; grid-template-columns: 10px minmax(0, 1fr) 28px; align-items: center; gap: 12px; width: 100%; padding: 10px 6px; border: 0; border-bottom: 1px solid var(--line-soft); background: none; color: var(--bone); font: 13px 'Space Grotesk', sans-serif; text-align: left; cursor: pointer; }
+.quality-list button:hover { background: var(--ink); }
+.quality-list button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
+.q-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); }
+.quality-ok { margin: 0 0 22px; color: var(--good); font-size: 11px; letter-spacing: .1em; }
+
+/* "¿Cómo se ve?" buttons next to each section title. */
+.see-btn { margin-left: auto; padding: 5px 10px; border: 1px dashed var(--line); border-radius: 999px; background: none; color: var(--steel); font: 10px "Space Mono", monospace; letter-spacing: .08em; cursor: pointer; }
+.see-btn:hover, .see-btn.on { border-color: var(--ember); border-style: solid; color: var(--ember); }
+.see-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.see-row { display: flex; margin: -4px 0 8px; }
+
+/* Chapter type picker: cards | live preview of the type under the pointer. */
+.picker-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 14px; align-items: start; margin: 6px 0 12px; }
+.picker-wrap .chapter-picker { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin: 0; }
+.chapter-type.on { border-color: var(--ember); }
+.picker-preview { position: sticky; top: calc(var(--site-header-h, 70px) + 16px); overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); }
+.pv-head { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--steel); font-size: 10px; letter-spacing: .06em; }
+.pv-head .tag { padding: 2px 8px; border: 1px dashed var(--ember); border-radius: 999px; color: var(--ember); font-size: 9px; }
+.pv-page { max-height: 420px; overflow: hidden; padding: 18px; }
+.pv-model { display: grid; place-items: center; min-height: 220px; padding: 24px; color: var(--steel); font-size: 11px; line-height: 1.6; text-align: center; }
+@media (max-width: 1100px) { .picker-wrap { grid-template-columns: minmax(0, 1fr); } .picker-preview { position: static; } }
+
+.organize-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
+.organize-row .step-hint { margin: 0; }

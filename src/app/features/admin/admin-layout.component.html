@@ -1,4 +1,4 @@
-<div class="admin-shell wrap">
+<div class="admin-shell wrap" [class.wide]="wide()">
   <div class="admin-top">
     <div class="brand">
       <span class="brand-mark">CA</span>
@@ -19,7 +19,7 @@
         <div class="nav-group">
           <span class="nav-group-label mono">{{ group.label }}</span>
           @for (link of group.links; track link.path) {
-            <a [routerLink]="link.path" routerLinkActive="on">
+            <a [routerLink]="link.path" routerLinkActive="on" [attr.title]="wide() ? link.label : null" [attr.aria-label]="link.label">
               <span class="nav-icon" aria-hidden="true"><app-icon [name]="link.icon" /></span>
               <span class="nav-label">{{ link.label }}</span>
               @if (link.badge === 'inbox' && inbox.unreadCount() > 0) {

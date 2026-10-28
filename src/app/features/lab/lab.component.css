@@ -1,0 +1,32 @@
+.block {
+  /* Vertical only, so .wrap keeps its side gutter on mobile. */
+  padding-top: 96px;
+  padding-bottom: 96px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+
+.card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); transition: border-color .25s; }
+.card:hover, .card:focus-within { border-color: var(--steel); }
+
+/* Clip strip; the hover zoom is a transform (compositor only). */
+.media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--ink); }
+.media video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.card:hover .media video { transform: scale(1.03); }
+.idx { position: absolute; top: 10px; left: 12px; padding: 2px 7px; border-radius: var(--r); background: rgba(10, 11, 13, .7); color: var(--ember); font-size: 10px; letter-spacing: .1em; }
+
+.body { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px 20px; }
+h3 { margin: 0; font: 800 17px/1.2 'Archivo', sans-serif; letter-spacing: -.01em; }
+p { margin: 0; color: var(--bone-dim); font-size: 13px; line-height: 1.55; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.open { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 4px; color: var(--ember); font-size: 10px; letter-spacing: .1em; text-decoration: none; }
+.open app-icon { width: 13px; height: 13px; transition: transform .25s var(--ease); }
+.open:hover app-icon { transform: translateX(3px); }
+.open:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+
+@media (max-width: 760px) { .block { padding-top: 64px; padding-bottom: 64px; } }
+@media (prefers-reduced-motion: reduce) {
+  .media video, .open app-icon { transition: none; }
+  .card:hover .media video, .open:hover app-icon { transform: none; }
+}

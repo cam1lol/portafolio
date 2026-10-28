@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject, viewChild, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { InboxService } from '../../core/data/inbox.service';
@@ -25,10 +25,18 @@ const NAV_GROUPS: NavGroup[] = [
       { path: 'ticker', label: 'Ticker', icon: 'rows' },
       { path: 'clients', label: 'Clientes', icon: 'users' },
       { path: 'testimonials', label: 'Testimonios', icon: 'quote' },
+      { path: 'lab', label: 'Laboratorio', icon: 'aperture' },
+      { path: 'log', label: 'Bitácora', icon: 'activity' },
       { path: 'site-texts', label: 'Textos del sitio', icon: 'type' },
     ],
   },
-  { label: 'PÁGINA', links: [{ path: 'structure', label: 'Estructura de portada', icon: 'layout' }] },
+  {
+    label: 'PÁGINA',
+    links: [
+      { path: 'structure', label: 'Estructura de portada', icon: 'layout' },
+      { path: 'scene', label: 'Escena', icon: 'eye' },
+    ],
+  },
   { label: 'BIBLIOTECA', links: [{ path: 'models', label: 'Modelos 3D', icon: 'box' }] },
   {
     label: 'COMUNIDAD',
@@ -56,8 +64,12 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   /** The routed page, so closing or reloading the tab can warn about unsaved forms. */
   private activePage: Partial<HasUnsavedChanges> | null = null;
 
+  /** Pages with a lot to fill (project form) use more of the screen and an icon-only menu. */
+  protected readonly wide = signal(false);
+
   onActivate(page: unknown): void {
     this.activePage = page as Partial<HasUnsavedChanges>;
+    this.wide.set((page as { wideLayout?: boolean } | null)?.wideLayout === true);
     // After routerLinkActive has marked the new link.
     setTimeout(() => this.revealActiveLink());
   }

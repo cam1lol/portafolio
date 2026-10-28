@@ -1,5 +1,5 @@
 import { Project } from './project.model';
-import { detailsFromRow, detailsToRow, filterProjects, homeProjects, relatedProjects, emptyDetails } from './project-details';
+import { chapterHasContent, detailsFromRow, detailsToRow, emptyChapter, filterProjects, homeProjects, relatedProjects, emptyDetails } from './project-details';
 
 const base = (over: Partial<Project>): Project => ({
   id: 'x', name: 'X', slug: 'x', type: 'web', kind: 'front', status: 'live', icon: 'box', typeLabel: 'WEB',
@@ -87,5 +87,43 @@ describe('project lists', () => {
     expect(filterProjects(all, { status: 'wip' }).map((p) => p.id)).toEqual(['b']);
     expect(filterProjects(all, { tech: 'three.js' }).map((p) => p.id)).toEqual(['a', 'd']);
     expect(filterProjects(all, { query: 'bosq' }).map((p) => p.id)).toEqual(['b']);
+  });
+});
+
+describe('project chapters mapping', () => {
+  it('lee cada tipo, descarta tipos desconocidos y normaliza el ancho', () => {
+    const details = detailsFromRow({
+      chapters: [
+        { type: 'text', title_es: 'El reto', body_es: 'Primer párrafo' },
+        { type: 'image', media: '/media/projects/x/hero.webp', layout: 'full', alt_es: 'Portada' },
+        { type: 'compare', media: '/a.webp', media_after: '/b.webp', layout: 'raro' },
+        { type: 'video', media: '/v.mp4' },
+        'roto',
+      ],
+    });
+    expect(details.chapters.map((ch) => ch.type)).toEqual(['text', 'image', 'compare']);
+    expect(details.chapters[0]).toEqual({ ...emptyChapter('text'), titleEs: 'El reto', bodyEs: 'Primer párrafo' });
+    expect(details.chapters[1].layout).toBe('full');
+    expect(details.chapters[2].layout).toBe('contained');
+    expect(details.chapters[2].mediaAfter).toBe('/b.webp');
+    // Projects saved before chapters existed read an empty list.
+    expect(detailsFromRow({}).chapters).toEqual([]);
+  });
+
+  it('guarda en snake_case, en orden, y descarta los capítulos incompletos para su tipo', () => {
+    const chapters = [
+      { ...emptyChapter('quote'), bodyEs: '  Una cita  ', author: 'Cliente' },
+      { ...emptyChapter('compare'), media: '/a.webp' },
+      { ...emptyChapter('code'), code: 'const a = 1;', language: 'ts' },
+      { ...emptyChapter('model') },
+      { ...emptyChapter('text') },
+    ];
+    expect(chapters.map(chapterHasContent)).toEqual([true, false, true, false, false]);
+    const row = detailsToRow({ ...emptyDetails(), chapters });
+    const stored = row['chapters'] as Record<string, string>[];
+    expect(stored.map((ch) => ch['type'])).toEqual(['quote', 'code']);
+    expect(stored[0]['body_es']).toBe('Una cita');
+    expect(stored[1]['media_after']).toBe('');
+    expect(detailsFromRow(row).chapters[1]).toEqual({ ...chapters[2] });
   });
 });

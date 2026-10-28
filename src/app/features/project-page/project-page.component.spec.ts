@@ -29,7 +29,7 @@ describe('ProjectPageComponent', () => {
       ],
       providers: [
         provideRouter([]),
-        { provide: ActivatedRoute, useValue: { paramMap: params.asObservable() } },
+        { provide: ActivatedRoute, useValue: { paramMap: params.asObservable(), queryParamMap: of(convertToParamMap({})) } },
         { provide: ProjectsService, useValue: { getPublished: () => of(list) } },
       ],
     }).compileComponents();
@@ -43,7 +43,7 @@ describe('ProjectPageComponent', () => {
     // Accessible name of the title (its decode effect shows glyphs for a moment).
     const h1 = root.querySelector('h1')!;
     expect(h1.getAttribute('aria-label') ?? h1.textContent).toContain('Cauce');
-    expect(root.querySelector('.case-study')?.innerHTML).toContain('<b>construí</b>');
+    expect(root.querySelector('#s-how app-rich-text')?.innerHTML).toContain('<b>construí</b>');
     expect(TestBed.inject(Title).getTitle()).toContain('Cauce');
   });
 

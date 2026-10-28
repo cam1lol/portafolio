@@ -6,6 +6,7 @@ import { ProjectsService } from '../../core/data/projects.service';
 import { Project } from '../../core/data/project.model';
 import { ModalService } from '../../core/modal/modal.service';
 import { IconComponent } from '../../shared/icons/icon.component';
+import { ProjectCoverArtComponent } from '../../shared/media/project-cover-art.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { PreviewPlayDirective } from '../../shared/media/preview-play.directive';
 import { RouterLink } from '@angular/router';
@@ -19,7 +20,7 @@ type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe, PreviewPlayDirective, RouterLink, TiltDirective, ScrambleDirective],
+  imports: [ProjectCoverArtComponent, TranslocoPipe, IconComponent, RevealDirective, SiteTextPipe, PreviewPlayDirective, RouterLink, TiltDirective, ScrambleDirective],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
 })

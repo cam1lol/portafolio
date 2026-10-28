@@ -1,50 +1,44 @@
-/* Project page detail sections (fact sheet, results, screens, gallery, extras, related).
+/* Project page section contents: timeline, results, overview, demo, screens, gallery, extras, related.
    Split from project-page.component.css to stay under the 8 kB per-stylesheet production budget. */
 
-/* ---- Detail sections (0010) ---- */
+.draft-banner { margin: 0 0 18px; padding: 10px 14px; border: 1px dashed var(--ember); border-radius: var(--r); color: var(--ember); font-size: 11px; letter-spacing: .1em; }
+.sub { margin: 32px 0 14px; color: var(--ember); font-size: 11px; letter-spacing: .14em; }
 
-.n { margin-left: 6px; color: var(--steel); }
-
-/* Fact sheet */
-.facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  margin: 0 0 36px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--line);
-  overflow: hidden;
+/* ---- Story: a timeline whose rule draws in with the scroll */
+.timeline { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin: 0; padding: 34px 0 0; list-style: none; }
+.timeline::before { content: ''; position: absolute; top: 9px; left: 0; right: 0; height: 1px; background: var(--ember); transform-origin: left; }
+@supports (animation-timeline: view()) {
+  .timeline::before { animation: tl-draw linear both; animation-timeline: view(); animation-range: entry 15% cover 45%; }
+  @keyframes tl-draw { from { transform: scaleX(0); } }
 }
-.facts > div { padding: 16px 18px; background: var(--graphite); }
-.facts dt { margin-bottom: 6px; color: var(--steel); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
-.facts dd { margin: 0; color: var(--bone); font-size: 15px; }
+.tl-step { position: relative; }
+.tl-dot { position: absolute; top: -30px; left: 0; width: 11px; height: 11px; border: 2px solid var(--ember); border-radius: 50%; background: var(--ink); }
+.tl-no { display: block; color: transparent; font: 900 clamp(44px, 5vw, 64px) / 1 'Archivo', sans-serif; -webkit-text-stroke: 1px var(--steel); }
+.tl-step h3 { margin: 10px 0 10px; color: var(--ember); font-size: 11px; letter-spacing: .16em; }
+.tl-text { font-size: 15px; gap: 14px; }
 
-/* Results */
-.results { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 0 0 56px; }
-.result { padding: 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
-.result strong { display: block; color: var(--ember); font-family: 'Archivo', sans-serif; font-size: clamp(32px, 4vw, 44px); font-weight: 900; line-height: 1; letter-spacing: -.02em; }
-.result-label { display: block; margin-top: 8px; color: var(--bone); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+/* ---- Results: big numbers */
+.results { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+.result { padding: 26px 24px; background: var(--ink); }
+.result strong { display: block; color: var(--ember); font: 900 clamp(36px, 4.4vw, 56px) / 1 'Archivo', sans-serif; letter-spacing: -.03em; }
+.result-label { display: block; margin-top: 10px; color: var(--bone); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .result p { margin: 8px 0 0; color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 
-.block-section { margin-top: 72px; }
+/* ---- Overview */
+.checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px 24px; margin: 0; padding: 0; list-style: none; color: var(--bone-dim); line-height: 1.6; }
+.checks li { position: relative; padding-left: 26px; }
+.checks li::before { content: ''; position: absolute; top: .5em; left: 2px; width: 10px; height: 6px; border-left: 2px solid var(--ember); border-bottom: 2px solid var(--ember); transform: rotate(-45deg); }
+.stack { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* Screens tour: list on the left, viewer on the right */
+/* ---- Demo video */
+.demo { max-width: 1000px; border: 1px solid var(--line); border-radius: var(--r); }
+
+/* ---- Screens tour: list on the left, viewer on the right */
 .tour { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 20px; align-items: start; }
 .tour-list { display: grid; gap: 4px; }
 .tour-list button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid transparent;
-  border-left: 2px solid var(--line);
-  background: none;
-  color: var(--bone-dim);
-  font: 14px 'Space Grotesk', sans-serif;
-  text-align: left;
-  cursor: pointer;
-  transition: color .18s, border-color .18s, background .18s;
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid transparent; border-left: 2px solid var(--line);
+  background: none; color: var(--bone-dim); font: 14px 'Space Grotesk', sans-serif; text-align: left; cursor: pointer; transition: color .18s, border-color .18s, background .18s;
 }
 .tour-list button span { color: var(--steel); font-size: 10px; }
 .tour-list button:hover { color: var(--bone); background: var(--graphite); }
@@ -55,41 +49,19 @@
 .tour-media video, .tour-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .tour-desc { margin: 14px 0 0; color: var(--bone-dim); font-size: 15px; line-height: 1.65; }
 
-/* Gallery + lightbox */
+/* ---- Gallery + lightbox */
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .thumb { padding: 0; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); cursor: zoom-in; }
 .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
 .thumb:hover img { transform: scale(1.04); }
 .thumb:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
-
-.lightbox {
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
-  margin: 0;
-  padding: 56px 72px;
-  border: 0;
-  background: rgba(10, 11, 13, .95);
-  color: var(--bone);
-}
+.lightbox { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; padding: 56px 72px; border: 0; background: rgba(10, 11, 13, .95); color: var(--bone); }
 .lightbox::backdrop { background: rgba(0, 0, 0, .6); }
 .lightbox figure { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 14px; height: 100%; margin: 0; }
 .lightbox img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
 .lightbox figcaption { color: var(--bone-dim); font-size: 14px; text-align: center; }
 .lightbox figcaption span { margin-right: 10px; color: var(--steel); font-size: 11px; }
-.lb-btn {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--graphite);
-  color: var(--bone);
-  cursor: pointer;
-}
+.lb-btn { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--graphite); color: var(--bone); cursor: pointer; }
 .lb-btn:hover { border-color: var(--ember); color: var(--ember); }
 .lb-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 .lb-btn svg { width: 18px; height: 18px; }
@@ -97,9 +69,9 @@
 .lb-prev { top: 50%; left: 14px; transform: translateY(-50%); }
 .lb-next { top: 50%; right: 14px; transform: translateY(-50%); }
 
-/* Improvements, docs, versions */
-.extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px; margin-top: 72px; }
-.extras h2 { margin-top: 0; }
+/* ---- Improvements, docs, versions */
+.extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; }
+.extras .sub { margin-top: 0; }
 .improvements, .docs, .versions { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .improvements li { display: flex; align-items: baseline; gap: 10px; color: var(--bone-dim); font-size: 14px; line-height: 1.5; }
 .imp-status { flex-shrink: 0; padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; color: var(--steel); font-size: 9px; letter-spacing: .08em; }
@@ -115,11 +87,11 @@
 .ver { color: var(--bone); font-size: 12px; letter-spacing: .06em; }
 .versions p { margin: 4px 0 0; color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 
-/* Related */
+/* ---- Related */
 .related { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .related-card { display: grid; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); color: inherit; text-decoration: none; transition: border-color .2s; }
 .related-card span { color: var(--steel); font-size: 10px; letter-spacing: .12em; }
-.related-card strong { color: var(--bone); font-family: 'Archivo', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase; }
+.related-card strong { color: var(--bone); font: 900 20px 'Archivo', sans-serif; text-transform: uppercase; }
 .related-card p { margin: 0; color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 .related-card:hover { border-color: var(--ember); }
 .related-card:hover strong { color: var(--ember); }
@@ -133,18 +105,7 @@
   .lightbox { padding: 64px 12px 24px; }
   .lb-prev, .lb-next { top: auto; bottom: 14px; transform: none; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .tour-list button, .thumb img, .related-card { transition: none; }
   .thumb:hover img { transform: none; }
 }
-
-/* Case study strip: problem -> process -> result, numbered and joined by a line. */
-.story { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 0 0 56px; }
-.story-step { position: relative; padding: 22px 22px 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
-.story-step + .story-step::before {
-  content: ''; position: absolute; top: 33px; left: -15px; width: 15px; height: 1px; background: var(--ember);
-}
-.story-no { color: var(--ember); font-size: 11px; letter-spacing: .1em; }
-.story-step h2 { margin: 8px 0 10px; color: var(--bone); font-size: 11px; letter-spacing: .16em; }
-.story-step p { margin: 0; color: var(--bone-dim); font-size: 15px; line-height: 1.6; white-space: pre-line; }

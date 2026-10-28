@@ -1,9 +1,10 @@
-import { Component, ElementRef, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, effect, input, signal, viewChild } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 
 /**
  * Short lists (stack, technologies) written as tags: Enter or comma adds, the X removes,
- * Backspace on the empty field removes the last one. Edits the FormArray in place, so the
+ * Backspace on the empty field removes the last one. With `suggestions`, the values already used
+ * elsewhere show as chips under the field (filtered while typing): one click adds them. Edits the FormArray in place, so the
  * parent form becomes dirty and keeps its validators.
  */
 @Component({
@@ -25,7 +26,15 @@ import { FormArray, FormControl } from '@angular/forms';
         [attr.maxlength]="maxLength()" [attr.aria-invalid]="hasInvalid()"
         (input)="draft.set(field.value)" (keydown)="onKeydown($event)" (blur)="commit()" />
     </div>
-    <span class="tag-help">Escribe y pulsa Enter o coma para agregar. Retroceso con el campo vacío quita la última.</span>
+    @if (visibleSuggestions().length) {
+      <div class="suggest" role="group" [attr.aria-label]="'Sugerencias'">
+        <span class="suggest-label">{{ draft() ? 'Coinciden:' : 'Usadas antes:' }}</span>
+        @for (value of visibleSuggestions(); track value) {
+          <button type="button" class="suggest-chip" (mousedown)="$event.preventDefault()" (click)="add(value)">+ {{ value }}</button>
+        }
+      </div>
+    }
+    <span class="tag-help">Elige una sugerencia o escribe y pulsa Enter (o coma). Retroceso con el campo vacío quita la última.</span>
   `,
   styles: `
     :host { display: grid; gap: 6px; }
@@ -54,7 +63,14 @@ import { FormArray, FormControl } from '@angular/forms';
       font: 13px 'Space Grotesk', sans-serif;
     }
     input:focus { outline: none; }
-    .tag-help { color: var(--steel); font-size: 11px; }
+    .tag-help { display: var(--hint-where, block); color: var(--steel); font-size: 11px; }
+    .suggest { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .suggest-label { color: var(--steel); font-size: 11px; }
+    .suggest-chip {
+      padding: 3px 9px; border: 1px dashed var(--line); border-radius: 999px; background: none; color: var(--bone-dim);
+      font: 12px 'Space Grotesk', sans-serif; cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .suggest-chip:hover, .suggest-chip:focus-visible { border-color: var(--ember); border-style: solid; color: var(--ember); outline: none; }
   `,
 })
 export class TagInputComponent {
@@ -64,9 +80,30 @@ export class TagInputComponent {
   readonly inputId = input<string | null>(null);
   readonly placeholder = input('Por ejemplo: Angular');
   readonly maxLength = input(80);
+  /** Values used elsewhere (most used first); the first ones that match and are not added yet show. */
+  readonly suggestions = input<string[]>([]);
+  readonly maxSuggestions = input(14);
 
   protected readonly draft = signal('');
+  /** Bumped when tags change, so the suggestion list (which hides added ones) updates. */
+  private readonly version = signal(0);
+  protected readonly visibleSuggestions = computed(() => {
+    this.version();
+    const added = new Set(this.array().controls.map((control) => control.value.toLowerCase()));
+    const query = this.draft().trim().toLowerCase();
+    return this.suggestions()
+      .filter((value) => !added.has(value.toLowerCase()) && (!query || value.toLowerCase().includes(query)))
+      .slice(0, this.maxSuggestions());
+  });
   private readonly fieldRef = viewChild.required<ElementRef<HTMLInputElement>>('field');
+
+  constructor() {
+    // Tags loaded or changed from outside (editing an existing project) also refresh the suggestions.
+    effect((onCleanup) => {
+      const sub = this.array().valueChanges.subscribe(() => this.version.update((n) => n + 1));
+      onCleanup(() => sub.unsubscribe());
+    });
+  }
 
   protected hasInvalid(): boolean {
     return this.array().controls.some((control) => control.invalid);
@@ -95,11 +132,22 @@ export class TagInputComponent {
     }
     this.draft.set('');
     this.fieldRef().nativeElement.value = '';
-    if (added) array.markAsDirty();
+    if (added) {
+      array.markAsDirty();
+      this.version.update((n) => n + 1);
+    }
+  }
+
+  /** Adds one suggested value and keeps the focus in the field for the next one. */
+  protected add(value: string): void {
+    this.draft.set(value);
+    this.commit();
+    this.fieldRef().nativeElement.focus();
   }
 
   protected remove(index: number): void {
     this.array().removeAt(index);
     this.array().markAsDirty();
+    this.version.update((n) => n + 1);
   }
 }

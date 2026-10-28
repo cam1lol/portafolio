@@ -10,12 +10,13 @@ import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
+import { MediaPickerComponent, MediaUpload } from '../../../shared/media-picker/media-picker.component';
 
 /** Create/edit screen shared by every simple collection, built from its `CollectionConfig`. */
 @Component({
   selector: 'app-admin-collection-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent, ImageUploadComponent],
+  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent, ImageUploadComponent, MediaPickerComponent],
   templateUrl: './admin-collection-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-collection-form.component.css'],
 })
@@ -42,7 +43,7 @@ export class AdminCollectionFormComponent implements OnInit {
   constructor() {
     for (const field of this.config.fields) {
       for (const column of this.columnsOf(field)) {
-        this.form.addControl(column, new FormControl('', { nonNullable: true, validators: this.validatorsFor(field, column) }));
+        this.form.addControl(column, new FormControl(this.initialValue(field), { nonNullable: true, validators: this.validatorsFor(field, column) }));
       }
     }
     this.steps = [
@@ -95,6 +96,19 @@ export class AdminCollectionFormComponent implements OnInit {
 
   protected isRequired(field: CollectionField, column: string): boolean {
     return field.required === true || (field.required === 'es' && !column.endsWith('_en'));
+  }
+
+  /** New items start with the field default (first option of a select, today for a date). */
+  private initialValue(field: CollectionField): string {
+    if (field.defaultValue === 'today') return new Date().toISOString().slice(0, 10);
+    return field.defaultValue ?? (field.kind === 'select' ? field.options?.[0]?.value ?? '' : '');
+  }
+
+  /** An uploaded video brings its poster: it fills the poster field if that one is still empty. */
+  protected onVideoUploaded(field: CollectionField, upload: MediaUpload): void {
+    if (!field.posterField || !upload.poster) return;
+    const poster = this.form.controls[field.posterField];
+    if (poster && !poster.value) this.setValue(field.posterField, upload.poster);
   }
 
   /** Values set by a widget instead of an input (image upload). */

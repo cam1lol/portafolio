@@ -15,6 +15,7 @@ import { StarRainComponent } from './core/background/star-rain.component';
 import { RITUAL_EVENT } from './core/background/ring-layer.component';
 import { ModalComponent } from './shared/modal/modal.component';
 import { SupabaseService } from './core/supabase/supabase.service';
+import { SceneService } from './core/scene/scene.service';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
   protected readonly themeService = inject(ThemeService);
   protected readonly sound = inject(SoundService);
   protected readonly vt = inject(ProjectTransitionService);
+  private readonly scene = inject(SceneService);
 
   ngOnInit(): void {
     this.trackVisit();
@@ -65,7 +67,7 @@ export class AppComponent implements OnInit {
   protected readonly isAdminScreen = computed(() => this.currentUrl().startsWith('/admin'));
 
   /** First-visit intro on the home page (see BootComponent). */
-  protected readonly showBoot = signal(BootComponent.shouldShow(location.pathname));
+  protected readonly showBoot = signal(this.scene.initial.scene_boot !== 'off' && BootComponent.shouldShow(location.pathname));
 
   // ---- Mobile menu (below 1280px the nav links live in a panel opened from the header)
 
@@ -75,6 +77,10 @@ export class AppComponent implements OnInit {
 
   constructor() {
     this.wireSounds();
+    // Intro turned off in Escena (first visit, before the cache knew it): close it as soon as we know.
+    effect(() => {
+      if (this.scene.settings().scene_boot === 'off') this.showBoot.set(false);
+    });
 
     // Router anchor jumps (/#contact) land below the sticky header, whatever its height on this screen.
     inject(ViewportScroller).setOffset(() => [0, (this.siteHeader()?.nativeElement.offsetHeight ?? 69) + 12]);
@@ -167,6 +173,16 @@ export class AppComponent implements OnInit {
 
   setLang(lang: 'es' | 'en'): void {
     this.transloco.setActiveLang(lang);
+  }
+
+  /**
+   * Logo and name: the router link takes any page to "/"; already on the home page (where the router
+   * ignores a same-URL link), it scrolls back to the top instead.
+   */
+  protected goHome(): void {
+    if (this.router.url.split(/[?#]/)[0] !== '/' || this.router.url.includes('#')) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   }
 
   goTo(screen: 'site' | 'admin'): void {

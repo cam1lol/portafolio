@@ -47,29 +47,45 @@ export class ExperienceComponent implements AfterViewInit, OnDestroy {
     }
 
     // The line fills as the timeline crosses the middle of the screen, and each node lights up
-    // (with a pulse) once the line reaches it. One CSS variable and a class toggle per frame.
+    // (with a pulse) once the line reaches it. One CSS variable and a class toggle per frame, only
+    // while the timeline is near the screen (an IntersectionObserver gates the work), and reading
+    // every position before writing anything.
     let scheduled = false;
+    let near = true;
+    let last = '';
     const update = () => {
       scheduled = false;
+      if (!near) return;
       const rect = host.getBoundingClientRect();
       const middle = window.innerHeight * 0.55;
-      const progress = Math.min(1, Math.max(0, (middle - rect.top) / Math.max(1, rect.height)));
-      host.style.setProperty('--tl', progress.toFixed(4));
-      host.querySelectorAll<HTMLElement>('.tl-node').forEach((node) => {
-        node.classList.toggle('lit', node.getBoundingClientRect().top + 10 <= middle);
+      const nodes = Array.from(host.querySelectorAll<HTMLElement>('.tl-node'));
+      const lit = nodes.map((node) => node.getBoundingClientRect().top + 10 <= middle);
+      const progress = Math.min(1, Math.max(0, (middle - rect.top) / Math.max(1, rect.height))).toFixed(4);
+      if (progress !== last) {
+        last = progress;
+        host.style.setProperty('--tl', progress);
+      }
+      nodes.forEach((node, i) => {
+        if (node.classList.contains('lit') !== lit[i]) node.classList.toggle('lit', lit[i]);
       });
     };
     const onScroll = () => {
-      if (scheduled) return;
+      if (scheduled || !near) return;
       scheduled = true;
       requestAnimationFrame(update);
     };
+    const observer = new IntersectionObserver(([entry]) => {
+      near = entry.isIntersecting;
+      if (near) onScroll();
+    }, { rootMargin: '25% 0px' });
     this.zone.runOutsideAngular(() => {
+      observer.observe(host);
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
       update();
     });
     this.removeScroll = () => {
+      observer.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };

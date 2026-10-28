@@ -12,6 +12,7 @@ import { AdminInboxListComponent } from './inbox/admin-inbox-list.component';
 import { AdminInboxThreadComponent } from './inbox/admin-inbox-thread.component';
 import { AdminBlockFormComponent } from './blocks/admin-block-form.component';
 import { AdminStructureComponent } from './structure/admin-structure.component';
+import { AdminSceneComponent } from './scene/admin-scene.component';
 import { AdminCollectionListComponent } from './collections/admin-collection-list.component';
 import { AdminCollectionFormComponent } from './collections/admin-collection-form.component';
 import { AdminSiteTextsComponent } from './site-texts/admin-site-texts.component';
@@ -47,8 +48,11 @@ export const ADMIN_ROUTES: Routes = [
       ...collectionRoutes('ticker'),
       ...collectionRoutes('clients'),
       ...collectionRoutes('testimonials'),
+      ...collectionRoutes('lab'),
+      ...collectionRoutes('log'),
       { path: 'site-texts', component: AdminSiteTextsComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'structure', component: AdminStructureComponent },
+      { path: 'scene', component: AdminSceneComponent, canDeactivate: [unsavedChangesGuard] },
       // Visibility, home order and the blocks list now live together in "structure".
       { path: 'visibility', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'layout', redirectTo: 'structure', pathMatch: 'full' },

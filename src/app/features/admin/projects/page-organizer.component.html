@@ -1,0 +1,63 @@
+<dialog #dialog class="organizer" aria-labelledby="organizer-title" (close)="onClose()">
+  <header class="org-head">
+    <div>
+      <span class="eyebrow mono">PÁGINA DEL PROYECTO</span>
+      <h2 id="organizer-title">Organizar la página</h2>
+      <p class="help">Arrastra las secciones o usa las flechas. Las vacías guardan su sitio pero no se ven hasta que tengan contenido. La cabecera y la ficha van siempre arriba; relacionados y la navegación, al final.</p>
+    </div>
+    <div class="org-actions">
+      <button type="button" class="btn" (click)="reset()">ORDEN ORIGINAL</button>
+      <button type="button" class="btn primary" (click)="done()">LISTO</button>
+    </div>
+  </header>
+
+  <div class="org-body">
+    <!-- 1. The list -->
+    <ol class="org-list" aria-label="Secciones en orden">
+      @for (row of rows(); track row.id; let i = $index; let last = $last) {
+        <li data-flip draggable="true" [class.selected]="selected() === row.id" [class.empty]="!row.filled"
+          (dragstart)="onDragStart($event, row.id)" (dragover)="onDragOver($event, row.id)" (dragend)="onDragEnd()">
+          <span class="grip" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4" /><circle cx="15" cy="6" r="1.4" /><circle cx="9" cy="12" r="1.4" /><circle cx="15" cy="12" r="1.4" /><circle cx="9" cy="18" r="1.4" /><circle cx="15" cy="18" r="1.4" /></svg>
+          </span>
+          <button type="button" class="row-main" (click)="select(row.id)">
+            <span class="row-no mono">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <span class="row-label">{{ row.label }}</span>
+            <span class="row-state mono">{{ row.filled ? 'SE VE' : 'VACÍA' }}</span>
+          </button>
+          <span class="row-arrows">
+            <button type="button" [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'Subir ' + row.label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+            </button>
+            <button type="button" [disabled]="last" (click)="move(i, 1)" [attr.aria-label]="'Bajar ' + row.label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+            </button>
+          </span>
+        </li>
+      }
+    </ol>
+
+    <!-- 2. The outline of the page -->
+    <div class="org-map" aria-hidden="true">
+      <span class="map-title mono">ESQUEMA</span>
+      <div class="map-page">
+        <span class="blk fixed hero">CABECERA</span>
+        <span class="blk fixed">FICHA</span>
+        @for (row of rows(); track row.id) {
+          <span data-flip class="blk" [class.empty]="!row.filled" [class.selected]="selected() === row.id">{{ row.label }}</span>
+        }
+        <span class="blk fixed">RELACIONADOS · SIGUIENTE</span>
+      </div>
+    </div>
+
+    <!-- 3. The real page with this order -->
+    <div class="org-preview" #preview>
+      <span class="map-title mono">VISTA PREVIA REAL</span>
+      @defer {
+        <div inert><app-project-page [previewProject]="previewProject()" /></div>
+      } @placeholder {
+        <p class="loading mono">CARGANDO…</p>
+      }
+    </div>
+  </div>
+</dialog>

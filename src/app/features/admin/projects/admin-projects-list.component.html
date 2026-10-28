@@ -51,6 +51,7 @@
           </span>
           <span class="col-actions">
             <a class="link-action" [routerLink]="['/admin/projects', row.id, 'edit']">Editar</a>
+            <a class="link-action" routerLink="/admin/projects/new" [queryParams]="{ from: row.id }" [attr.aria-label]="'Duplicar ' + row.name">Duplicar</a>
             <button type="button" class="link-action danger" (click)="remove(row)">Borrar</button>
           </span>
         </div>

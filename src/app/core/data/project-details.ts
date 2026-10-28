@@ -87,6 +87,37 @@ export interface ProjectStory {
   outcomeEn: string;
 }
 
+export type ChapterType = 'text' | 'image' | 'compare' | 'quote' | 'code' | 'model';
+export type ChapterLayout = 'contained' | 'full';
+
+/**
+ * One piece of the case study, composed in the admin. A flat shape for every type (unused fields
+ * stay empty), so the form and the jsonb stay simple:
+ * - text: title + body (blank line between paragraphs, **bold**).
+ * - image: media + alt + caption, contained or full-bleed.
+ * - compare: media (before) + mediaAfter + alt + caption.
+ * - quote: body + author.
+ * - code: code + language + caption.
+ * - model: media (GLB path in the `models` bucket) + caption.
+ */
+export interface ProjectChapter {
+  type: ChapterType;
+  layout: ChapterLayout;
+  titleEs: string;
+  titleEn: string;
+  bodyEs: string;
+  bodyEn: string;
+  captionEs: string;
+  captionEn: string;
+  altEs: string;
+  altEn: string;
+  media: string;
+  mediaAfter: string;
+  author: string;
+  code: string;
+  language: string;
+}
+
 export interface ProjectDetails {
   /** Shown on the home page; /proyectos shows every published project. */
   featured: boolean;
@@ -99,9 +130,64 @@ export interface ProjectDetails {
   docs: ProjectDoc[];
   versions: ProjectVersion[];
   videos: ProjectVideo[];
+  chapters: ProjectChapter[];
+  /**
+   * Part of the card image / clip that must always show when it is cropped (CSS object-position,
+   * e.g. "50% 0%" = top). Stored inside the facts jsonb like the story, so it needs no migration.
+   */
+  mediaFocus: string;
+  /** Order of the movable sections on the project page (ids of PAGE_SECTIONS); empty = default order. */
+  sectionOrder: string[];
 }
 
+/** Sections of the project page that can be reordered from the admin ("Organizar la página"), in default order. */
+export const PAGE_SECTIONS: { id: string; label: string }[] = [
+  { id: 's-demo', label: 'Video demo' },
+  { id: 's-story', label: 'Historia en tres pasos' },
+  { id: 's-results', label: 'Resultados con cifras' },
+  { id: 's-overview', label: 'Resumen y stack' },
+  { id: 's-how', label: 'Cómo está hecho' },
+  { id: 's-chapters', label: 'Capítulos' },
+  { id: 's-videos', label: 'Videos' },
+  { id: 's-screens', label: 'Pantallas' },
+  { id: 's-gallery', label: 'Galería de fotos' },
+  { id: 's-extras', label: 'Mejoras, documentos y versiones' },
+];
+
+/** A saved order completed with any section it does not mention (new ones go where they belong by default). */
+export function effectiveSectionOrder(saved: string[]): string[] {
+  const known = PAGE_SECTIONS.map((section) => section.id);
+  const order = saved.filter((id, i) => known.includes(id) && saved.indexOf(id) === i);
+  for (const id of known) if (!order.includes(id)) order.splice(Math.min(known.indexOf(id), order.length), 0, id);
+  return order;
+}
+
+/** The nine focus points offered in the admin (3 x 3 grid), as object-position values. */
+export const MEDIA_FOCUS_POINTS = ['0% 0%', '50% 0%', '100% 0%', '0% 50%', '50% 50%', '100% 50%', '0% 100%', '50% 100%', '100% 100%'];
+export const DEFAULT_MEDIA_FOCUS = '50% 50%';
+
 export const IMPROVEMENT_STATUSES: ImprovementStatus[] = ['planned', 'in_progress', 'done'];
+export const CHAPTER_TYPES: ChapterType[] = ['text', 'image', 'compare', 'quote', 'code', 'model'];
+
+export function emptyChapter(type: ChapterType): ProjectChapter {
+  return {
+    type, layout: 'contained', titleEs: '', titleEn: '', bodyEs: '', bodyEn: '', captionEs: '', captionEn: '',
+    altEs: '', altEn: '', media: '', mediaAfter: '', author: '', code: '', language: '',
+  };
+}
+
+/** Whether a chapter has what its type needs to be shown; incomplete ones are dropped on save. */
+export function chapterHasContent(chapter: ProjectChapter): boolean {
+  const filled = (value: string) => value.trim() !== '';
+  switch (chapter.type) {
+    case 'text': return filled(chapter.titleEs) || filled(chapter.titleEn) || filled(chapter.bodyEs) || filled(chapter.bodyEn);
+    case 'image': return filled(chapter.media);
+    case 'compare': return filled(chapter.media) && filled(chapter.mediaAfter);
+    case 'quote': return filled(chapter.bodyEs) || filled(chapter.bodyEn);
+    case 'code': return filled(chapter.code);
+    case 'model': return filled(chapter.media);
+  }
+}
 
 export function emptyFacts(): ProjectFacts {
   return { year: '', durationEs: '', durationEn: '', roleEs: '', roleEn: '', client: '', team: '' };
@@ -112,7 +198,7 @@ export function emptyStory(): ProjectStory {
 }
 
 export function emptyDetails(): ProjectDetails {
-  return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [] };
+  return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [], chapters: [], mediaFocus: DEFAULT_MEDIA_FOCUS, sectionOrder: [] };
 }
 
 // ---- Row mapping (jsonb keys are snake_case, like `experience.subprojects`) ----
@@ -147,6 +233,17 @@ const DOC_KEYS: (keyof ProjectDoc)[] = ['titleEs', 'titleEn', 'file', 'url'];
 const VERSION_KEYS: (keyof ProjectVersion)[] = ['version', 'date', 'notesEs', 'notesEn'];
 const STORY_KEYS: (keyof ProjectStory)[] = ['challengeEs', 'challengeEn', 'approachEs', 'approachEn', 'outcomeEs', 'outcomeEn'];
 const VIDEO_KEYS: (keyof ProjectVideo)[] = ['titleEs', 'titleEn', 'descEs', 'descEn', 'video', 'poster', 'preview', 'duration'];
+const CHAPTER_TEXT_KEYS = ['titleEs', 'titleEn', 'bodyEs', 'bodyEn', 'captionEs', 'captionEn', 'altEs', 'altEn', 'media', 'mediaAfter', 'author', 'code', 'language'] as const;
+
+/** Unknown types are skipped (a newer admin, or a hand-edited row, must not break the page). */
+function readChapters(value: unknown): ProjectChapter[] {
+  return list(value).flatMap((item) => {
+    const type = text(item, 'type') as ChapterType;
+    if (!CHAPTER_TYPES.includes(type)) return [];
+    const layout: ChapterLayout = text(item, 'layout') === 'full' ? 'full' : 'contained';
+    return [{ ...readItem<Omit<ProjectChapter, 'type' | 'layout'>>(item, [...CHAPTER_TEXT_KEYS]), type, layout }];
+  });
+}
 
 export function detailsFromRow(row: Json): ProjectDetails {
   return {
@@ -163,6 +260,9 @@ export function detailsFromRow(row: Json): ProjectDetails {
     docs: list(row['docs']).map((item) => readItem<ProjectDoc>(item, DOC_KEYS)),
     versions: list(row['versions']).map((item) => readItem<ProjectVersion>(item, VERSION_KEYS)),
     videos: list(row['videos']).map((item) => readItem<ProjectVideo>(item, VIDEO_KEYS)),
+    chapters: readChapters(row['chapters']),
+    mediaFocus: MEDIA_FOCUS_POINTS.includes(text(object(row['facts']), 'media_focus')) ? text(object(row['facts']), 'media_focus') : DEFAULT_MEDIA_FOCUS,
+    sectionOrder: text(object(row['facts']), 'section_order').split(',').map((id) => id.trim()).filter((id) => PAGE_SECTIONS.some((s) => s.id === id)),
   };
 }
 
@@ -171,7 +271,7 @@ export function detailsToRow(details: ProjectDetails): Json {
   return {
     featured: details.featured,
     // The story shares the facts column (no migration): its keys never collide with the fact keys.
-    facts: { ...writeItem(details.facts), ...writeItem(details.story) },
+    facts: { ...writeItem(details.facts), ...writeItem(details.story), media_focus: details.mediaFocus || DEFAULT_MEDIA_FOCUS, section_order: details.sectionOrder.join(',') },
     results: items(details.results),
     screens: items(details.screens),
     gallery: details.gallery.filter((photo) => photo.image.trim()).map(writeItem),
@@ -179,6 +279,7 @@ export function detailsToRow(details: ProjectDetails): Json {
     docs: details.docs.filter((doc) => doc.file.trim() || doc.url.trim()).map(writeItem),
     versions: items(details.versions),
     videos: details.videos.filter((video) => video.video.trim()).map(writeItem),
+    chapters: details.chapters.filter(chapterHasContent).map(writeItem),
   };
 }
 

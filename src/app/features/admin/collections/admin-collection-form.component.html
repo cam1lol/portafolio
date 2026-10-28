@@ -29,6 +29,15 @@
                 </label>
                 @if (field.kind === 'image') {
                   <app-image-upload [value]="form.controls[column].value" (valueChange)="setValue(column, $event)" />
+                } @else if (field.kind === 'video') {
+                  <app-media-picker [slug]="field.mediaFolder ?? config.key" kind="video" [selectId]="column" [value]="form.controls[column].value"
+                    (valueChange)="setValue(column, $event)" (uploaded)="onVideoUploaded(field, $event)" [recommendedMb]="15" [showHint]="false" />
+                } @else if (field.kind === 'select') {
+                  <select [id]="column" [formControlName]="column">
+                    @for (option of field.options ?? []; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+                  </select>
+                } @else if (field.kind === 'date') {
+                  <input [id]="column" type="date" [formControlName]="column" [attr.aria-required]="isRequired(field, column) || null" />
                 } @else if (field.multiline) {
                   <textarea [id]="column" rows="4" [formControlName]="column" [attr.aria-required]="isRequired(field, column) || null" [attr.maxlength]="field.maxLength" [placeholder]="field.placeholder ?? ''"></textarea>
                 } @else {
@@ -37,7 +46,7 @@
                 @if (hasError(column)) {
                   <span class="field-error mono" role="alert">{{ errorText(field, column) }}</span>
                 }
-                @if (field.kind !== 'image') {
+                @if (field.kind !== 'image' && field.kind !== 'video' && field.kind !== 'select' && field.kind !== 'date') {
                   <app-field-hint [control]="form.controls[column]" [max]="field.maxLength" [where]="field.where ?? ''" />
                 }
               </div>

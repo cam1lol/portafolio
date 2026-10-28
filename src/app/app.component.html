@@ -7,13 +7,13 @@
 <app-modal></app-modal>
 
 <header #siteHeader [class.menu-open]="menuOpen()">
-  <div class="brand">
-    <div class="glyph">CA</div>
-    <div>
+  <a class="brand" routerLink="/" (click)="goHome()" [attr.aria-label]="'brand_home' | transloco">
+    <div class="glyph" aria-hidden="true">CA</div>
+    <div aria-hidden="true">
       <div class="nm">CAMILO AYALA</div>
       <div class="role eyebrow">{{ 'role' | transloco }}</div>
     </div>
-  </div>
+  </a>
 
   <!-- Inline on desktop; below 1280px it becomes the panel opened by the menu button. -->
   <nav class="links" id="site-menu" [attr.aria-label]="'nav_menu' | transloco" (click)="onMenuClick($event)" (keydown)="onMenuKeydown($event)">

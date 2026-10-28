@@ -13,10 +13,12 @@ const SECTION_ORDER = [
   'manifesto',
   'projects',
   'clients',
+  'lab',
   'experience',
   'testimonials',
   'services',
   'roadmap',
+  'log',
   'comments',
   'contact',
 ] as const;

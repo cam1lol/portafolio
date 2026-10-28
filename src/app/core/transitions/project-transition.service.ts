@@ -75,7 +75,8 @@ export class ProjectTransitionService {
     const from = leafPath(info.from);
     const to = leafPath(info.to);
     const skip =
-      this.skipNext || this.uaAnimatedPop || !(from in DEPTH && to in DEPTH) || (from === to && from !== 'proyectos/:slug');
+      this.skipNext || this.uaAnimatedPop || !(from in DEPTH && to in DEPTH) || (from === to && from !== 'proyectos/:slug') ||
+      document.documentElement.dataset['sceneTransition'] === 'none';
     this.skipNext = false;
     this.uaAnimatedPop = false;
     if (skip) {

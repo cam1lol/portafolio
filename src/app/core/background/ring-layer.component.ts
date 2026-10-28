@@ -6,8 +6,8 @@ export const RITUAL_EVENT = 'portfolio:ritual';
 
 const RUNES = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛏᛒᛖᛗᛚᛜᛞᛟ·';
 
-/** Sections with long text: the circle fades while one of them crosses the middle of the screen. */
-const READING_SECTIONS = '#about, #experience, #services';
+/** Sections with long text (and a project page body): the circle fades while one crosses the middle of the screen. */
+const READING_SECTIONS = '#about, #experience, #services, .project-page .body';
 
 function repeat(s: string, times: number) {
   return Array.from({ length: times }, () => s).join('');
@@ -52,7 +52,10 @@ function tickPath(rIn: number, rOut: number, every: number): string {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Each ring is its own <svg>: rotation (.spin) and parallax (.depth) move whole elements,
-  // which the browser composites on the GPU instead of repainting a big filtered SVG.
+  // which the browser composites on the GPU instead of repainting a big filtered SVG. The rotation
+  // and the pulse animate a wrapping <div>, never the <svg>: Chrome cannot run a transform animation
+  // of an <svg> root on the compositor ("depends on box size"), so it was recomputed on the main
+  // thread every frame, re-laying out and repainting the rune text with its glow.
   template: `
 <div #rings class="rings" aria-hidden="true">
   <!-- Static: ambient glow and center marker (moves the most with the cursor) -->
@@ -74,15 +77,15 @@ function tickPath(rIn: number, rOut: number, every: number): string {
 
   <!-- Energy pulse: a ring that expands from the center every few seconds -->
   <div class="depth" style="--d: 1">
-    <svg class="layer pulse" viewBox="-320 -320 640 640">
+    <div class="pulse"><svg class="layer" viewBox="-320 -320 640 640">
       <circle r="300" fill="none" stroke="#ff8a5c" stroke-width="5" stroke-opacity=".9"/>
       <circle r="300" fill="none" stroke="#e85525" stroke-width="18" stroke-opacity=".18"/>
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 1: outer measurement ring, very slow CW -->
   <div class="depth" style="--d: 0.35">
-    <svg class="layer spin l1" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
+    <div class="spin l1"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="308" fill="none" stroke="#e85525" stroke-width="3.74" stroke-opacity=".95"/>
       <circle r="298" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".55"/>
       <path [attr.d]="majTicks"  fill="none" stroke="#e85525" stroke-width="2.72" stroke-opacity=".9"/>
@@ -92,22 +95,22 @@ function tickPath(rIn: number, rOut: number, every: number): string {
         <polygon [attr.transform]="'rotate(' + angle + ')'" points="0,-293 6,-302 0,-311 -6,-302"
                  fill="none" stroke="#e85525" stroke-width="2.04" stroke-opacity=".9"/>
       }
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 2: outer rune text ring, slow CCW; random runes light up -->
   <div class="depth" style="--d: 0.5">
-    <svg class="layer spin l2" viewBox="-320 -320 640 640">
+    <div class="spin l2"><svg class="layer" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-outer" d="M 0,-268 A 268,268 0 1,1 -0.01,-268"/></defs>
       <text font-size="11" fill="#e85525" fill-opacity=".7" font-family="monospace">
         <textPath href="#ring-text-outer" textLength="1680" lengthAdjust="spacing">@for (rune of outerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
       </text>
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 3: second ring with ornaments, medium CW -->
   <div class="depth" style="--d: 0.65">
-    <svg class="layer spin l3" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
+    <div class="spin l3"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="228" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
       <circle r="220" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".45"/>
       @for (angle of [0,90,180,270]; track angle) {
@@ -120,12 +123,12 @@ function tickPath(rIn: number, rOut: number, every: number): string {
         <line [attr.transform]="'rotate(' + angle + ')'" x1="0" y1="-222" x2="0" y2="-226"
               stroke="#e85525" stroke-width="1.36" stroke-opacity=".5"/>
       }
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 4: hexagram ring, slow CCW -->
   <div class="depth" style="--d: 0.8">
-    <svg class="layer spin l4" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
+    <div class="spin l4"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="170" fill="none" stroke="#e85525" stroke-width="2.72" stroke-opacity=".75"/>
       <circle r="162" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".4"/>
       <polygon [attr.points]="triUp" fill="none" stroke="#e85525" stroke-width="2.55" stroke-opacity=".8"/>
@@ -133,29 +136,29 @@ function tickPath(rIn: number, rOut: number, every: number): string {
       @for (v of hexVerts; track $index) {
         <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="4" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".8"/>
       }
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 5: pentagram ring, medium CW -->
   <div class="depth" style="--d: 1">
-    <svg class="layer spin l5" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
+    <div class="spin l5"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="108" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
       <circle r="100" fill="none" stroke="#e85525" stroke-width="1.19" stroke-opacity=".45"/>
       <path [attr.d]="penta" fill="none" stroke="#e85525" stroke-width="3.4" stroke-opacity=".95"/>
       @for (v of pentaVerts; track $index) {
         <circle [attr.cx]="v[0]" [attr.cy]="v[1]" r="3.5" fill="none" stroke="#e85525" stroke-width="1.7" stroke-opacity=".85"/>
       }
-    </svg>
+    </svg></div>
   </div>
 
   <!-- Layer 6: inner rune ring, CCW; random runes light up -->
   <div class="depth" style="--d: 1.15">
-    <svg class="layer spin l6" viewBox="-320 -320 640 640">
+    <div class="spin l6"><svg class="layer" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-inner" d="M 0,-118 A 118,118 0 1,1 -0.01,-118"/></defs>
       <text font-size="9" fill="#e85525" fill-opacity=".6" font-family="monospace">
         <textPath href="#ring-text-inner" textLength="738" lengthAdjust="spacing">@for (rune of innerRunes; track $index) {<tspan class="rune">{{ rune }}</tspan>}</textPath>
       </text>
-    </svg>
+    </svg></div>
   </div>
 </div>
   `,
@@ -204,12 +207,22 @@ export class RingLayerComponent implements AfterViewInit {
   /**
    * Scroll boost + cursor parallax in one rAF loop. Scrolling speeds the rings up (playbackRate
    * keeps their current angle, so there is no jump) and they ease back when scrolling stops.
+   * The loop sleeps once everything has settled and wakes on scroll, pointer or burst. The scroll
+   * position is read in the scroll event (layout is clean there) and parallax moves each depth
+   * layer directly, so an idle page does no work at all and a frame never forces a layout.
    */
   private motionLoop(root: HTMLElement): void {
     const animations = Array.from(root.querySelectorAll<HTMLElement>('.spin')).flatMap((el) => el.getAnimations());
-    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const depths = Array.from(root.querySelectorAll<HTMLElement>('.depth')).map((el) => ({
+      el,
+      d: parseFloat(el.style.getPropertyValue('--d')) || 1,
+      last: '',
+    }));
+    // Any mouse or trackpad (not only the primary pointer): touchscreen laptops report touch as primary.
+    const finePointer = window.matchMedia('(any-pointer: fine)').matches;
 
-    let lastY = window.scrollY;
+    let scrollY = window.scrollY;
+    let lastY = scrollY;
     let lastT = performance.now();
     let rate = 1;
     let appliedRate = 1;
@@ -219,53 +232,86 @@ export class RingLayerComponent implements AfterViewInit {
     let y = 0;
     let frameId = 0;
 
+    const wake = () => {
+      if (frameId) return;
+      lastT = performance.now();
+      frameId = requestAnimationFrame(frame);
+    };
+    const onScroll = () => {
+      scrollY = window.scrollY;
+      wake();
+    };
     const onPointer = (event: PointerEvent) => {
       targetX = (event.clientX / window.innerWidth) * 2 - 1;
       targetY = (event.clientY / window.innerHeight) * 2 - 1;
+      wake();
     };
     // Cursor left the window: drift back to the center instead of staying offset.
     const onLeave = (event: MouseEvent) => {
       if (!event.relatedTarget) {
         targetX = 0;
         targetY = 0;
+        wake();
       }
     };
+    window.addEventListener('scroll', onScroll, { passive: true });
     if (finePointer) {
       window.addEventListener('pointermove', onPointer, { passive: true });
       document.addEventListener('mouseout', onLeave);
     }
     // Opening a project: a sudden spin-up that settles back on its own (same slow ease as scrolling).
-    const onBurst = () => (rate = Math.max(rate, 8));
+    const onBurst = () => {
+      rate = Math.max(rate, 8);
+      wake();
+    };
     window.addEventListener(RING_BURST_EVENT, onBurst);
-    const onRitual = () => (rate = 14);
+    const onRitual = () => {
+      rate = 14;
+      wake();
+    };
     window.addEventListener(RITUAL_EVENT, onRitual);
 
-    const frame = (now: number) => {
+    function frame(now: number): void {
       const dt = Math.max(16, now - lastT);
-      const speed = Math.abs(window.scrollY - lastY) / dt; // px per ms
-      lastY = window.scrollY;
+      const speed = Math.abs(scrollY - lastY) / dt; // px per ms
+      lastY = scrollY;
       lastT = now;
 
       // Up to 5x faster while scrolling; quick to speed up, slow to settle.
       const target = 1 + Math.min(speed * 3, 4);
       rate += (target - rate) * (target > rate ? 0.18 : 0.035);
-      if (Math.abs(rate - appliedRate) > 0.01) {
+      if (speed === 0 && Math.abs(rate - 1) < 0.01) rate = 1;
+      if (Math.abs(rate - appliedRate) > 0.01 || (rate === 1 && appliedRate !== 1)) {
         appliedRate = rate;
         for (const animation of animations) animation.playbackRate = rate;
       }
 
+      let moving = false;
       if (finePointer) {
         x += (targetX - x) * 0.05;
         y += (targetY - y) * 0.05;
-        root.style.setProperty('--px', (x * 16).toFixed(2));
-        root.style.setProperty('--py', (y * 16).toFixed(2));
+        if (Math.abs(targetX - x) < 0.002 && Math.abs(targetY - y) < 0.002) {
+          x = targetX;
+          y = targetY;
+        } else {
+          moving = true;
+        }
+        for (const depth of depths) {
+          const value = `translate3d(${(x * 16 * depth.d).toFixed(1)}px, ${(y * 16 * depth.d).toFixed(1)}px, 0)`;
+          if (value !== depth.last) {
+            depth.last = value;
+            depth.el.style.transform = value;
+          }
+        }
       }
-      frameId = requestAnimationFrame(frame);
-    };
-    frameId = requestAnimationFrame(frame);
+
+      // Asleep until the next scroll, pointer move or burst.
+      frameId = moving || speed > 0 || rate !== 1 ? requestAnimationFrame(frame) : 0;
+    }
 
     this.destroyRef.onDestroy(() => {
       cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onPointer);
       document.removeEventListener('mouseout', onLeave);
       window.removeEventListener(RING_BURST_EVENT, onBurst);
@@ -310,7 +356,7 @@ export class RingLayerComponent implements AfterViewInit {
 
   /** Fires the expanding pulse at irregular intervals (7-12 s) so it feels alive, not mechanical. */
   private energyPulse(root: HTMLElement): void {
-    const pulse = root.querySelector<SVGSVGElement>('.pulse');
+    const pulse = root.querySelector<HTMLElement>('.pulse');
     if (!pulse) return;
     let timeout: ReturnType<typeof setTimeout>;
 
@@ -356,19 +402,30 @@ export class RingLayerComponent implements AfterViewInit {
 
   /** Fades the circle while a text-heavy section sits in the middle of the screen. */
   private dimWhileReading(root: HTMLElement): void {
-    let scheduled = false;
+    // A hit test forces layout, so it runs at most every 150 ms while scrolling (the fade itself
+    // takes .9 s, so the delay is invisible), plus once when scrolling stops.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let pending = false;
     const check = () => {
-      scheduled = false;
       const element = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
       root.classList.toggle('dimmed', !!element?.closest(READING_SECTIONS));
     };
+    const tick = () => {
+      timer = undefined;
+      if (!pending) return;
+      pending = false;
+      check();
+      timer = setTimeout(tick, 150);
+    };
     const onScroll = () => {
-      if (scheduled) return;
-      scheduled = true;
-      requestAnimationFrame(check);
+      pending = true;
+      if (!timer) timer = setTimeout(tick, 150);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     check();
-    this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    });
   }
 }

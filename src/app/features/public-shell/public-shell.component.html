@@ -16,6 +16,13 @@
       @case ('clients') {
         @if (visibility()['clients'] !== false) { <app-clients /> }
       }
+      @case ('lab') {
+        <!-- Deferred until the browser is idle: off the initial bundle, loaded before anyone scrolls there. -->
+        @if (visibility()['lab'] !== false) { @defer (on idle) { <app-lab /> } }
+      }
+      @case ('log') {
+        @if (visibility()['log'] !== false) { @defer (on idle) { <app-log /> } }
+      }
       @case ('testimonials') {
         @if (visibility()['testimonials'] !== false) { <app-testimonials /> }
       }

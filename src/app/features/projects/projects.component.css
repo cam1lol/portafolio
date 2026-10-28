@@ -274,3 +274,7 @@ section.block {
 
 /* Keyboard / TV remote focus: thick ember ring, readable from a distance; same lift as hover. */
 .card:focus-visible { outline: 3px solid var(--ember); outline-offset: 4px; }
+
+/* The project icon over its banner (top-left), with its perpetual motion, like on cards without media. */
+.card .media .ic-over { position: absolute; top: 10px; left: 10px; z-index: 2; margin: 0; border-color: rgba(242, 84, 27, .55); background: rgba(10, 11, 13, .88); }
+.card:hover .media .ic-over { transform: translateY(-2px) rotate(-6deg); }

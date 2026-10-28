@@ -1,4 +1,4 @@
-<div class="vgrid">
+<div class="vgrid" [class.featured]="videos().length === 1">
   @for (item of videos(); track $index; let i = $index) {
     <button type="button" class="vcard" (click)="open(i)" (mouseenter)="startPreview(i)" (mouseleave)="stopPreview()"
       (focus)="startPreview(i)" (blur)="stopPreview()" [attr.aria-label]="('pp_play' | transloco) + ': ' + (loc(item.titleEs, item.titleEn) || i + 1)">

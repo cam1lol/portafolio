@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { Directive, ElementRef, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 
 @Directive({
   selector: '[appMagnetic]',
@@ -6,6 +6,7 @@ import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core'
 })
 export class MagneticDirective implements OnInit, OnDestroy {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly zone = inject(NgZone);
 
   private onPointerMove?: (event: PointerEvent) => void;
   private onPointerLeave?: () => void;
@@ -28,8 +29,11 @@ export class MagneticDirective implements OnInit, OnDestroy {
       host.style.transform = '';
     };
 
-    host.addEventListener('pointermove', this.onPointerMove);
-    host.addEventListener('pointerleave', this.onPointerLeave);
+    // Only moves the element: no change detection per pointer event.
+    this.zone.runOutsideAngular(() => {
+      host.addEventListener('pointermove', this.onPointerMove!, { passive: true });
+      host.addEventListener('pointerleave', this.onPointerLeave!);
+    });
   }
 
   ngOnDestroy(): void {

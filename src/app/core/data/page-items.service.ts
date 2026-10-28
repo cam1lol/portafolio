@@ -22,7 +22,7 @@ export type PageBlockPlacement =
   | `after:${string}`
   | `after-item:${string}`;
 
-const HOME_SECTIONS = ['hero', 'ticker', 'manifesto', 'projects', 'clients', 'experience', 'testimonials', 'services', 'roadmap', 'comments', 'contact'];
+const HOME_SECTIONS = ['hero', 'ticker', 'manifesto', 'projects', 'clients', 'lab', 'experience', 'testimonials', 'services', 'roadmap', 'log', 'comments', 'contact'];
 
 interface PageItemRow {
   item_key: string;

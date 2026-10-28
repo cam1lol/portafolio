@@ -1,0 +1,19 @@
+@if (lines().length) {
+  <section class="block wrap" id="log">
+    <app-section-head index="LOG" headingKey="log_h" descKey="log_d" />
+    <ol class="log mono reveal" appReveal>
+      @for (line of lines(); track line.id; let i = $index) {
+        <li class="line" [class]="'line k-' + line.kind" [style.--i]="i">
+          <time class="date" [attr.datetime]="line.date">{{ shortDate(line.date) }}</time>
+          <span class="kind">[{{ 'log_kind_' + line.kind | transloco }}]</span>
+          @if (line.url) {
+            <a class="text" [href]="line.url" target="_blank" rel="noopener">{{ line.text }}</a>
+          } @else {
+            <span class="text">{{ line.text }}</span>
+          }
+        </li>
+      }
+      <li class="prompt" aria-hidden="true"><span class="caret"></span></li>
+    </ol>
+  </section>
+}

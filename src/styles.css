@@ -553,8 +553,10 @@ html.vt-forward .vt-interstitial { opacity: 1; }
    transition keeps the card morph and the content rise, without the circular reveal,
    the ember ring or the HUD label; simpler ring glow; no grain.
    --------------------------------------------------------------------------- */
-html.fx-lite.vt-forward::view-transition-new(root) { animation: vt-fade-in .4s var(--ease) both; }
+html.fx-lite.vt-forward::view-transition-new(root),
+html[data-scene-transition="simple"].vt-forward::view-transition-new(root) { animation: vt-fade-in .4s var(--ease) both; }
+html[data-scene-transition="simple"] .vt-ring,
+html[data-scene-transition="simple"] .vt-interstitial,
 html.fx-lite .vt-ring,
 html.fx-lite .vt-interstitial,
 html.fx-lite body::after { display: none; }
-html.fx-lite app-ring-layer .layer { filter: none; }

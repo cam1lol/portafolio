@@ -1,6 +1,6 @@
 import { FormGroup } from '@angular/forms';
-import { detailControls, fillToCount, moveItem, patchDetails, readDetails, screenGroup, videoGroup } from './project-details.form';
-import { emptyDetails } from '../../../core/data/project-details';
+import { chapterGroup, detailControls, fillToCount, moveItem, patchDetails, readDetails, screenGroup, videoGroup } from './project-details.form';
+import { emptyChapter, emptyDetails } from '../../../core/data/project-details';
 
 describe('project details form', () => {
   it('carga y vuelve a leer los detalles sin perder nada', () => {
@@ -35,5 +35,21 @@ describe('project details form', () => {
     moveItem(controls.screens, 0, -1); // first item cannot go up
     expect(controls.screens.getRawValue().map((s) => s.titleEs)).toEqual(['B', 'A', 'C']);
     expect(form.dirty).toBeTrue();
+  });
+
+  it('capítulos: se cargan, se editan y se leen en orden, con el tipo de cada uno', () => {
+    const controls = detailControls();
+    const chapters = [
+      { ...emptyChapter('text'), titleEs: 'El reto', bodyEs: 'Párrafo' },
+      { ...emptyChapter('image'), media: '/media/projects/x/a.webp', layout: 'full' as const },
+    ];
+    patchDetails(controls, { ...emptyDetails(), chapters });
+    expect(readDetails(controls).chapters).toEqual(chapters);
+    controls.chapters.push(chapterGroup('code'));
+    controls.chapters.at(2).controls.code.setValue('if (a) {\n\treturn b;\n}');
+    expect(controls.chapters.at(2).valid).withContext('el código admite tabulaciones').toBeTrue();
+    controls.chapters.at(2).controls.code.setValue('a\u0000b');
+    expect(controls.chapters.at(2).valid).toBeFalse();
+    expect(readDetails(controls).chapters.map((c) => c.type)).toEqual(['text', 'image', 'code']);
   });
 });

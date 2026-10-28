@@ -154,3 +154,10 @@
   .vplayer[open], .vpreview { animation: none; }
   .vp-loading { animation-duration: 2.4s; }
 }
+
+/* A single video: one large featured player (thumbnail and text side by side) instead of a lonely small card. */
+.vgrid.featured { grid-template-columns: minmax(0, 1fr); }
+.vgrid.featured .vcard { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: center; }
+.vgrid.featured .vbody { padding: 24px 28px; }
+.vgrid.featured .vbody h3 { font-size: clamp(20px, 2vw, 28px); }
+@media (max-width: 760px) { .vgrid.featured .vcard { grid-template-columns: minmax(0, 1fr); } }

@@ -4,7 +4,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { Project } from './project.model';
 import { ProjectDetails, detailsFromRow, detailsToRow } from './project-details';
 
-const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'story', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos'];
+const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'story', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos', 'chapters', 'mediaFocus', 'sectionOrder'];
 
 /**
  * Row shape returned by the Supabase `projects` table (snake_case),
@@ -50,6 +50,8 @@ interface ProjectRow {
   docs?: unknown;
   versions?: unknown;
   videos?: unknown;
+  /** Case study chapters (0013). */
+  chapters?: unknown;
 }
 
 /**
@@ -98,6 +100,38 @@ export class ProjectsService {
 
   private clearCache(): void {
     this.published$ = null;
+  }
+
+  /**
+   * Private draft link (/proyectos/<slug>?preview=<token>, migration 0014): returns the project even
+   * while unpublished, only when the token matches. Null if it does not (or the function is missing).
+   */
+  getPreview(slug: string, token: string): Observable<Project | null> {
+    return from(this.supabase.client.rpc('project_preview', { p_slug: slug, p_token: token })).pipe(
+      map(({ data, error }) => {
+        if (error) {
+          console.error('Failed to load project preview', error);
+          return null;
+        }
+        const row = (data as ProjectRow[] | null)?.[0];
+        return row ? this.toProject(row) : null;
+      }),
+    );
+  }
+
+  /** Admin: the secret token of a project's private link (migration 0014); null before the migration. */
+  getPreviewToken(id: string): Observable<string | null> {
+    return from(this.supabase.client.from('projects').select('preview_token').eq('id', id).maybeSingle()).pipe(
+      map(({ data, error }) => (error || !data ? null : String((data as { preview_token?: string }).preview_token ?? '') || null)),
+    );
+  }
+
+  /** Admin: a new token, so links shared before stop working. */
+  regeneratePreviewToken(id: string): Observable<string | null> {
+    const token = crypto.randomUUID();
+    return from(this.supabase.client.from('projects').update({ preview_token: token }).eq('id', id)).pipe(
+      map(({ error }) => (error ? null : token)),
+    );
   }
 
   /** Admin listing: every row (published or not), ordered by `sort_order`. */

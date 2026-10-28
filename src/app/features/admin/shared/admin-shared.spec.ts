@@ -2,6 +2,8 @@ import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ToastService } from './toast.service';
 import { unsavedChangesGuard } from './unsaved-changes.guard';
 import { ConfirmDialogService } from './confirm-dialog.service';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { controlHasValue } from './form-steps.component';
 
 describe('ToastService', () => {
   it('muestra un aviso y lo retira solo a los 3,5 s', fakeAsync(() => {
@@ -48,5 +50,19 @@ describe('unsavedChangesGuard', () => {
 
   it('deja salir si el componente no informa cambios', async () => {
     expect(await run({})).toBeTrue();
+  });
+});
+
+describe('controlHasValue (estado de cada paso en el raíl)', () => {
+  it('cuenta texto, casillas marcadas, listas con elementos y grupos con algo dentro', () => {
+    expect(controlHasValue(new FormControl('  '))).toBeFalse();
+    expect(controlHasValue(new FormControl('Hola'))).toBeTrue();
+    expect(controlHasValue(new FormControl(false))).toBeFalse();
+    expect(controlHasValue(new FormControl(true))).toBeTrue();
+    expect(controlHasValue(new FormControl<string[]>([]))).toBeFalse();
+    expect(controlHasValue(new FormArray([]))).toBeFalse();
+    expect(controlHasValue(new FormArray([new FormControl('')]))).toBeTrue();
+    expect(controlHasValue(new FormGroup({ a: new FormControl(''), b: new FormControl('') }))).toBeFalse();
+    expect(controlHasValue(new FormGroup({ a: new FormControl(''), b: new FormControl('2025') }))).toBeTrue();
   });
 });

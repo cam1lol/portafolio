@@ -13,6 +13,14 @@ export class SoundService {
   private ctx: AudioContext | null = null;
   private lastTick = 0;
 
+  /** Default from the admin (Escena), used only while the visitor has not toggled sound. */
+  applyDefault(on: boolean): void {
+    try {
+      if (localStorage.getItem(STORAGE_KEY) !== null) return;
+    } catch {}
+    this.enabled.set(on);
+  }
+
   toggle(): void {
     const next = !this.enabled();
     this.enabled.set(next);

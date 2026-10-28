@@ -1,0 +1,73 @@
+<div class="chapters" [attr.aria-label]="'pp_chapters' | transloco" role="region">
+  @for (ch of chapters(); track $index; let i = $index) {
+    <article class="ch" [class]="'ch t-' + ch.type" [class.full]="ch.layout === 'full' && (ch.type === 'image' || ch.type === 'compare')">
+      <span class="ch-no mono" aria-hidden="true">{{ pad(i + 1) }} <span class="ch-of">/ {{ pad(total()) }}</span></span>
+
+      @switch (ch.type) {
+        @case ('text') {
+          @if (loc(ch.titleEs, ch.titleEn); as title) {
+            <h2 class="ch-title" [appScramble]="title" scrambleOnView></h2>
+          }
+          @if (loc(ch.bodyEs, ch.bodyEn); as body) {
+            <div class="ch-body" [appLineReveal]="body" [innerHTML]="body | inlineMarkup"></div>
+          }
+        }
+
+        @case ('image') {
+          <figure class="ch-figure">
+            <div class="ch-frame" appReveal>
+              <img [src]="ch.media" [alt]="loc(ch.altEs, ch.altEn)" loading="lazy" decoding="async" />
+            </div>
+            @if (loc(ch.captionEs, ch.captionEn); as caption) { <figcaption class="mono">{{ caption }}</figcaption> }
+          </figure>
+        }
+
+        @case ('compare') {
+          <figure class="ch-figure">
+            <div class="ch-frame ch-compare" appReveal [style.--split.%]="splitAt(i)">
+              <img [src]="ch.media" [alt]="loc(ch.altEs, ch.altEn) + ' · ' + ('pp_before' | transloco)" loading="lazy" decoding="async" />
+              <img class="after" [src]="ch.mediaAfter" [alt]="loc(ch.altEs, ch.altEn) + ' · ' + ('pp_after' | transloco)" loading="lazy" decoding="async" />
+              <span class="cmp-tag cmp-before mono" aria-hidden="true">{{ 'pp_before' | transloco }}</span>
+              <span class="cmp-tag cmp-after mono" aria-hidden="true">{{ 'pp_after' | transloco }}</span>
+              <span class="cmp-handle" aria-hidden="true"></span>
+              <input type="range" min="0" max="100" step="1" [value]="splitAt(i)" (input)="setSplit(i, $any($event.target).value)"
+                [attr.aria-label]="'pp_compare_slider' | transloco" />
+            </div>
+            @if (loc(ch.captionEs, ch.captionEn); as caption) { <figcaption class="mono">{{ caption }}</figcaption> }
+          </figure>
+        }
+
+        @case ('quote') {
+          <blockquote class="ch-quote">
+            <span class="q-mark mono" aria-hidden="true">//</span>
+            <p [appLineReveal]="loc(ch.bodyEs, ch.bodyEn)" [innerHTML]="loc(ch.bodyEs, ch.bodyEn) | inlineMarkup"></p>
+            @if (ch.author.trim()) { <footer class="mono" [appScramble]="ch.author" scrambleOnView></footer> }
+          </blockquote>
+        }
+
+        @case ('code') {
+          <figure class="ch-code" appReveal>
+            <div class="code-bar mono" aria-hidden="true">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span>{{ ch.language || 'code' }}</span>
+            </div>
+            <pre><code>@for (line of codeLines(ch.code); track $index; let n = $index) {<span class="ln" [style.--i]="n"><span class="ln-no" aria-hidden="true">{{ n + 1 }}</span>{{ line }}
+</span>}</code></pre>
+            @if (loc(ch.captionEs, ch.captionEn); as caption) { <figcaption class="mono">{{ caption }}</figcaption> }
+          </figure>
+        }
+
+        @case ('model') {
+          <figure class="ch-figure">
+            @defer (on viewport) {
+              <app-gallery-3d [modelPath]="ch.media" [label]="loc(ch.captionEs, ch.captionEn) || ('pp_model' | transloco)" height="tall" [zoomEnabled]="false" [showBorder]="true" />
+            } @placeholder {
+              <div class="model-ph mono">{{ 'pp_model' | transloco }}</div>
+            }
+            @if (loc(ch.captionEs, ch.captionEn); as caption) { <figcaption class="mono">{{ caption }}</figcaption> }
+          </figure>
+        }
+      }
+    </article>
+  }
+</div>

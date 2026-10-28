@@ -205,3 +205,14 @@
 @media (prefers-reduced-motion: reduce) {
   .nav-icon { transition: none; }
 }
+
+/* Wide pages (the project form): more of the screen, menu reduced to its icons (the label is the tooltip). */
+.admin-shell.wide { max-width: min(1880px, 100%); }
+@media (min-width: 901px) {
+  .admin-shell.wide .admin-body { grid-template-columns: 58px minmax(0, 1fr); gap: 24px; }
+  .admin-shell.wide .nav-label,
+  .admin-shell.wide .nav-group-label { display: none; }
+  .admin-shell.wide .admin-nav a { position: relative; display: grid; place-items: center; padding: 10px 0; }
+  .admin-shell.wide .nav-badge { position: absolute; transform: translate(10px, -10px); }
+  .admin-shell.wide .admin-nav { gap: 10px; }
+}

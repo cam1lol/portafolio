@@ -26,18 +26,21 @@
       <!-- Keyboard and TV remotes: focusable, opens with Enter or Space like a button. -->
       <div class="card" appReveal appTilt [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
         role="button" tabindex="0" [attr.aria-label]="p.name" [style.view-transition-name]="cardName(p.slug, 'card')" (keydown.enter)="openProject(p)" (keydown.space)="$event.preventDefault(); openProject(p)">
-        @if (p.previewVideo) {
-          <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')">
-            <video appPreviewPlay [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
+        <!-- Every card has the media strip (same height): the clip, the image, or a generated cover until there is one. -->
+        <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')">
+          @if (p.previewVideo) {
+            <video appPreviewPlay [style.object-position]="p.mediaFocus" [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
               muted loop playsinline aria-hidden="true"></video>
-          </div>
-        } @else if (p.previewImage) {
-          <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')"><img [src]="p.previewImage" alt="" loading="lazy" /></div>
-        }
-        <span class="corner mono">0{{ i + 1 }}</span>
-        <div class="ic">
-          <app-icon [name]="p.icon" animated />
+          } @else if (p.previewImage) {
+            <img [src]="p.previewImage" [style.object-position]="p.mediaFocus" alt="" loading="lazy" />
+          } @else {
+            <app-project-cover-art [icon]="p.icon" [name]="p.name" />
+          }
+          @if (p.previewVideo || p.previewImage) {
+            <span class="ic ic-over"><app-icon [name]="p.icon" animated /></span>
+          }
         </div>
+        <span class="corner mono">0{{ i + 1 }}</span>
         <div class="ptype mono">{{ p.typeLabel }}</div>
         <h3 [style.view-transition-name]="cardName(p.slug, 'title')">{{ p.name }}</h3>
         <p class="pd">{{ description(p) }}</p>

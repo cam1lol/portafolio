@@ -15,7 +15,14 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
+  color: inherit;
+  text-decoration: none;
 }
+
+/* Back to the home page: the mark reacts like the other HUD controls. */
+.brand .glyph { transition: border-color .2s, color .2s; }
+.brand:hover .glyph { border-color: var(--ember); color: var(--ember); }
+.brand:focus-visible { outline: 2px solid var(--ember); outline-offset: 4px; }
 
 .brand .glyph {
   width: 30px;

@@ -58,12 +58,16 @@ export class StarRainComponent implements AfterViewInit {
 
       const phone = window.matchMedia('(max-width: 760px)').matches;
       const schedule = () => {
-        const wait = 1600 + Math.random() * 2800;
+        const low = document.documentElement.dataset['sceneRain'] === 'low';
+        const wait = (1600 + Math.random() * 2800) * (low ? 2 : 1);
         this.spawnTimer = setTimeout(() => {
           // Not during a page transition: the browser is busy enough animating the snapshots.
           const transitioning = /vt-(forward|back|modal)/.test(document.documentElement.className);
-          if (!document.hidden && !transitioning) {
-            const count = 1 + Math.floor(Math.random() * (phone ? 2 : 3));
+          // Light mode may switch on later (measured frame rate, see main.ts): then it stops raining.
+          const lite = document.documentElement.classList.contains('fx-lite');
+          const off = document.documentElement.dataset['sceneRain'] === 'off';
+          if (!document.hidden && !transitioning && !lite && !off) {
+            const count = low ? 1 : 1 + Math.floor(Math.random() * (phone ? 2 : 3));
             for (let i = 0; i < count; i++) this.meteors.push(this.newMeteor(i * 140));
             this.start(ctx);
           }

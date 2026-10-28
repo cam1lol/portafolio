@@ -1,0 +1,33 @@
+<section class="scene-page">
+  <app-admin-page-header icon="eye" title="Escena" description="Cómo se comporta el sitio público: fondo, transiciones, intro, sonido y modo ligero. Lo que eliges se ve al momento en este navegador (los anillos también giran detrás del panel); los visitantes lo ven al guardar.">
+    <a class="btn view-site" href="/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" /></svg> VER EN EL SITIO</a>
+  </app-admin-page-header>
+
+  <div class="scene-grid">
+    @for (field of fields; track field.key; let i = $index) {
+      <fieldset class="scene-card">
+        <legend><span class="mono idx">{{ (i + 1).toString().padStart(2, '0') }}</span> {{ field.label }}</legend>
+        <p class="help">{{ field.help }}</p>
+        <div class="choices" role="radiogroup" [attr.aria-label]="field.label">
+          @for (option of field.options; track option.value) {
+            <button type="button" role="radio" class="choice" [class.on]="draft()[field.key] === option.value"
+              [attr.aria-checked]="draft()[field.key] === option.value" [attr.tabindex]="draft()[field.key] === option.value ? 0 : -1"
+              (click)="choose(field.key, option.value)" (keydown)="onKey($event, field.key, values(field.key))">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="choice-label">{{ option.label }}</span>
+              @if (option.hint) { <span class="choice-hint">{{ option.hint }}</span> }
+            </button>
+          }
+        </div>
+      </fieldset>
+    }
+  </div>
+
+  <p class="note">El modo ligero se activa además solo en los equipos que no llegan a unos 45 fps, elijas lo que elijas. "Siempre" se quita al recargar la página si vuelves a "Automático".</p>
+
+  <div class="sticky-actions">
+    <span class="save-state mono" [class.dirty]="dirty()" role="status">{{ dirty() ? 'VISTA PREVIA SIN GUARDAR' : 'SIN CAMBIOS PENDIENTES' }}</span>
+    <button type="button" class="btn" (click)="reset()" [disabled]="!dirty() || saving()">DESCARTAR</button>
+    <button type="button" class="btn primary" (click)="save()" [disabled]="!dirty() || saving()">{{ saving() ? 'GUARDANDO…' : 'GUARDAR ESCENA' }}</button>
+  </div>
+</section>
