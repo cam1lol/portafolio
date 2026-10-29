@@ -1,11 +1,11 @@
-// Local-only uploads for the admin (started inside `ng serve` by proxy.conf.mjs). Receives a file from
-// the panel, optimizes it with ffmpeg and saves it under public/media/projects/<slug>/, then refreshes
-// manifest.json. It listens on 127.0.0.1 only and is never deployed: in production the panel only lists
-// the files already in the repo. No npm dependencies: node:http plus the ffmpeg/ffprobe binaries.
+// Subidas solo en local para el admin (lo arranca proxy.conf.mjs dentro de `ng serve`). Recibe un archivo
+// del panel, lo optimiza con ffmpeg, lo guarda en public/media/projects/<slug>/ y refresca manifest.json.
+// Escucha solo en 127.0.0.1 y nunca se despliega: en producción el panel solo lista los archivos que ya
+// están en el repositorio. Sin dependencias npm: node:http más los binarios de ffmpeg/ffprobe.
 //
-//   video -> <name>.mp4 (H.264 + AAC, max 1920x1080, fast start), <name>.poster.webp, <name>.preview.mp4 (6 s, 480p, no audio)
-//   image -> <name>.webp (max 1920 px), GIFs are copied as they are (they may be animated)
-//   pdf   -> copied as it is
+//   video  -> <nombre>.mp4 (H.264 + AAC, máx. 1920x1080, inicio rápido), <nombre>.poster.webp, <nombre>.preview.mp4 (6 s, 480p, sin audio)
+//   imagen -> <nombre>.webp (máx. 1920 px); los GIF se copian tal cual (pueden ser animados)
+//   pdf    -> se copia tal cual
 import { createServer } from 'node:http';
 import { createReadStream, createWriteStream, existsSync, readdirSync, statSync, copyFileSync, mkdirSync, rmSync, openSync, readSync, closeSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
@@ -32,7 +32,7 @@ class UserError extends Error {
   }
 }
 
-// ---- ffmpeg lookup: PATH first, then the WinGet package folder (a fresh install is not on PATH until a new terminal).
+// ---- Buscar ffmpeg: primero en el PATH y luego en la carpeta de paquetes de WinGet (una instalación nueva no está en el PATH hasta abrir otra terminal).
 
 function findBinary(name) {
   const fromEnv = process.env[`${name.toUpperCase()}_PATH`];
@@ -73,7 +73,7 @@ async function probe(file) {
   const json = JSON.parse(await run(FFPROBE, ['-v', 'error', '-print_format', 'json', '-show_streams', '-show_format', file]));
   const video = json.streams?.find((s) => s.codec_type === 'video');
   if (!video) return null;
-  // ffmpeg applies the rotation when decoding, so a portrait phone video is measured upright.
+  // ffmpeg aplica la rotación al decodificar, así un video vertical de móvil se mide en su orientación real.
   const rotation = Math.abs(Number(video.side_data_list?.find((d) => d.rotation !== undefined)?.rotation ?? video.tags?.rotate ?? 0));
   const turned = rotation % 180 === 90;
   return {
@@ -84,11 +84,11 @@ async function probe(file) {
   };
 }
 
-// ---- Sizes and names
+// ---- Tamaños y nombres
 
 const even = (n) => Math.max(2, Math.round(n / 2) * 2);
 
-/** Scales down (never up) so the long side fits maxLong and the short side fits maxShort. */
+/** Reduce (nunca amplía) para que el lado largo quepa en maxLong y el corto en maxShort. */
 function fit(width, height, maxLong, maxShort) {
   const factor = Math.min(1, maxLong / Math.max(width, height), maxShort / Math.min(width, height));
   return [even(width * factor), even(height * factor)];
@@ -113,7 +113,7 @@ function safeBase(name) {
   return base || 'archivo';
 }
 
-/** First "name", "name-2"... whose outputs do not exist yet, so an upload never overwrites a file. */
+/** El primer "nombre", "nombre-2"... cuyas salidas aún no existen, así una subida nunca sobrescribe un archivo. */
 function uniqueBase(dir, base) {
   const taken = (b) => ['.mp4', '.poster.webp', '.preview.mp4', '.webp', '.gif', '.pdf'].some((suffix) => existsSync(join(dir, b + suffix)));
   let candidate = base;
@@ -121,10 +121,10 @@ function uniqueBase(dir, base) {
   return candidate;
 }
 
-const publicPath = (file) => '/' + file.split(/[\\/]/).slice(1).join('/'); // drop "public"
+const publicPath = (file) => '/' + file.split(/[\\/]/).slice(1).join('/'); // quita "public"
 const size = (file) => statSync(file).size;
 
-// ---- Optimizers
+// ---- Optimizadores
 
 async function optimizeVideo(input, dir, base) {
   const info = await probe(input);
@@ -142,7 +142,7 @@ async function optimizeVideo(input, dir, base) {
     '-movflags', '+faststart', out,
   ]);
 
-  // Hover clip: a few seconds from early in the video, small and silent.
+  // Clip de hover: unos segundos del principio del video, pequeño y sin sonido.
   const start = info.duration > 12 ? Math.min(3, info.duration * 0.1) : 0;
   const [pw, ph] = fit(w, h, 854, 480);
   await run(FFMPEG, [
@@ -186,7 +186,7 @@ function copyPdf(input, dir, base) {
 
 // ---- HTTP
 
-/** One optimization at a time: ffmpeg already uses every core. */
+/** Una optimización a la vez: ffmpeg ya usa todos los núcleos. */
 let queue = Promise.resolve();
 const enqueue = (job) => {
   const result = queue.then(job);
@@ -238,8 +238,8 @@ async function handleUpload(req, res, url) {
   }
 }
 
-// ---- Static files. In development `ng serve` does not serve public/media/projects (angular.json ignores
-// it, so new uploads do not trigger a page reload mid-form); the proxy sends those requests here.
+// ---- Archivos estáticos. En desarrollo `ng serve` no sirve public/media/projects (angular.json lo ignora,
+// para que las subidas nuevas no recarguen la página a mitad de formulario); el proxy manda esas peticiones aquí.
 
 const TYPES = {
   '.mp4': 'video/mp4', '.webm': 'video/webm', '.webp': 'image/webp', '.avif': 'image/avif', '.png': 'image/png',
@@ -258,7 +258,7 @@ function serveStatic(req, res, pathname) {
 
   const total = statSync(file).size;
   const headers = { 'Content-Type': TYPES[extname(file).toLowerCase()] ?? 'application/octet-stream', 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache' };
-  // Range requests let the browser start a video and seek without downloading all of it.
+  // Las peticiones Range dejan al navegador empezar un video y saltar sin descargarlo entero.
   const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
   if (range && (range[1] || range[2])) {
     const start = range[1] ? Number(range[1]) : Math.max(0, total - Number(range[2]));
@@ -276,7 +276,7 @@ function serveStatic(req, res, pathname) {
   createReadStream(file).pipe(res);
 }
 
-/** No Origin (curl, same-origin GET) or one served from this machine (the ng serve app on any port). */
+/** Sin Origin (curl, GET del mismo origen) o uno servido desde esta máquina (la app de ng serve en cualquier puerto). */
 function isLocalOrigin(origin) {
   if (!origin) return true;
   try {
@@ -293,8 +293,9 @@ const server = createServer(async (req, res) => {
     if ((req.method === 'GET' || req.method === 'HEAD') && url.pathname.startsWith('/media/projects/')) return serveStatic(req, res, url.pathname);
     if (req.method === 'GET' && route === '/health') return send(res, 200, { ok: true, ffmpeg: !!FFMPEG && !!FFPROBE });
     if (req.method === 'POST' && route === '/upload') {
-      // Any page open in the browser could POST here while npm start runs. The custom header forces a
-      // CORS preflight, which this server never approves, and the Origin check rejects other sites.
+      // Cualquier página abierta en el navegador podría hacer POST aquí mientras corre npm start. La cabecera
+      // propia obliga a una comprobación CORS previa que este servidor nunca aprueba, y la comprobación de
+      // Origin rechaza otros sitios.
       if (req.headers['x-media-upload'] !== '1' || !isLocalOrigin(req.headers.origin)) return send(res, 403, { error: 'Solo se aceptan subidas desde el panel local.' });
       return await handleUpload(req, res, url);
     }
@@ -307,7 +308,7 @@ const server = createServer(async (req, res) => {
   }
 });
 
-// Never take ng serve down with it (this module runs inside the dev server, see proxy.conf.mjs).
+// Nunca tumbar ng serve con él (este módulo corre dentro del servidor de desarrollo, ver proxy.conf.mjs).
 server.on('error', (error) => {
   const reason = error.code === 'EADDRINUSE' ? `el puerto ${PORT} está ocupado (¿otro ng serve abierto?)` : error.message;
   console.warn(`media-server: no se pudo iniciar, ${reason}. Las subidas y los medios locales no funcionarán en esta sesión.`);

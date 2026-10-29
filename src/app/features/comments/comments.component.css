@@ -1,5 +1,5 @@
 .block {
-  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
+  padding-block: 96px; /* solo vertical: .wrap conserva el margen lateral */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -49,7 +49,7 @@
 
 .field-error { display: block; margin-top: 6px; color: var(--ember); font-size: 10px; }
 
-/* Honeypot stays in the DOM for bots but is invisible and unreachable for people. */
+/* La trampa para bots sigue en el DOM pero es invisible e inalcanzable para las personas. */
 .trap {
   position: absolute;
   width: 1px;

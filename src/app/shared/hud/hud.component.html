@@ -1,7 +1,7 @@
 <div class="hud">
   <span class="tick tl"></span><span class="tick tr"></span>
   <span class="tick bl"></span><span class="tick br"></span>
-  <!-- Scroll progress under the sticky header; section index on the home page (public site only). -->
+  <!-- Progreso de scroll bajo la cabecera fija; índice de sección en la portada (solo sitio público). -->
   <span #progress class="progress" [hidden]="isAdmin()"></span>
   <span #index class="index" [hidden]="isAdmin() || !isHome()"></span>
   @if (ritual()) { <span class="ritual mono" role="status">// RITUAL DESBLOQUEADO</span> }

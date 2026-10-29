@@ -1,10 +1,11 @@
-/* Project page section contents: timeline, results, overview, demo, screens, gallery, extras, related.
-   Split from project-page.component.css to stay under the 8 kB per-stylesheet production budget. */
+/* Contenido de las secciones de la página del proyecto: línea de tiempo, resultados, resumen, demo,
+   pantallas, galería, extras, relacionados. Separado de project-page.component.css para no pasar del
+   límite de 8 kB por hoja de estilos en producción. */
 
 .draft-banner { margin: 0 0 18px; padding: 10px 14px; border: 1px dashed var(--ember); border-radius: var(--r); color: var(--ember); font-size: 11px; letter-spacing: .1em; }
 .sub { margin: 32px 0 14px; color: var(--ember); font-size: 11px; letter-spacing: .14em; }
 
-/* ---- Story: a timeline whose rule draws in with the scroll */
+/* ---- Historia: una línea de tiempo cuya regla se dibuja con el scroll */
 .timeline { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin: 0; padding: 34px 0 0; list-style: none; }
 .timeline::before { content: ''; position: absolute; top: 9px; left: 0; right: 0; height: 1px; background: var(--ember); transform-origin: left; }
 @supports (animation-timeline: view()) {
@@ -17,23 +18,23 @@
 .tl-step h3 { margin: 10px 0 10px; color: var(--ember); font-size: 11px; letter-spacing: .16em; }
 .tl-text { font-size: 15px; gap: 14px; }
 
-/* ---- Results: big numbers */
+/* ---- Resultados: números grandes */
 .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); }
 .result { padding: 26px 24px; background: var(--ink); }
 .result strong { display: block; color: var(--ember); font: 900 clamp(36px, 4.4vw, 56px) / 1 'Archivo', sans-serif; letter-spacing: -.03em; }
 .result-label { display: block; margin-top: 10px; color: var(--bone); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .result p { margin: 8px 0 0; color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 
-/* ---- Overview */
+/* ---- Resumen */
 .checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px 24px; margin: 0; padding: 0; list-style: none; color: var(--bone-dim); line-height: 1.6; }
 .checks li { position: relative; padding-left: 26px; }
 .checks li::before { content: ''; position: absolute; top: .5em; left: 2px; width: 10px; height: 6px; border-left: 2px solid var(--ember); border-bottom: 2px solid var(--ember); transform: rotate(-45deg); }
 .stack { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* ---- Demo video */
+/* ---- Video demo */
 .demo { max-width: 1000px; border: 1px solid var(--line); border-radius: var(--r); }
 
-/* ---- Screens tour: list on the left, viewer on the right */
+/* ---- Recorrido de pantallas: lista a la izquierda, visor a la derecha */
 .tour { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 20px; align-items: start; }
 .tour-list { display: grid; gap: 4px; }
 .tour-list button {
@@ -49,7 +50,7 @@
 .tour-media video, .tour-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .tour-desc { margin: 14px 0 0; color: var(--bone-dim); font-size: 15px; line-height: 1.65; }
 
-/* ---- Gallery + lightbox */
+/* ---- Galería + visor ampliado */
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .thumb { padding: 0; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); cursor: zoom-in; }
 .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
@@ -69,7 +70,7 @@
 .lb-prev { top: 50%; left: 14px; transform: translateY(-50%); }
 .lb-next { top: 50%; right: 14px; transform: translateY(-50%); }
 
-/* ---- Improvements, docs, versions */
+/* ---- Mejoras, documentos, versiones */
 .extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; }
 .extras .sub { margin-top: 0; }
 .improvements, .docs, .versions { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
@@ -87,7 +88,7 @@
 .ver { color: var(--bone); font-size: 12px; letter-spacing: .06em; }
 .versions p { margin: 4px 0 0; color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 
-/* ---- Related */
+/* ---- Relacionados */
 .related { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .related-card { display: grid; gap: 8px; padding: 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); color: inherit; text-decoration: none; transition: border-color .2s; }
 .related-card span { color: var(--steel); font-size: 10px; letter-spacing: .12em; }

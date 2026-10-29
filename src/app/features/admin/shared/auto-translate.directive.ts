@@ -3,8 +3,8 @@ import { FormGroup, NgControl } from '@angular/forms';
 import { TranslatorService } from './translator.service';
 
 /**
- * On a Spanish field (`formControlName="xxxEs"`): when you leave it, its English sibling (`xxxEn`)
- * is translated automatically if it is empty or still holds an untouched automatic translation.
+ * En un campo en español (`formControlName="xxxEs"`): al salir de él, su hermano en inglés (`xxxEn`) se
+ * traduce solo si está vacío o si aún tiene una traducción automática que nadie tocó.
  */
 @Directive({
   selector: '[appAutoTranslate]',

@@ -65,12 +65,12 @@ export class BlockDispatcherComponent {
   private readonly transloco = inject(TranslocoService);
 
   @Input({ required: true }) block!: Block;
-  /** Forces a language (admin preview); defaults to the active site language. */
+  /** Fuerza un idioma (vista previa del admin); por defecto, el idioma activo del sitio. */
   @Input() lang: 'es' | 'en' | null = null;
 
   /**
-   * Bilingual config: the base key holds Spanish, `<key>_en` holds English.
-   * Blocks created before the bilingual form only have the base key, so English falls back to it.
+   * Config bilingüe: la clave base lleva el español y `<clave>_en` el inglés. Los bloques creados antes
+   * del formulario bilingüe solo tienen la clave base, así que el inglés recurre a ella.
    */
   private text(source: Record<string, unknown> | undefined, key: string): string {
     if (!source) return '';

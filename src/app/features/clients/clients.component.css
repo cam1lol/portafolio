@@ -31,7 +31,7 @@
 }
 .logos a:focus-visible { outline: 2px solid var(--ember); outline-offset: 6px; }
 
-/* Monochrome by default so mixed brand colors read as one row; full color on hover. */
+/* Monocromo por defecto para que los colores de marca mezclados se lean como una sola fila; a color al pasar el ratón. */
 img {
   display: block;
   width: auto;

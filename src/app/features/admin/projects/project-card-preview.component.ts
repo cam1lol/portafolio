@@ -5,9 +5,9 @@ import { ProjectCoverArtComponent } from '../../../shared/media/project-cover-ar
 const STATUS_LABELS = { live: 'EN VIVO', wip: 'EN PROGRESO', archive: 'ARCHIVADO' } as const;
 
 /**
- * Live miniature of the home page card while the project is being edited: same structure and
- * tokens as the public card (media strip, animated icon, type label, name, summary, stack, status),
- * without the hover and transition machinery. Shows the Spanish summary.
+ * Miniatura en vivo de la tarjeta de la portada mientras se edita el proyecto: misma estructura y tokens
+ * que la tarjeta pública (franja de medios, icono animado, tipo, nombre, resumen, stack, estado), sin
+ * la maquinaria de hover y transiciones. Muestra el resumen en español.
  */
 @Component({
   selector: 'app-project-card-preview',

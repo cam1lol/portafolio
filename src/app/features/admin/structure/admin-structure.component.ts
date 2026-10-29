@@ -14,9 +14,9 @@ interface StructureRow extends PageItem {
   label: string;
   description: string;
   block?: Block;
-  /** Section visibility; `null` when the section has no row in `section_visibility` (ticker). */
+  /** Visibilidad de la sección; `null` si la sección no tiene fila en `section_visibility` (ticker). */
   visible: boolean | null;
-  /** Where EDITAR leads; `null` when the section has no editor yet. */
+  /** Adónde lleva EDITAR; `null` si la sección aún no tiene editor. */
   editLink: string[] | null;
   editFragment?: string;
 }
@@ -222,7 +222,7 @@ export class AdminStructureComponent implements OnInit {
       }
     }
 
-    // Same fallback as the public page: content missing from page_items goes last.
+    // El mismo respaldo que la página pública: el contenido que falta en page_items va al final.
     for (const section of SECTIONS) {
       if (!seenSections.has(section.key)) ordered.push(sectionRow(section, `section:${section.key}`, ordered.length));
     }

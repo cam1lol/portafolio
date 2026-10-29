@@ -3,7 +3,7 @@ import { Observable, forkJoin, from, map, of } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Block } from './block.model';
 
-/** Row shape returned by the Supabase `blocks` table (snake_case). */
+/** Forma de las filas de la tabla `blocks` (snake_case). */
 interface BlockRow {
   id: string;
   type: Block['type'];
@@ -17,7 +17,7 @@ interface BlockRow {
 export class BlocksService {
   private readonly supabase = inject(SupabaseService);
 
-  /** Public read: only published blocks for a given page, ordered for display. */
+  /** Lectura pública: solo los bloques publicados de una página, en orden. */
   getPublished(page: string): Observable<Block[]> {
     return from(
       this.supabase.client
@@ -37,7 +37,7 @@ export class BlocksService {
     );
   }
 
-  /** Admin read: all blocks regardless of `published`. */
+  /** Lectura del admin: todos los bloques, publicados o no. */
   getAll(): Observable<Block[]> {
     return from(this.supabase.client.from('blocks').select('*').order('sort_order')).pipe(
       map(({ data, error }) => {
@@ -102,7 +102,7 @@ export class BlocksService {
     );
   }
 
-  /** Persists a new ordering by updating `sort_order` in batch. */
+  /** Guarda un orden nuevo actualizando `sort_order` en lote. */
   reorder(ids: string[]): Observable<void[]> {
     if (ids.length === 0) {
       return of([]);

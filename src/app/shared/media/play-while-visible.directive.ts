@@ -2,9 +2,10 @@ import { AfterViewInit, DestroyRef, Directive, ElementRef, NgZone, inject } from
 import { prefersLightEffects, whenVisible } from '../perf/perf-utils';
 
 /**
- * Loops a muted clip only while it is on screen (half visible) and pauses it otherwise, so a grid
- * of clips never decodes more than what is visible. With reduced motion or the light mode it does
- * not autoplay: the clip plays while its card is hovered or focused, and the poster stays otherwise.
+ * Reproduce en bucle un clip sin sonido solo mientras se ve (la mitad visible) y lo pausa si no, así
+ * una cuadrícula de clips nunca decodifica más de lo que se ve. Con movimiento reducido no se reproduce
+ * solo. En modo ligero con ratón se reproduce al pasar el ratón o enfocar su tarjeta; en táctil (sin
+ * hover posible) se reproduce mientras se ve, como siempre.
  */
 @Directive({
   selector: 'video[appPlayWhileVisible]',
@@ -18,8 +19,8 @@ export class PlayWhileVisibleDirective implements AfterViewInit {
   ngAfterViewInit(): void {
     this.video.muted = true;
     this.zone.runOutsideAngular(() => {
-      if (prefersLightEffects()) {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (prefersLightEffects() && window.matchMedia('(hover: hover)').matches) {
         const card = this.video.closest<HTMLElement>('.card') ?? this.video;
         const enter = () => this.play();
         const leave = () => this.video.pause();
@@ -41,7 +42,7 @@ export class PlayWhileVisibleDirective implements AfterViewInit {
   }
 
   private play(): void {
-    // Rejected when the browser blocks it or the file is missing: the poster stays visible.
+    // Falla si el navegador lo bloquea o falta el archivo: el póster sigue visible.
     this.video.play()?.catch(() => undefined);
   }
 }

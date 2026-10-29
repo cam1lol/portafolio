@@ -1,4 +1,4 @@
-/* Buttons, sticky bar and save state come from ../shared/admin-form.css. */
+/* Los botones, la barra fija y el estado de guardado vienen de ../shared/admin-form.css. */
 
 .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 14px; }
 

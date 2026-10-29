@@ -190,8 +190,24 @@
   background: var(--ember);
 }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .drag-handle { min-width: 40px; min-height: 40px; }
   .link-action { display: inline-flex; align-items: center; min-height: 40px; }
+}
+
+/* Móvil: cada fila pasa a ser una tarjeta (asa, empresa e interruptor arriba; rol y periodo debajo;
+   acciones en su propia línea). Sin encabezado, que ya no alinea con nada. */
+@media (max-width: 760px) {
+  .table-head { display: none; }
+  .experience-row { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 14px 12px; }
+  .experience-row .col-drag { flex: 0 0 28px; }
+  .experience-row .col-company { flex: 1 1 calc(100% - 120px); font-weight: 600; }
+  /* En el HTML el interruptor va después del rol y el periodo: aquí sube a la primera línea. */
+  .experience-row .col-published { flex: 0 0 auto; order: 1; }
+  .experience-row .col-role, .experience-row .col-period { order: 2; }
+  .experience-row .col-actions { order: 3; }
+  .experience-row .col-role { flex: 1 0 calc(100% - 40px); margin-left: 40px; }
+  .experience-row .col-period { flex: 1 0 calc(100% - 40px); margin-left: 40px; }
+  .experience-row .col-actions { flex: 1 0 100%; flex-wrap: wrap; padding-left: 40px; gap: 4px 18px; }
 }

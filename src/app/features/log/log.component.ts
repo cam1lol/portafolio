@@ -16,12 +16,12 @@ interface LogLine {
 }
 
 const KINDS: LogKind[] = ['now', 'launch', 'learning', 'note'];
-/** Lines shown on the home page (newest first). */
+/** Líneas que se muestran en la portada (las más nuevas primero). */
 const MAX_LINES = 6;
 
 /**
- * Bitácora (admin > Bitácora, migration 0014): the latest dated notes as a HUD log. Ordered by date
- * (newest first), whatever the order in the admin. Renders nothing while there are no published notes.
+ * Bitácora (admin > Bitácora, migración 0014): las últimas notas fechadas como registro HUD. Ordenadas
+ * por fecha (las más nuevas primero), sea cual sea el orden en el admin. No pinta nada sin notas publicadas.
  */
 @Component({
   selector: 'app-log',
@@ -52,7 +52,7 @@ export class LogComponent {
       .slice(0, MAX_LINES);
   });
 
-  /** 2026-10-27 -> 27.10.26 (compact, same in both languages). */
+  /** 2026-10-27 -> 27.10.26 (compacto, igual en los dos idiomas). */
   protected shortDate(iso: string): string {
     const [y, m, d] = iso.split('-');
     return y && m && d ? `${d}.${m}.${y.slice(2)}` : iso;

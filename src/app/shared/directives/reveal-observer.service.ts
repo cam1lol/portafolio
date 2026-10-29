@@ -28,7 +28,9 @@ export class RevealObserverService {
             }
           }
         },
-        { threshold: 0.15 },
+        // Aparece cuando su borde entra en el 90 % inferior de la pantalla. Con un umbral de proporción
+        // (antes 0.15), un elemento más alto que unas 6 pantallas nunca llegaba a él y no aparecía.
+        { threshold: 0, rootMargin: '0px 0px -10% 0px' },
       );
     }
     return this.observer;

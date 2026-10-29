@@ -3,9 +3,10 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { applyScene, readCachedScene } from './app/core/scene/scene.config';
 
-// Modest hardware: lighter effects (styles.css "fx-lite"). Decided at start from cores and memory,
-// or from a previous visit that measured a slow frame rate on this device.
-const FX_LITE_KEY = 'ca-fx-lite-v1';
+// Equipos modestos: efectos más ligeros ("fx-lite" en styles.css). Se decide al arrancar según núcleos y
+// memoria, o según una visita anterior que midió pocos fps en este dispositivo. Casi todos los móviles
+// declaran 4 GB o menos (el navegador redondea a la baja), así que la memoria sola no basta para decidir.
+const FX_LITE_KEY = 'ca-fx-lite-v2'; // v2: las visitas que guardaron v1 con el criterio anterior vuelven a medirse
 const FX_LITE_DAYS = 7;
 const nav = navigator as Navigator & { deviceMemory?: number };
 const root = document.documentElement;
@@ -14,13 +15,15 @@ try {
   const until = Number(localStorage.getItem(FX_LITE_KEY));
   remembered = until > Date.now();
 } catch {}
-if (remembered || (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4) root.classList.add('fx-lite');
-// Settings from the admin (Escena) seen on the last visit: applied before the first frame.
+const cores = nav.hardwareConcurrency ?? 8;
+const memory = nav.deviceMemory ?? 8;
+if (remembered || cores <= 2 || memory <= 2 || (cores <= 4 && memory <= 4)) root.classList.add('fx-lite');
+// Ajustes del admin (Escena) vistos en la última visita: se aplican antes del primer fotograma.
 applyScene(readCachedScene(), root);
 
-// Many cores but a weak GPU (common on laptops) is only visible by measuring: a few seconds after
-// load (so startup work does not count), if the median frame takes longer than ~22 ms (under ~45
-// fps) the light mode is switched on and remembered for a week on this device.
+// Muchos núcleos pero una GPU débil (habitual en portátiles) solo se ve midiendo: unos segundos tras la
+// carga (para no contar el arranque), si el fotograma mediano tarda más de ~22 ms (menos de ~45 fps) se
+// activa el modo ligero y se recuerda una semana en este dispositivo.
 function measureFrameRate(): void {
   if (root.classList.contains('fx-lite') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   setTimeout(() => {

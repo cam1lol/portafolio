@@ -8,10 +8,8 @@ export type ModalState =
   | null;
 
 /**
- * Single source of truth for the project/experience modal
- * (camilo-ayala-prototype (2).html `openProject()`/`openXP()`, lines
- * 750-777). `AppModalComponent` reads `active()` and renders nothing while
- * it is `null`.
+ * Única fuente de verdad del modal de proyecto/experiencia. `AppModalComponent` lee `active()` y no
+ * pinta nada mientras vale `null`.
  */
 @Injectable({ providedIn: 'root' })
 export class ModalService {

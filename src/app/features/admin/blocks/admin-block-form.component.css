@@ -1,4 +1,4 @@
-/* Shared field, button and step styles live in ../shared/admin-form.css. */
+/* Los estilos comunes de campos, botones y pasos están en ../shared/admin-form.css. */
 
 .form-heading,
 .preview-heading,
@@ -42,7 +42,7 @@ h1 { margin: 8px 0 0; font-size: clamp(20px, 4vw, 26px); }
   background: var(--graphite);
 }
 
-/* The ES/EN pairs stack by the form's own width, not the window's (the preview takes the other half). */
+/* Los pares ES/EN se apilan según el ancho del propio formulario, no de la ventana (la vista previa ocupa la otra mitad). */
 .form-card { container-type: inline-size; }
 
 form { display: flex; flex-direction: column; }
@@ -96,7 +96,7 @@ form { display: flex; flex-direction: column; }
   cursor: pointer;
 }
 
-/* Save bar sits inside the card, so it takes the card colour. */
+/* La barra de guardar va dentro de la tarjeta, así toma su color. */
 .sticky-actions { background: var(--graphite); }
 
 .preview-panel { position: sticky; top: calc(var(--site-header-h) + 64px); overflow: hidden; }
@@ -127,7 +127,7 @@ form { display: flex; flex-direction: column; }
 .lang-switch button.on { background: var(--ember); color: var(--ink); font-weight: 700; }
 .lang-switch button:focus-visible { outline: 2px solid var(--ember); outline-offset: -2px; }
 
-/* Step 1: type catalog */
+/* Paso 1: catálogo de tipos */
 .step-hint { margin: 0 0 16px; }
 
 .type-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
@@ -152,7 +152,7 @@ form { display: flex; flex-direction: column; }
 .type-what { color: var(--bone-dim); font-size: 13px; line-height: 1.5; }
 .type-when { color: var(--steel); font-size: 10px; letter-spacing: .04em; line-height: 1.5; }
 
-/* Step 2: numbered form */
+/* Paso 2: formulario numerado */
 .type-badge-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
 .type-badge { padding: 5px 10px; border: 1px solid var(--ember); border-radius: 999px; color: var(--ember); font-size: 10px; letter-spacing: .08em; }
 .inline-hint { margin: 0; }
@@ -163,7 +163,7 @@ form { display: flex; flex-direction: column; }
 
 .head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
-/* The admin menu takes ~240px, so the side-by-side preview only fits on wide screens. */
+/* El menú del admin ocupa ~240px, así que la vista previa al lado solo cabe en pantallas anchas. */
 @media (max-width: 1180px) {
   .editor-grid { grid-template-columns: minmax(0, 1fr); }
   .preview-panel { position: static; }
@@ -178,7 +178,7 @@ form { display: flex; flex-direction: column; }
   .type-card { transition: none; }
 }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .link-action { min-height: 40px; }
 }

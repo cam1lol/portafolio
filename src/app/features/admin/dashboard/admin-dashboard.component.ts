@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DayCount, VisitsChartComponent, bucketVisitsByDay } from './visits-chart.component';
 import { ProjectStatsComponent } from './project-stats.component';
+import { ProjectGapsComponent } from './project-gaps.component';
 import { TOPIC_LABELS } from '../../../core/data/inbox.service';
 import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
@@ -43,14 +44,14 @@ interface LanguageRow {
   en: number;
   esShare: number;
   enShare: number;
-  /** Rows recorded before migration 0006 (or with no language) are reported apart. */
+  /** Las filas registradas antes de la migración 0006 (o sin idioma) se cuentan aparte. */
   untagged: number;
 }
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [AdminPageHeaderComponent, RouterLink, DatePipe, VisitsChartComponent, ProjectStatsComponent],
+  imports: [AdminPageHeaderComponent, RouterLink, DatePipe, VisitsChartComponent, ProjectStatsComponent, ProjectGapsComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
 })
@@ -78,7 +79,7 @@ export class AdminDashboardComponent implements OnInit {
     this.toRow('Comentarios', this.commentsByLang(), this.stats().commentsTotal),
   ]);
 
-  /** "ES", "EN" or "—" when there is no tagged data yet. */
+  /** "ES", "EN" o "—" si aún no hay datos con idioma. */
   protected readonly topLanguage = computed(() => {
     const { es, en } = this.visitsByLang();
     if (!es && !en) return '—';
@@ -90,7 +91,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loadActivity();
   }
 
-  /** Daily visits for the chart plus the latest messages and comments. Failures just leave them empty. */
+  /** Visitas diarias para el gráfico más los últimos mensajes y comentarios. Si algo falla, queda vacío. */
   private async loadActivity(): Promise<void> {
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const [visits, messages, comments] = await Promise.all([

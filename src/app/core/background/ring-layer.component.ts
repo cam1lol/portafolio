@@ -1,12 +1,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, NgZone, inject, viewChild } from '@angular/core';
 import { RING_BURST_EVENT } from '../transitions/project-transition.service';
 
-/** Easter egg (Konami code or typing "ritual", see AppComponent): the circle comes alive for a moment. */
+/** Easter egg (código Konami o escribir "ritual", ver AppComponent): el círculo se activa un momento. */
 export const RITUAL_EVENT = 'portfolio:ritual';
 
 const RUNES = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛏᛒᛖᛗᛚᛜᛞᛟ·';
 
-/** Sections with long text (and a project page body): the circle fades while one crosses the middle of the screen. */
+/** Secciones con texto largo (y el cuerpo de un proyecto): el círculo se atenúa mientras cruzan el centro de la pantalla. */
 const READING_SECTIONS = '#about, #experience, #services, .project-page .body';
 
 function repeat(s: string, times: number) {
@@ -18,7 +18,7 @@ function pentagramPath(r: number): string {
     const a = ((-90 + k * 72) * Math.PI) / 180;
     return [r * Math.cos(a), r * Math.sin(a)];
   });
-  // skip-connect: 0→2→4→1→3→0
+  // salto de vértices: 0→2→4→1→3→0
   const order = [0, 2, 4, 1, 3, 0];
   return order.map((i, idx) =>
     `${idx === 0 ? 'M' : 'L'} ${pts[i][0].toFixed(2)},${pts[i][1].toFixed(2)}`
@@ -51,14 +51,13 @@ function tickPath(rIn: number, rOut: number, every: number): string {
   selector: 'app-ring-layer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // Each ring is its own <svg>: rotation (.spin) and parallax (.depth) move whole elements,
-  // which the browser composites on the GPU instead of repainting a big filtered SVG. The rotation
-  // and the pulse animate a wrapping <div>, never the <svg>: Chrome cannot run a transform animation
-  // of an <svg> root on the compositor ("depends on box size"), so it was recomputed on the main
-  // thread every frame, re-laying out and repainting the rune text with its glow.
+  // Cada anillo es su propio <svg>: el giro (.spin) y el parallax (.depth) mueven elementos enteros que
+  // el navegador compone en la GPU, sin repintar un SVG grande con filtros. El giro y el pulso animan
+  // un <div> envoltorio, nunca el <svg>: Chrome no puede llevar al compositor la animación de
+  // transform de un <svg> raíz, y lo recalculaba en el hilo principal en cada fotograma.
   template: `
 <div #rings class="rings" aria-hidden="true">
-  <!-- Static: ambient glow and center marker (moves the most with the cursor) -->
+  <!-- Estático: brillo ambiental y marca central (lo que más se mueve con el cursor) -->
   <div class="depth" style="--d: 1.3">
     <svg class="layer" viewBox="-320 -320 640 640">
       <defs>
@@ -75,7 +74,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg>
   </div>
 
-  <!-- Energy pulse: a ring that expands from the center every few seconds -->
+  <!-- Pulso de energía: un anillo que se expande desde el centro cada pocos segundos -->
   <div class="depth" style="--d: 1">
     <div class="pulse"><svg class="layer" viewBox="-320 -320 640 640">
       <circle r="300" fill="none" stroke="#ff8a5c" stroke-width="5" stroke-opacity=".9"/>
@@ -83,7 +82,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 1: outer measurement ring, very slow CW -->
+  <!-- Capa 1: anillo exterior de medidas, muy lento en sentido horario -->
   <div class="depth" style="--d: 0.35">
     <div class="spin l1"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="308" fill="none" stroke="#e85525" stroke-width="3.74" stroke-opacity=".95"/>
@@ -98,7 +97,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 2: outer rune text ring, slow CCW; random runes light up -->
+  <!-- Capa 2: anillo exterior de runas, lento en sentido antihorario; se encienden runas al azar -->
   <div class="depth" style="--d: 0.5">
     <div class="spin l2"><svg class="layer" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-outer" d="M 0,-268 A 268,268 0 1,1 -0.01,-268"/></defs>
@@ -108,7 +107,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 3: second ring with ornaments, medium CW -->
+  <!-- Capa 3: segundo anillo con ornamentos, velocidad media en sentido horario -->
   <div class="depth" style="--d: 0.65">
     <div class="spin l3"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="228" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
@@ -126,7 +125,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 4: hexagram ring, slow CCW -->
+  <!-- Capa 4: anillo del hexagrama, lento en sentido antihorario -->
   <div class="depth" style="--d: 0.8">
     <div class="spin l4"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="170" fill="none" stroke="#e85525" stroke-width="2.72" stroke-opacity=".75"/>
@@ -139,7 +138,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 5: pentagram ring, medium CW -->
+  <!-- Capa 5: anillo del pentagrama, velocidad media en sentido horario -->
   <div class="depth" style="--d: 1">
     <div class="spin l5"><svg class="layer" viewBox="-320 -320 640 640" stroke-linecap="round" stroke-linejoin="round">
       <circle r="108" fill="none" stroke="#e85525" stroke-width="3.06" stroke-opacity=".85"/>
@@ -151,7 +150,7 @@ function tickPath(rIn: number, rOut: number, every: number): string {
     </svg></div>
   </div>
 
-  <!-- Layer 6: inner rune ring, CCW; random runes light up -->
+  <!-- Capa 6: anillo interior de runas, antihorario; se encienden runas al azar -->
   <div class="depth" style="--d: 1.15">
     <div class="spin l6"><svg class="layer" viewBox="-320 -320 640 640">
       <defs><path id="ring-text-inner" d="M 0,-118 A 118,118 0 1,1 -0.01,-118"/></defs>
@@ -169,8 +168,8 @@ export class RingLayerComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly rings = viewChild.required<ElementRef<HTMLDivElement>>('rings');
 
-  // textLength (on the textPath) spreads the runes over the full circumference, 2 * PI * r,
-  // so the ring closes with no gap: outer r=268 -> 1680, inner r=118 -> 738.
+  // textLength (en el textPath) reparte las runas por toda la circunferencia, 2 * PI * r, para que el
+  // anillo cierre sin hueco: exterior r=268 -> 1680, interior r=118 -> 738.
   readonly outerRunes = Array.from(repeat(RUNES, 7));
   readonly innerRunes = Array.from(repeat(RUNES, 4));
 
@@ -193,8 +192,8 @@ export class RingLayerComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const root = this.rings().nativeElement;
-    // Everything below only touches styles and classes, so it runs outside Angular:
-    // no change detection per frame.
+    // Todo lo de abajo solo toca estilos y clases, así que corre fuera de Angular: sin detección de
+    // cambios por fotograma.
     this.zone.runOutsideAngular(() => {
       this.dimWhileReading(root);
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -205,11 +204,11 @@ export class RingLayerComponent implements AfterViewInit {
   }
 
   /**
-   * Scroll boost + cursor parallax in one rAF loop. Scrolling speeds the rings up (playbackRate
-   * keeps their current angle, so there is no jump) and they ease back when scrolling stops.
-   * The loop sleeps once everything has settled and wakes on scroll, pointer or burst. The scroll
-   * position is read in the scroll event (layout is clean there) and parallax moves each depth
-   * layer directly, so an idle page does no work at all and a frame never forces a layout.
+   * Aceleración por scroll y parallax del cursor en un solo bucle rAF. Al hacer scroll los anillos
+   * giran más rápido (playbackRate conserva el ángulo, sin saltos) y vuelven despacio al parar. El
+   * bucle se duerme cuando todo se asienta y despierta con scroll, puntero o ráfaga. La posición se
+   * lee en el evento de scroll y el parallax mueve cada capa directamente: una página quieta no hace
+   * ningún trabajo y ningún fotograma fuerza un layout.
    */
   private motionLoop(root: HTMLElement): void {
     const animations = Array.from(root.querySelectorAll<HTMLElement>('.spin')).flatMap((el) => el.getAnimations());
@@ -218,7 +217,7 @@ export class RingLayerComponent implements AfterViewInit {
       d: parseFloat(el.style.getPropertyValue('--d')) || 1,
       last: '',
     }));
-    // Any mouse or trackpad (not only the primary pointer): touchscreen laptops report touch as primary.
+    // Cualquier ratón o trackpad (no solo el puntero principal): los portátiles táctiles reportan el toque como principal.
     const finePointer = window.matchMedia('(any-pointer: fine)').matches;
 
     let scrollY = window.scrollY;
@@ -246,7 +245,7 @@ export class RingLayerComponent implements AfterViewInit {
       targetY = (event.clientY / window.innerHeight) * 2 - 1;
       wake();
     };
-    // Cursor left the window: drift back to the center instead of staying offset.
+    // El cursor salió de la ventana: vuelve al centro en vez de quedarse desplazado.
     const onLeave = (event: MouseEvent) => {
       if (!event.relatedTarget) {
         targetX = 0;
@@ -259,7 +258,7 @@ export class RingLayerComponent implements AfterViewInit {
       window.addEventListener('pointermove', onPointer, { passive: true });
       document.addEventListener('mouseout', onLeave);
     }
-    // Opening a project: a sudden spin-up that settles back on its own (same slow ease as scrolling).
+    // Al abrir un proyecto: un acelerón repentino que se calma solo (con la misma curva que el scroll).
     const onBurst = () => {
       rate = Math.max(rate, 8);
       wake();
@@ -273,11 +272,11 @@ export class RingLayerComponent implements AfterViewInit {
 
     function frame(now: number): void {
       const dt = Math.max(16, now - lastT);
-      const speed = Math.abs(scrollY - lastY) / dt; // px per ms
+      const speed = Math.abs(scrollY - lastY) / dt; // px por ms
       lastY = scrollY;
       lastT = now;
 
-      // Up to 5x faster while scrolling; quick to speed up, slow to settle.
+      // Hasta 5 veces más rápido al hacer scroll; acelera rápido y se calma despacio.
       const target = 1 + Math.min(speed * 3, 4);
       rate += (target - rate) * (target > rate ? 0.18 : 0.035);
       if (speed === 0 && Math.abs(rate - 1) < 0.01) rate = 1;
@@ -305,7 +304,7 @@ export class RingLayerComponent implements AfterViewInit {
         }
       }
 
-      // Asleep until the next scroll, pointer move or burst.
+      // Dormido hasta el próximo scroll, movimiento del puntero o ráfaga.
       frameId = moving || speed > 0 || rate !== 1 ? requestAnimationFrame(frame) : 0;
     }
 
@@ -319,7 +318,7 @@ export class RingLayerComponent implements AfterViewInit {
     });
   }
 
-  /** A few random runes glow and fade back, as if the circle were active. */
+  /** Algunas runas al azar brillan y se apagan, como si el círculo estuviera activo. */
   private runeSparks(root: HTMLElement): void {
     const runes = Array.from(root.querySelectorAll<SVGTSpanElement>('.rune'));
     if (runes.length === 0) return;
@@ -340,7 +339,7 @@ export class RingLayerComponent implements AfterViewInit {
 
     const interval = setInterval(() => {
       if (Math.random() < 0.3) {
-        // Now and then a short wave: three consecutive runes, one after another.
+        // De vez en cuando una onda corta: tres runas seguidas, una tras otra.
         const start = Math.floor(Math.random() * (runes.length - 3));
         for (let i = 0; i < 3; i++) light(runes[start + i], i * 140);
       } else {
@@ -354,14 +353,14 @@ export class RingLayerComponent implements AfterViewInit {
     });
   }
 
-  /** Fires the expanding pulse at irregular intervals (7-12 s) so it feels alive, not mechanical. */
+  /** Dispara el pulso a intervalos irregulares (7-12 s) para que se sienta vivo y no mecánico. */
   private energyPulse(root: HTMLElement): void {
     const pulse = root.querySelector<HTMLElement>('.pulse');
     if (!pulse) return;
     let timeout: ReturnType<typeof setTimeout>;
 
-    // Web Animations API: every call is a fresh animation, so it always replays
-    // (toggling a CSS class does not reliably restart an animation on SVG elements).
+    // Web Animations API: cada llamada es una animación nueva y siempre se reproduce (alternar una clase
+    // CSS no reinicia bien una animación en elementos SVG).
     const fire = (duration = 3800) => {
       pulse.animate(
         [
@@ -375,10 +374,10 @@ export class RingLayerComponent implements AfterViewInit {
       timeout = setTimeout(fire, 7000 + Math.random() * 5000);
     };
     timeout = setTimeout(fire, 2500);
-    // Opening a project fires a quicker pulse right away (and restarts the irregular timer).
+    // Abrir un proyecto dispara un pulso rápido al momento (y reinicia el temporizador irregular).
     const onBurst = () => fire(1600);
     window.addEventListener(RING_BURST_EVENT, onBurst);
-    // Ritual: three quick pulses, every rune lit, the whole circle glowing for a few seconds.
+    // Ritual: tres pulsos rápidos, todas las runas encendidas y el círculo brillando unos segundos.
     const ritualTimers: ReturnType<typeof setTimeout>[] = [];
     const onRitual = () => {
       root.classList.add('ritual');
@@ -400,10 +399,10 @@ export class RingLayerComponent implements AfterViewInit {
     });
   }
 
-  /** Fades the circle while a text-heavy section sits in the middle of the screen. */
+  /** Atenúa el círculo mientras una sección con mucho texto está en el centro de la pantalla. */
   private dimWhileReading(root: HTMLElement): void {
-    // A hit test forces layout, so it runs at most every 150 ms while scrolling (the fade itself
-    // takes .9 s, so the delay is invisible), plus once when scrolling stops.
+    // La prueba de impacto fuerza un layout, así que corre como mucho cada 150 ms durante el scroll (el
+    // fundido dura .9 s, el retraso no se nota) y una vez más al parar.
     let timer: ReturnType<typeof setTimeout> | undefined;
     let pending = false;
     const check = () => {

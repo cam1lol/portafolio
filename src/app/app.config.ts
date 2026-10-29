@@ -17,12 +17,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    // anchorScrolling: "Ver en el sitio" opens /#section and lands on that section.
-    // View transitions: animated move between project cards and project pages (see ProjectTransitionService).
+    // anchorScrolling: "Ver en el sitio" abre /#seccion y cae en esa sección.
+    // View transitions: paso animado entre las tarjetas y las páginas de proyecto (ver ProjectTransitionService).
     provideRouter(
       routes,
-      // New pages start at the top (the project title is in view for the open transition);
-      // back/forward restores where you were.
+      // Las páginas nuevas empiezan arriba (el título del proyecto se ve para la transición de apertura);
+      // atrás/adelante recupera donde estabas.
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
       withViewTransitions({
         skipInitialTransition: true,

@@ -4,14 +4,12 @@ import { Observable, from, map } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
 /**
- * Wraps Supabase Auth (`signInWithPassword`/`signOut`) and exposes the
- * current session as a signal kept in sync via `onAuthStateChange` (covers
- * login/logout from another tab, token refresh, and expiry — not just the
- * initial load).
+ * Envuelve Supabase Auth (`signInWithPassword`/`signOut`) y expone la sesión como señal,
+ * sincronizada con `onAuthStateChange` (login/logout en otra pestaña, renovación del token y
+ * caducidad, no solo la carga inicial).
  *
- * `authGuard` (`./auth.guard.ts`) intentionally does NOT read `session()`
- * from this service: it resolves its own `getSession()` call so route
- * activation never races against this service's async constructor work.
+ * `authGuard` NO lee `session()` a propósito: hace su propio `getSession()` para no competir
+ * con el trabajo asíncrono de este constructor.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {

@@ -29,7 +29,7 @@ export class AdminModelsComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
-  /** Metadata typed in the "Subir modelo" card, stored with the GLB in Storage. */
+  /** Metadatos escritos en la tarjeta "Subir modelo", guardados con el GLB en Storage. */
   protected readonly uploadMeta = signal<ModelAssetMetadata>({ title: '', author: '', license: '' });
 
   setMeta(field: keyof ModelAssetMetadata, event: Event): void {

@@ -3,6 +3,7 @@
   <app-star-rain></app-star-rain>
 }
 <app-hud></app-hud>
+<app-focus-hud />
 @if (showBoot()) { <app-boot (done)="showBoot.set(false)" /> }
 <app-modal></app-modal>
 
@@ -15,14 +16,14 @@
     </div>
   </a>
 
-  <!-- Inline on desktop; below 1280px it becomes the panel opened by the menu button. -->
+  <!-- En línea en escritorio; por debajo de 1280px se convierte en el panel que abre el botón de menú. -->
   <nav class="links" id="site-menu" [attr.aria-label]="'nav_menu' | transloco" (click)="onMenuClick($event)" (keydown)="onMenuKeydown($event)">
     <a routerLink="/" fragment="work">{{ 'nav_work' | transloco }}</a>
     <a routerLink="/proyectos">{{ 'nav_projects' | transloco }}</a>
     <a routerLink="/" fragment="experience">{{ 'nav_xp' | transloco }}</a>
     <a routerLink="/" fragment="services">{{ 'nav_services' | transloco }}</a>
     <a routerLink="/" fragment="contact">{{ 'nav_contact' | transloco }}</a>
-    <!-- On small phones the controls move into the panel so the header fits at 320px. -->
+    <!-- En móviles pequeños los controles pasan al panel para que la cabecera quepa a 320px. -->
     <div class="menu-controls"><ng-container *ngTemplateOutlet="controls" /></div>
   </nav>
 
@@ -35,10 +36,10 @@
     </svg>
   </button>
 </header>
-<!-- Ember ring that rides the edge of the circular reveal when a project opens (styles.css). -->
+<!-- Anillo de acento que recorre el borde de la apertura circular al abrir un proyecto (styles.css). -->
 <div class="vt-ring" aria-hidden="true"></div>
 <app-command-palette #palette />
-<!-- HUD label in the middle of the open-project transition (styles.css, "Interstitial"). -->
+<!-- Rótulo HUD en el centro de la transición al abrir un proyecto (styles.css, "Interstitial"). -->
 @if (vt.interstitial(); as label) {
   <div class="vt-interstitial" aria-hidden="true">
     <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
@@ -88,7 +89,51 @@
 </main>
 
 <footer>
-  <span class="mono">© 2026 CAMILO AYALA — BOGOTÁ, CO</span>
-  <span class="mono">LAT 4.71 · LON -74.07</span>
-  <span class="mono">DEPLOY: VERCEL · ANGULAR STANDALONE</span>
+  <!-- Mapa del sitio, perfiles y enlaces legales (solo sitio público; el admin conserva solo la barra inferior). -->
+  @if (!isAdminScreen()) {
+    @let email = 'contact_email' | siteText: ('ct_b' | siteText);
+    <div class="ft-top">
+      <div class="ft-brand">
+        <div class="glyph" aria-hidden="true">CA</div>
+        <div>
+          <div class="nm">CAMILO AYALA</div>
+          <div class="eyebrow">{{ 'role' | transloco }}</div>
+        </div>
+        <p>{{ 'ft_pitch' | transloco }}</p>
+        <a class="ft-mail mono" [href]="'mailto:' + email">{{ email }}</a>
+      </div>
+
+      <nav class="ft-col" [attr.aria-label]="'ft_site' | transloco">
+        <span class="ft-k mono">// {{ 'ft_site' | transloco }}</span>
+        <a routerLink="/proyectos">{{ 'ft_projects' | transloco }}</a>
+        <a routerLink="/" fragment="experience">{{ 'ft_experience' | transloco }}</a>
+        <a routerLink="/" fragment="services">{{ 'ft_services' | transloco }}</a>
+        <a routerLink="/" fragment="contact">{{ 'ft_contact' | transloco }}</a>
+        <a routerLink="/reclutador">{{ 'cmd_recruiter' | transloco }}</a>
+      </nav>
+
+      <nav class="ft-col" [attr.aria-label]="'ft_profiles' | transloco">
+        <span class="ft-k mono">// {{ 'ft_profiles' | transloco }}</span>
+        <a href="https://github.com/cam1lol" target="_blank" rel="noopener noreferrer">GitHub <span class="ext" aria-hidden="true">/ ↗</span></a>
+        <a href="https://www.linkedin.com/in/camilo1" target="_blank" rel="noopener noreferrer">LinkedIn <span class="ext" aria-hidden="true">/ ↗</span></a>
+        <a [href]="'mailto:' + email">Email</a>
+      </nav>
+
+      <nav class="ft-col" [attr.aria-label]="'ft_legal' | transloco">
+        <span class="ft-k mono">// {{ 'ft_legal' | transloco }}</span>
+        <a routerLink="/politicas" fragment="privacidad">{{ 'ft_privacy' | transloco }}</a>
+        <a routerLink="/politicas" fragment="almacenamiento">{{ 'ft_storage' | transloco }}</a>
+        <a routerLink="/politicas" fragment="propiedad">{{ 'ft_ip' | transloco }}</a>
+      </nav>
+    </div>
+  }
+
+  <div class="ft-bar">
+    <span class="mono">© {{ year }} CAMILO AYALA — BOGOTÁ, CO · {{ 'ft_rights' | transloco }}</span>
+    <span class="mono">LAT 4.71 · LON -74.07</span>
+    <span class="mono">DEPLOY: VERCEL · ANGULAR STANDALONE</span>
+    @if (!isAdminScreen()) {
+      <button type="button" class="ft-top-btn mono" (click)="backToTop()">{{ 'ft_top' | transloco }} <span aria-hidden="true">↑</span></button>
+    }
+  </div>
 </footer>

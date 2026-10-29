@@ -8,10 +8,10 @@ import { ScrambleDirective } from '../../shared/directives/scramble.directive';
 import { Gallery3dComponent } from '../../shared/gallery-3d/gallery-3d.component';
 
 /**
- * Case study chapters composed in the admin: text, image, before/after, quote, code and 3D model,
- * in the admin's order. Each type has its own entrance (line reveal, clip, scramble, typed lines);
- * images also drift with the scroll where the browser supports scroll-driven animations. Missing
- * English falls back to Spanish. The 3D viewer only loads when its chapter scrolls near.
+ * Capítulos del caso de estudio compuestos en el admin: texto, imagen, antes/después, cita, código y
+ * modelo 3D, en el orden del admin. Cada tipo tiene su entrada (líneas, recorte, descifrado, líneas que
+ * se escriben); las imágenes además se desplazan con el scroll si el navegador lo soporta. Si falta el
+ * inglés se usa el español. El visor 3D solo carga cuando su capítulo se acerca.
  */
 @Component({
   selector: 'app-project-chapters',
@@ -26,7 +26,7 @@ export class ProjectChaptersComponent {
 
   protected readonly total = computed(() => this.chapters().length);
 
-  /** Divider position (percent) of each before/after chapter, by index; centred again when the list changes. */
+  /** Posición del divisor (porcentaje) de cada capítulo antes/después, por índice; vuelve al centro si cambia la lista. */
   protected readonly split = linkedSignal<ProjectChapter[], Record<number, number>>({ source: this.chapters, computation: () => ({}) });
 
   protected loc(es: string, en: string): string {

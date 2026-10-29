@@ -12,7 +12,7 @@ interface NavGroup {
   links: Array<{ path: string; label: string; icon: string; badge?: 'inbox' }>;
 }
 
-/** Grouped by intent: one obvious place for each kind of task. */
+/** Agrupado por intención: un sitio claro para cada tipo de tarea. */
 const NAV_GROUPS: NavGroup[] = [
   { label: 'GENERAL', links: [{ path: 'dashboard', label: 'Dashboard', icon: 'grid' }] },
   {
@@ -61,22 +61,22 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   protected readonly navGroups = NAV_GROUPS;
 
-  /** The routed page, so closing or reloading the tab can warn about unsaved forms. */
+  /** La página enrutada, para que cerrar o recargar la pestaña avise si hay formularios sin guardar. */
   private activePage: Partial<HasUnsavedChanges> | null = null;
 
-  /** Pages with a lot to fill (project form) use more of the screen and an icon-only menu. */
+  /** Las páginas con mucho que rellenar (formulario de proyectos) usan más pantalla y un menú solo de iconos. */
   protected readonly wide = signal(false);
 
   onActivate(page: unknown): void {
     this.activePage = page as Partial<HasUnsavedChanges>;
     this.wide.set((page as { wideLayout?: boolean } | null)?.wideLayout === true);
-    // After routerLinkActive has marked the new link.
+    // Cuando routerLinkActive ya marcó el enlace nuevo.
     setTimeout(() => this.revealActiveLink());
   }
 
   private readonly nav = viewChild<ElementRef<HTMLElement>>('adminNav');
 
-  /** Mobile: the menu is a horizontal strip; scroll it so the current section is centered, not cut. */
+  /** Móvil: el menú es una franja horizontal; se desplaza para que la sección actual quede centrada y no cortada. */
   private revealActiveLink(): void {
     const nav = this.nav()?.nativeElement;
     const active = nav?.querySelector<HTMLElement>('a.on');

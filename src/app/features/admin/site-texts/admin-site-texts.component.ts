@@ -11,6 +11,7 @@ import { SITE_TEXT_GROUPS, SiteTextField, SiteTextGroup } from './site-texts.con
 import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { PdfUploadComponent } from '../../../shared/pdf-upload/pdf-upload.component';
+import { SaveShortcutDirective } from '../shared/save-shortcut.directive';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -19,7 +20,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 @Component({
   selector: 'app-admin-site-texts',
   standalone: true,
-  imports: [AdminPageHeaderComponent, ReactiveFormsModule, UpperCasePipe, FieldHintComponent, PdfUploadComponent],
+  imports: [AdminPageHeaderComponent, ReactiveFormsModule, UpperCasePipe, FieldHintComponent, PdfUploadComponent, SaveShortcutDirective],
   templateUrl: './admin-site-texts.component.html',
   styleUrl: './admin-site-texts.component.css',
 })
@@ -85,7 +86,7 @@ export class AdminSiteTextsComponent implements OnInit {
     return 'Contiene caracteres no permitidos.';
   }
 
-  /** Current i18n value shown as a reference for fields that are not prefilled. */
+  /** Valor i18n actual, mostrado como referencia en los campos que no se rellenan de antemano. */
   protected reference(field: SiteTextField): string {
     if (!field.referenceI18nKey) return '';
     const es = String(this.translations.es[field.referenceI18nKey] ?? '');
@@ -93,7 +94,7 @@ export class AdminSiteTextsComponent implements OnInit {
     return es === en ? es : `ES: ${es} · EN: ${en}`;
   }
 
-  /** Values set by a widget instead of an input (the PDF upload). */
+  /** Valores que pone un widget en vez de un input (la subida del PDF). */
   protected setValue(groupId: string, column: string, value: string): void {
     const control = this.forms[groupId].controls[column];
     control.setValue(value);
@@ -155,7 +156,7 @@ export class AdminSiteTextsComponent implements OnInit {
     }
   }
 
-  /** Prefill with what the public page shows today: Supabase, then i18n, then the static fallback. */
+  /** Se rellena con lo que muestra hoy la página pública: Supabase, luego i18n y luego el respaldo fijo. */
   private initialValue(field: SiteTextField, stored: string | undefined, lang: 'es' | 'en'): string {
     if (stored?.trim()) return stored;
     if (field.referenceI18nKey) return '';
@@ -183,7 +184,7 @@ export class AdminSiteTextsComponent implements OnInit {
     target?.scrollIntoView({ block: 'start' });
   }
 
-  /** "EDITAR" in Estructura de portada links here with `#hero`, `#manifesto`, `#contact`. */
+  /** "EDITAR" en Estructura de portada enlaza aquí con `#hero`, `#manifesto`, `#contact`. */
   private scrollToFragment(): void {
     const fragment = this.route.snapshot.fragment;
     if (fragment) queueMicrotask(() => this.scrollTo(fragment));

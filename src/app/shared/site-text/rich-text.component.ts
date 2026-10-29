@@ -9,12 +9,12 @@ export type RichBlock =
   | { kind: 'cards'; cards: { title: string; text: string }[] };
 
 /**
- * Long texts from the admin with structure instead of a wall of paragraphs:
- * - blank line between paragraphs; the first one can be a larger lead;
- * - lines starting with "- " become a checklist;
- * - paragraphs starting with a bold title ("**Reactividad:** Angular Signals...") become feature
- *   cards, consecutive ones grouped in a grid;
- * - inside any text, **bold** and `code` (InlineMarkupPipe).
+ * Textos largos del admin con estructura en vez de un muro de párrafos:
+ * - línea en blanco entre párrafos; el primero puede ser una entradilla más grande;
+ * - las líneas que empiezan con "- " se vuelven una lista de verificación;
+ * - los párrafos que empiezan con un título en negrita ("**Reactividad:** Angular Signals...") se vuelven
+ *   tarjetas, agrupadas en rejilla si van seguidas;
+ * - dentro de cualquier texto, **negrita** y `código` (InlineMarkupPipe).
  */
 export function parseRichText(source: string): RichBlock[] {
   const blocks: RichBlock[] = [];
@@ -87,7 +87,7 @@ export function parseRichText(source: string): RichBlock[] {
 })
 export class RichTextComponent {
   readonly text = input('');
-  /** The first paragraph larger (entry of a section). */
+  /** El primer párrafo más grande (entrada de una sección). */
   readonly lead = input(false, { transform: booleanAttribute });
   protected readonly blocks = computed(() => parseRichText(this.text()));
 }

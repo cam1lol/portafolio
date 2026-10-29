@@ -5,8 +5,8 @@ import { SiteTextPipe } from '../site-text/site-text.pipe';
 import { MagneticDirective } from '../directives/magnetic.directive';
 
 /**
- * "Download CV" button: opens the PDF of the active language (English falls back to Spanish),
- * uploaded in Textos del sitio > CV. Renders nothing until a PDF exists.
+ * Botón "Descargar CV": abre el PDF del idioma activo (el inglés recurre al español), subido en
+ * Textos del sitio > CV. No pinta nada hasta que exista un PDF.
  */
 @Component({
   selector: 'app-cv-button',
@@ -20,7 +20,7 @@ import { MagneticDirective } from '../directives/magnetic.directive';
       </a>
     }
   `,
-  // Same look as the hero's secondary button (button styles are scoped per component).
+  // Mismo aspecto que el botón secundario del hero (los estilos de botón van por componente).
   styles: `
     :host { display: contents; }
     .btn {

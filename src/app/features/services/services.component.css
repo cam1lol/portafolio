@@ -1,5 +1,5 @@
 .block {
-  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
+  padding-block: 96px; /* solo vertical: .wrap conserva el margen lateral */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -9,18 +9,38 @@
   gap: 14px;
 }
 
+/* Cada servicio como ficha técnica: número y plazo, texto, qué incluye, precio y cotizar. */
 .svc .s {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--line);
   padding: 26px;
   border-radius: var(--r);
   background: var(--graphite);
 }
 
+.svc .top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .svc .s .no {
-  font-family: "Space Mono", monospace;
   color: var(--ember);
   font-size: 12px;
 }
+
+.svc .eta {
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  color: var(--bone);
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.svc .eta .k { color: var(--steel); }
 
 .svc .s h3 {
   font-family: "Archivo";
@@ -34,11 +54,83 @@
   color: var(--bone-dim);
 }
 
-.svc .s .price {
+.svc .inc {
   margin-top: 18px;
-  font-family: "Space Mono", monospace;
-  font-size: 12px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+.svc .inc .k {
   color: var(--steel);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.svc .inc ul {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.svc .inc li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--bone-dim);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.svc .inc li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .6em;
+  width: 8px;
+  height: 1px;
+  background: var(--ember);
+}
+
+/* Pegado abajo para que las fichas se alineen sea cual sea su largo. */
+.svc .foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 22px;
+}
+
+.svc .price {
+  font-size: 11px;
+  color: var(--steel);
+}
+
+.svc .quote {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--ember);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--ember);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.svc .quote svg {
+  width: 14px;
+  height: 14px;
+}
+.svc .quote:hover {
+  background: var(--ember);
+  color: var(--ink);
+}
+.svc .quote:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
 }
 
 @media (max-width: 900px) {

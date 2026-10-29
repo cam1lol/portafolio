@@ -18,18 +18,18 @@
     </button>
   </div>
 
-  <!-- Wide screens with more than 3 projects: the cards run sideways while the section is pinned. -->
+  <!-- Pantallas anchas con más de 3 proyectos: las tarjetas pasan de lado mientras la sección queda fija. -->
   <div class="run" #run>
   <div class="run-pin" #pin>
   <div class="grid-cards" #track (focusin)="revealFocused($event)">
     @if (loading()) {
       @for (n of [1, 2, 3]; track n) { <div class="skel skel-card" aria-hidden="true"><i></i><i></i><i></i><i></i></div> }
     }
-    @for (p of filtered(); track p.id; let i = $index) {
-      <!-- Keyboard and TV remotes: focusable, opens with Enter or Space like a button. -->
+    @for (p of shown(); track p.id; let i = $index) {
+      <!-- Teclado y mandos de TV: enfocable, se abre con Enter o Espacio como un botón. -->
       <div class="card" appReveal appTilt [style.transition-delay.ms]="i * 60" (click)="openProject(p)"
         role="button" tabindex="0" [attr.aria-label]="p.name" [style.view-transition-name]="cardName(p.slug, 'card')" (keydown.enter)="openProject(p)" (keydown.space)="$event.preventDefault(); openProject(p)">
-        <!-- Every card has the media strip (same height): the clip, the image, or a generated cover until there is one. -->
+        <!-- Todas las tarjetas tienen la franja de medios (misma altura): el clip, la imagen o una portada generada mientras no haya. -->
         <div class="media" [style.view-transition-name]="cardName(p.slug, 'media')">
           @if (p.previewVideo) {
             <video appPreviewPlay [style.object-position]="p.mediaFocus" [src]="p.previewVideo" [attr.poster]="p.previewImage || null" [attr.preload]="p.previewImage ? 'none' : 'metadata'"
@@ -60,9 +60,19 @@
         </div>
       </div>
     }
+    <!-- Más de 7 proyectos: el carrusel termina aquí y el resto está en /proyectos. -->
+    @if (moreCount() > 0) {
+      <a class="card more-card" routerLink="/proyectos" appReveal>
+        <span class="more-n">+{{ moreCount() }}</span>
+        <span class="more-t mono">{{ (moreCount() === 1 ? 'wk_more_one' : 'wk_more') | transloco: { n: moreCount() } }}</span>
+        <span class="more-go mono">{{ 'wk_more_link' | transloco }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+      </a>
+    }
   </div>
   <div class="run-meta mono" aria-hidden="true">
-    <span class="run-count"><b #runNo>01</b> / {{ (filtered().length < 10 ? '0' : '') + filtered().length }}</span>
+    <span class="run-count"><b #runNo>01</b> / {{ (shown().length < 10 ? '0' : '') + shown().length }}</span>
     <span class="run-bar"><i #runBar></i></span>
   </div>
   </div>

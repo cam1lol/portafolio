@@ -3,32 +3,43 @@
   <div class="svc">
     @if (cards(); as cards) {
       @for (card of cards; track card.id; let i = $index) {
-        <div class="s reveal" appReveal appTilt>
-          <div class="no mono">{{ index(i) }}</div>
+        <article class="s reveal" appReveal appTilt>
+          <div class="top">
+            <span class="no mono">{{ index(i) }}</span>
+            @if (card.timeline) { <span class="eta mono"><span class="k">{{ 'sv_timeline' | transloco }}</span> {{ card.timeline }}</span> }
+          </div>
           <h3>{{ card.title }}</h3>
           <p>{{ card.description }}</p>
-          @if (card.price) { <div class="price">{{ card.price }}</div> }
-        </div>
+          @if (card.includes.length) {
+            <div class="inc">
+              <span class="k mono">// {{ 'sv_includes' | transloco }}</span>
+              <ul>
+                @for (item of card.includes; track $index) { <li>{{ item }}</li> }
+              </ul>
+            </div>
+          }
+          <ng-container *ngTemplateOutlet="foot; context: { price: card.price, title: card.title }" />
+        </article>
       }
     } @else {
-      <div class="s reveal" appReveal>
-        <div class="no mono">S/01</div>
-        <h3>{{ 'sv1h' | transloco }}</h3>
-        <p>{{ 'sv1p' | transloco }}</p>
-        <div class="price">{{ 'sv1pr' | transloco }}</div>
-      </div>
-      <div class="s reveal" appReveal>
-        <div class="no mono">S/02</div>
-        <h3>{{ 'sv2h' | transloco }}</h3>
-        <p>{{ 'sv2p' | transloco }}</p>
-        <div class="price">{{ 'sv2pr' | transloco }}</div>
-      </div>
-      <div class="s reveal" appReveal>
-        <div class="no mono">S/03</div>
-        <h3>{{ 'sv3h' | transloco }}</h3>
-        <p>{{ 'sv3p' | transloco }}</p>
-        <div class="price">{{ 'sv3pr' | transloco }}</div>
-      </div>
+      @for (n of [1, 2, 3]; track n) {
+        <article class="s reveal" appReveal>
+          <div class="top"><span class="no mono">S/0{{ n }}</span></div>
+          <h3>{{ 'sv' + n + 'h' | transloco }}</h3>
+          <p>{{ 'sv' + n + 'p' | transloco }}</p>
+          <ng-container *ngTemplateOutlet="foot; context: { price: ('sv' + n + 'pr' | transloco), title: ('sv' + n + 'h' | transloco) }" />
+        </article>
+      }
     }
   </div>
 </section>
+
+<ng-template #foot let-price="price" let-title="title">
+  <div class="foot">
+    @if (price) { <span class="price mono">{{ price }}</span> }
+    <button type="button" class="quote mono" (click)="quote(title, $event)" [attr.aria-label]="('sv_quote' | transloco) + ': ' + title">
+      {{ 'sv_quote' | transloco }}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+    </button>
+  </div>
+</ng-template>

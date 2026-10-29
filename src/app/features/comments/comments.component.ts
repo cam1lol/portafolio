@@ -13,9 +13,9 @@ const COOLDOWN_MS = 60_000;
 const COOLDOWN_KEY = 'comments:last-sent';
 
 /**
- * Public guestbook: approved comments plus a form that always lands pending moderation
- * (enforced by RLS in migration 0002). Spam guards here are client-side only: a hidden
- * honeypot field and a per-browser cooldown; length limits are enforced by the database.
+ * Libro de visitas: comentarios aprobados y un formulario cuyos envíos siempre quedan pendientes de
+ * moderar (lo asegura RLS, migración 0002). Las protecciones contra spam de aquí son solo del cliente:
+ * un campo trampa oculto y una espera por navegador; los límites de longitud los pone la base de datos.
  */
 @Component({
   selector: 'app-comments',
@@ -40,7 +40,7 @@ export class CommentsComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(2000), noControlCharsValidator({ allowNewlines: true })],
     }),
-    /** Honeypot: hidden from people, often filled by bots. */
+    /** Trampa: oculta para las personas, los bots suelen rellenarla. */
     website: new FormControl('', { nonNullable: true }),
   });
 
@@ -59,7 +59,7 @@ export class CommentsComponent implements OnInit {
 
     const { author, body, website } = this.form.getRawValue();
     if (website) {
-      // Pretend success so bots do not learn the field is a trap.
+      // Simula éxito para que los bots no aprendan que el campo es una trampa.
       this.state.set('sent');
       this.form.reset();
       return;
@@ -95,7 +95,7 @@ export class CommentsComponent implements OnInit {
     try {
       localStorage.setItem(COOLDOWN_KEY, String(Date.now()));
     } catch {
-      // Storage unavailable (private mode): the database limits still apply.
+      // Almacenamiento no disponible (modo privado): los límites de la base de datos siguen aplicando.
     }
   }
 }

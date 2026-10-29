@@ -3,13 +3,13 @@ import { TranslocoService } from '@jsverse/transloco';
 import { SiteContentService } from '../../core/data/site-content.service';
 
 /**
- * `'hero_l1' | siteText` resolves a public text in this order:
- * 1. `site_content` row for the active language (admin-editable),
- * 2. the i18n key of the same name,
- * 3. the optional `fallback` argument (for keys that never existed in i18n).
+ * `'hero_l1' | siteText` resuelve un texto público en este orden:
+ * 1. la fila de `site_content` del idioma activo (editable en el admin),
+ * 2. la clave i18n del mismo nombre,
+ * 3. el argumento opcional `fallback` (para claves que nunca existieron en i18n).
  *
- * Impure on purpose, like `TranslocoPipe`: it must re-run when the language,
- * the i18n JSON or the Supabase content finish loading.
+ * Impuro a propósito, como `TranslocoPipe`: debe volver a ejecutarse cuando terminan de cargar el
+ * idioma, el JSON de i18n o el contenido de Supabase.
  */
 @Pipe({ name: 'siteText', standalone: true, pure: false })
 export class SiteTextPipe implements PipeTransform {
@@ -26,9 +26,9 @@ export class SiteTextPipe implements PipeTransform {
     const value = row ? (lang === 'en' ? row.en : row.es) : '';
     if (value.trim()) return value;
 
-    // Read the loaded dictionary directly: translate() on a key that only lives in Supabase
-    // (contact_email, hero_m1_value...) triggers Transloco's missing-key warning, and this
-    // impure pipe runs on every change detection, flooding the console.
+    // Lee el diccionario cargado directamente: translate() con una clave que solo vive en Supabase
+    // (contact_email, hero_m1_value...) dispara el aviso de clave ausente de Transloco, y este pipe impuro
+    // corre en cada detección de cambios, llenando la consola.
     const translated = this.transloco.getTranslation(lang)[key];
     return typeof translated === 'string' && translated ? translated : fallback;
   }

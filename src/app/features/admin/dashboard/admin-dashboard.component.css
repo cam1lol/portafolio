@@ -42,10 +42,14 @@
   }
 }
 
+/* Móvil: dos cifras por fila y tarjetas más compactas, en vez de una tarjeta enorme por cifra. */
 @media (max-width: 540px) {
-  .stats {
-    grid-template-columns: 1fr;
-  }
+  .stats { gap: 10px; margin-bottom: 24px; }
+  .stat { padding: 14px; }
+  .stat .v { font-size: 28px; }
+}
+@media (max-width: 300px) {
+  .stats { grid-template-columns: 1fr; }
 }
 
 .lang-panel {
@@ -92,7 +96,7 @@ app-visits-chart { display: block; margin-bottom: 20px; }
 .empty { margin: 4px 0 10px; color: var(--steel); font-size: 12px; }
 @media (max-width: 900px) { .activity { grid-template-columns: minmax(0, 1fr); } }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .more { display: inline-flex; align-items: center; min-height: 40px; }
 }

@@ -27,7 +27,7 @@ import { ToastService } from './toast.service';
       box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .6); animation: toast-in .2s ease-out;
       position: relative; overflow: hidden;
     }
-    /* HUD corners and a line that runs out while the toast stays (3.5 s, see ToastService). */
+    /* Esquinas HUD y una línea que se agota mientras el aviso sigue visible (3.5 s, ver ToastService). */
     .tick { position: absolute; width: 7px; height: 7px; border: 1px solid var(--steel); }
     .tl { top: 3px; left: 3px; border-right: 0; border-bottom: 0; }
     .br { right: 3px; bottom: 3px; border-left: 0; border-top: 0; }

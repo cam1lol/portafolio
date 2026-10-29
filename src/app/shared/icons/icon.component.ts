@@ -5,7 +5,7 @@ import { ICON_PATHS } from './icon-paths';
 @Component({
   selector: 'app-icon',
   standalone: true,
-  // [data-anim]: perpetual micro-motion per icon (styles.css, "Icon motion"); public cards only.
+  // [data-anim]: micromovimiento continuo propio de cada icono (styles.css, "Icon motion"); solo en las tarjetas públicas.
   host: { '[attr.data-anim]': 'animated ? name : null' },
   template: `<svg
     viewBox="0 0 24 24"
@@ -22,7 +22,7 @@ export class IconComponent {
 
   private readonly nameSignal = signal<string>('');
 
-  /** Slow, icon-specific loop (spinning cube, drawing pulse, blinking cursor...). */
+  /** Bucle lento propio de cada icono (cubo que gira, pulso que se dibuja, cursor que parpadea...). */
   @Input({ transform: booleanAttribute }) animated = false;
 
   @Input({ required: true })

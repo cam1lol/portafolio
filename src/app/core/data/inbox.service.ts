@@ -42,15 +42,15 @@ const PREVIEW_LENGTH = 140;
 const THREAD_COLUMNS = 'id, name, email, topic, lang, status, created_at, last_message_at';
 
 /**
- * Admin side of the contact inbox (v2). Messages arrive by email through Web3Forms and are
- * kept here as a backup; Camilo answers from Gmail and tracks the status in the panel.
+ * Parte del admin de la bandeja de contacto. Los mensajes llegan por correo con Web3Forms y aquí se
+ * guarda una copia; Camilo responde desde Gmail y lleva el estado en el panel.
  */
 @Injectable({ providedIn: 'root' })
 export class InboxService {
   private readonly supabase = inject(SupabaseService);
   private unreadChannel: RealtimeChannel | null = null;
 
-  /** Conversations in `new`, shown as a badge in the admin menu. */
+  /** Conversaciones en `new`, mostradas como contador en el menú del admin. */
   readonly unreadCount = signal(0);
 
   listThreads(status: InboxStatus | 'all'): Observable<InboxThread[]> {
@@ -91,7 +91,7 @@ export class InboxService {
     );
   }
 
-  /** Opening a new conversation marks it read; any other status is left alone. */
+  /** Abrir una conversación nueva la marca como leída; los demás estados no se tocan. */
   markRead(thread: InboxThread): Observable<void> {
     if (thread.status !== 'new') return of(undefined);
     return this.write(
@@ -113,7 +113,7 @@ export class InboxService {
     return this.write(this.supabase.client.from('contact_threads').delete().eq('id', id)).pipe(tap(() => this.refreshUnread()));
   }
 
-  /** `mailto:` that opens Camilo's mail client with the subject and the visitor's message quoted. */
+  /** `mailto:` que abre el correo de Camilo con el asunto y el mensaje del visitante citado. */
   replyMailto(thread: InboxThread, message: string): string {
     const quoted = message
       .split('\n')
@@ -123,11 +123,11 @@ export class InboxService {
       subject: `Re: ${TOPIC_LABELS[thread.topic]} · Camilo Ayala`,
       body: `Hola ${thread.name},\n\n\n\n--\nCamilo Ayala\n\n${quoted}`,
     });
-    // URLSearchParams encodes spaces as "+", which mail clients show literally.
+    // URLSearchParams codifica los espacios como "+", y los clientes de correo los muestran tal cual.
     return `mailto:${thread.email}?${params.toString().replace(/\+/g, '%20')}`;
   }
 
-  /** Called by the admin layout: loads the badge and keeps it current. */
+  /** Lo llama el layout del admin: carga el contador y lo mantiene al día. */
   startUnreadWatch(): void {
     this.refreshUnread();
     if (this.unreadChannel) return;

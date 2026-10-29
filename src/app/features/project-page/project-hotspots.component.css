@@ -27,7 +27,6 @@
 .legend li { display: flex; gap: 10px; }
 .legend span { flex: none; color: var(--ember); font-size: 11px; padding-top: 3px; }
 
-:host-context(html.fx-lite) .dot::before { animation: none; opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .dot::before { animation: none; opacity: 0; }
   .lbl { transition: none; }

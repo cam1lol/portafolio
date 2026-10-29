@@ -12,7 +12,7 @@ interface ClientLogo {
   url: string;
 }
 
-/** "Trusted by" strip of client logos (admin > Clientes, migration 0012). Renders nothing when empty. */
+/** Franja "Confían en mí" con logos de clientes (admin > Clientes, migración 0012). No pinta nada si está vacía. */
 @Component({
   selector: 'app-clients',
   standalone: true,

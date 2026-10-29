@@ -4,13 +4,23 @@ import { environment } from '../../../environments/environment';
 
 export type ContactTopic = 'project' | 'job' | 'other';
 
+/** Evento de ventana que abre el formulario de contacto desde cualquier sitio, p. ej. "Cotizar esto" en un servicio. */
+export const OPEN_CONTACT_EVENT = 'portfolio:open-contact';
+
+export interface OpenContactDetail {
+  /** Servicio del que se pide presupuesto: fija el tema y empieza el mensaje. */
+  service?: string;
+  /** Recupera el foco al cerrar el formulario (por defecto, el botón de contacto). */
+  returnFocusTo?: HTMLElement | null;
+}
+
 export interface ContactSubmitInput {
   name: string;
   email: string;
   topic: ContactTopic;
   message: string;
   lang: 'es' | 'en';
-  /** Honeypot: always empty for people. */
+  /** Trampa para bots: siempre vacío para las personas. */
   website: string;
 }
 
@@ -19,15 +29,15 @@ export type ContactSubmitResult = 'received' | 'rate_limited' | 'error';
 const TOPIC_SUBJECT: Record<ContactTopic, string> = { project: 'Proyecto', job: 'Oferta de trabajo', other: 'Consulta' };
 
 /**
- * Public side of the contact inbox. The message is stored in Supabase (backup, rate limit)
- * and emailed to Camilo through Web3Forms; success needs at least one of the two.
+ * Parte pública de la bandeja de contacto. El mensaje se guarda en Supabase (copia y límite de
+ * envíos) y llega por correo a través de Web3Forms; basta con que funcione uno de los dos.
  */
 @Injectable({ providedIn: 'root' })
 export class ContactService {
   private readonly supabase = inject(SupabaseService);
 
   async submit(input: ContactSubmitInput): Promise<ContactSubmitResult> {
-    // Bots get the same answer as people, so the trap stays invisible.
+    // Los bots reciben la misma respuesta que las personas, así la trampa no se nota.
     if (input.website) return 'received';
 
     const stored = await this.store(input);

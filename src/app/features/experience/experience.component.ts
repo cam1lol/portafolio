@@ -27,7 +27,7 @@ export class ExperienceComponent implements AfterViewInit, OnDestroy {
 
   private readonly experienceService = inject(ExperienceService);
 
-  /** undefined while loading (skeleton entries), then the list. */
+  /** undefined mientras carga (entradas de esqueleto), luego la lista. */
   private readonly loadedExperience = toSignal(this.experienceService.getPublished());
   protected readonly loading = computed(() => this.loadedExperience() === undefined);
   protected readonly EXPERIENCE = computed<Experience[]>(() => this.loadedExperience() ?? []);
@@ -46,10 +46,10 @@ export class ExperienceComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    // The line fills as the timeline crosses the middle of the screen, and each node lights up
-    // (with a pulse) once the line reaches it. One CSS variable and a class toggle per frame, only
-    // while the timeline is near the screen (an IntersectionObserver gates the work), and reading
-    // every position before writing anything.
+    // La línea se llena mientras la línea de tiempo cruza el centro de la pantalla, y cada punto se
+    // enciende (con un pulso) cuando la línea lo alcanza. Una variable CSS y un cambio de clase por
+    // fotograma, solo mientras la línea de tiempo está cerca de la pantalla (lo regula un
+    // IntersectionObserver), leyendo todas las posiciones antes de escribir nada.
     let scheduled = false;
     let near = true;
     let last = '';

@@ -1,4 +1,4 @@
-/* Shared field, button and step styles live in ../shared/admin-form.css. */
+/* Los estilos comunes de campos, botones y pasos están en ../shared/admin-form.css. */
 
 .form-heading {
   display: flex;
@@ -36,6 +36,6 @@ form { display: grid; gap: 18px; }
   .form-heading { flex-direction: column; align-items: flex-start; }
   .field-row.bilingual { grid-template-columns: minmax(0, 1fr); }
 }
-/* A field followed by its hint keeps the hint close; when stacked, only the last one does. */
+/* Un campo seguido de su ayuda la mantiene cerca; al apilarse, solo el último lo hace. */
 .field-row:has(+ .hint) .field:last-child { margin-bottom: 8px; }
 @media (min-width: 641px) { .field-row:has(+ .hint) .field { margin-bottom: 8px; } }

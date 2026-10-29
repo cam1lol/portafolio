@@ -3,24 +3,24 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProjectTransitionService } from '../../core/transitions/project-transition.service';
 
-/** Touches must start this close to the left edge (px), like the native back gesture. */
+/** El toque tiene que empezar así de cerca del borde izquierdo (px), como el gesto nativo de volver. */
 const EDGE = 24;
-/** Movement before deciding between a horizontal swipe and a vertical scroll. */
+/** Movimiento necesario antes de decidir entre deslizar en horizontal o hacer scroll vertical. */
 const DECIDE = 10;
-/** Release past this share of the width, or faster than this speed (px/ms), goes back. */
+/** Soltar pasada esta fracción del ancho, o más rápido que esta velocidad (px/ms), vuelve atrás. */
 const DISTANCE_RATIO = 1 / 3;
 const SPEED = 0.5;
 
 /**
- * Touch screens: swiping from the left edge drags the page with the finger; releasing far or fast
- * enough goes back (to the previous screen in the app, or `fallback` when the page was opened
- * directly). Vertical scrolling is never blocked: the gesture only engages on a horizontal move.
+ * Pantallas táctiles: deslizar desde el borde izquierdo arrastra la página con el dedo; soltar lejos o
+ * rápido vuelve atrás (a la pantalla anterior de la app, o a `fallback` si la página se abrió
+ * directamente). Nunca bloquea el scroll vertical: el gesto solo se activa con un movimiento horizontal.
  */
 @Directive({ selector: '[appSwipeBack]', standalone: true })
 export class SwipeBackDirective implements OnDestroy {
-  /** Where to go when there is no previous screen in the app (page opened from a shared link). */
+  /** Adónde ir si no hay pantalla anterior en la app (página abierta desde un enlace compartido). */
   readonly fallback = input('/', { alias: 'appSwipeBack' });
-  /** Shown at the left edge while dragging, e.g. "All projects". */
+  /** Se ve en el borde izquierdo mientras se arrastra, p. ej. "Todos los proyectos". */
   readonly label = input('', { alias: 'swipeBackLabel' });
 
   private readonly el = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
@@ -33,9 +33,9 @@ export class SwipeBackDirective implements OnDestroy {
   private startY = 0;
   private startTime = 0;
   private dx = 0;
-  /** null: touch started away from the edge; 'pending': undecided; then swipe or scroll. */
+  /** null: el toque empezó lejos del borde; 'pending': sin decidir; luego swipe o scroll. */
   private mode: null | 'pending' | 'swipe' | 'scroll' = null;
-  /** Dark layer behind the page with the back label; it lightens as the finger moves (iOS-like). */
+  /** Capa oscura detrás de la página con la etiqueta de volver; se aclara al mover el dedo (como en iOS). */
   private backdrop: HTMLElement | null = null;
 
   private readonly onStart = (event: TouchEvent) => {
@@ -65,7 +65,7 @@ export class SwipeBackDirective implements OnDestroy {
       this.el.style.boxShadow = '-16px 0 40px rgba(0, 0, 0, .45)';
       this.showBackdrop();
     }
-    event.preventDefault(); // the page follows the finger instead of scrolling
+    event.preventDefault(); // la página sigue al dedo en vez de hacer scroll
     this.dx = Math.max(0, dx);
     this.el.style.transform = `translateX(${this.dx}px)`;
     this.updateBackdrop(this.dx / (this.el.getBoundingClientRect().width || window.innerWidth));
@@ -94,8 +94,8 @@ export class SwipeBackDirective implements OnDestroy {
   };
 
   constructor() {
-    // Listeners outside Angular (no change detection per touchmove); touchmove is not passive so
-    // the swipe can stop the page from scrolling once it is clearly horizontal.
+    // Listeners fuera de Angular (sin detección de cambios en cada touchmove); touchmove no es pasivo para
+    // que el gesto pueda frenar el scroll cuando ya es claramente horizontal.
     this.zone.runOutsideAngular(() => {
       this.el.addEventListener('touchstart', this.onStart, { passive: true });
       this.el.addEventListener('touchmove', this.onMove, { passive: false });
@@ -105,7 +105,7 @@ export class SwipeBackDirective implements OnDestroy {
   }
 
   private navigateBack(): void {
-    // The page already slid away with the finger: no second animation.
+    // La página ya se fue con el dedo: sin segunda animación.
     this.vt.skipNextTransition();
     const cameFromApp = !!this.router.lastSuccessfulNavigation?.previousNavigation;
     if (cameFromApp) this.location.back();
@@ -113,7 +113,7 @@ export class SwipeBackDirective implements OnDestroy {
   }
 
   private showBackdrop(): void {
-    // The page needs a solid background while it slides, so the layer shows only on the uncovered side.
+    // La página necesita fondo sólido al deslizar, así la capa solo se ve en el lado descubierto.
     this.el.style.position = 'relative';
     this.el.style.zIndex = '2';
     this.el.style.background = 'var(--ink)';
@@ -130,7 +130,7 @@ export class SwipeBackDirective implements OnDestroy {
     this.backdrop = layer;
   }
 
-  /** progress 0 (page in place) to 1 (page gone): the layer lightens, the label slides in. */
+  /** progreso 0 (página en su sitio) a 1 (página fuera): la capa se aclara y la etiqueta entra. */
   private updateBackdrop(progress: number): void {
     if (!this.backdrop) return;
     const p = Math.min(1, Math.max(0, progress));

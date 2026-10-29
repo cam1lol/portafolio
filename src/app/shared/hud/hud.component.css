@@ -3,7 +3,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  /* Stays put during page transitions; set here (not on the host) so z-index keeps it above the page. */
+  /* Se queda fijo durante las transiciones de página; va aquí (no en el host) para que z-index lo mantenga sobre la página. */
   view-transition-name: site-hud;
 }
 
@@ -69,7 +69,7 @@
   .index { display: none; }
 }
 
-/* Easter egg label (Konami code or typing "ritual"). */
+/* Rótulo del easter egg (código Konami o escribir "ritual"). */
 .ritual {
   position: absolute;
   top: 50%;

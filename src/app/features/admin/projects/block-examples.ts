@@ -2,8 +2,8 @@ import { Project } from '../../../core/data/project.model';
 import { ChapterType, ProjectChapter, emptyChapter } from '../../../core/data/project-details';
 
 /**
- * Example content for the admin's "¿Cómo se ve?": only used when a section is still empty, always
- * shown with an EJEMPLO tag, never saved. Generic texts that explain the block, no invented facts.
+ * Contenido de ejemplo para el "¿Cómo se ve?" del admin: solo se usa si la sección está vacía, siempre
+ * con la marca EJEMPLO y nunca se guarda. Textos genéricos que explican el bloque, sin datos inventados.
  */
 const IMAGE = '/og.png';
 
@@ -25,11 +25,11 @@ export function exampleChapter(type: ChapterType): ProjectChapter {
   }
 }
 
-/** Sections that can show an example, with what fills them when they are empty. */
+/** Secciones que pueden mostrar un ejemplo, con lo que las rellena cuando están vacías. */
 export const EXAMPLE_SECTIONS = ['s-story', 's-results', 's-chapters', 's-videos', 's-screens', 's-gallery', 's-extras'] as const;
 export type ExampleSection = (typeof EXAMPLE_SECTIONS)[number];
 
-/** Whether the project already has its own content for the section. */
+/** Si el proyecto ya tiene contenido propio para la sección. */
 export function hasSection(project: Project, section: ExampleSection): boolean {
   switch (section) {
     case 's-story': return Object.values(project.story).some((value) => value.trim());
@@ -42,7 +42,7 @@ export function hasSection(project: Project, section: ExampleSection): boolean {
   }
 }
 
-/** The project as-is if the section has content, else with example content for that section only. */
+/** El proyecto tal cual si la sección tiene contenido; si no, con contenido de ejemplo solo para esa sección. */
 export function withExample(project: Project, section: ExampleSection): { project: Project; isExample: boolean } {
   if (hasSection(project, section)) return { project, isExample: false };
   const p: Project = { ...project };

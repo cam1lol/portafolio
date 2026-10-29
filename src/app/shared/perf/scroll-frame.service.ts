@@ -1,25 +1,25 @@
 import { DestroyRef, Injectable, NgZone, inject } from '@angular/core';
 
-/** What every scroll-driven task receives once per frame. */
+/** Lo que recibe cada tarea de scroll una vez por fotograma. */
 export interface ScrollFrame {
-  /** Read in the scroll event (layout is clean there), so reading it never forces a layout. */
+  /** Se lee en el propio evento de scroll (ahí el layout está limpio), así que leerlo nunca fuerza un layout. */
   scrollY: number;
   viewportHeight: number;
   viewportWidth: number;
 }
 
 export interface ScrollTask<T> {
-  /** Measure phase: getBoundingClientRect, offsetHeight... No DOM writes here. */
+  /** Fase de medida: getBoundingClientRect, offsetHeight... Aquí no se escribe en el DOM. */
   read?: (frame: ScrollFrame) => T;
-  /** Write phase: runs after every task has measured, so writes never interleave with reads. */
+  /** Fase de escritura: corre cuando todas las tareas ya midieron, así lecturas y escrituras no se mezclan. */
   write: (measured: T, frame: ScrollFrame) => void;
 }
 
 /**
- * One shared scroll/resize listener for the whole app (outside Angular). On scroll it schedules a
- * single animation frame in which every registered task first measures and then writes, so N
- * components cost one layout per frame instead of N forced layouts. Writes should still compare
- * with the last value and skip unchanged ones (see AGENTS.md, 8.1).
+ * Un único listener de scroll/resize para toda la app (fuera de Angular). En cada scroll pide un solo
+ * fotograma en el que todas las tareas registradas primero miden y luego escriben: N componentes
+ * cuestan un layout por fotograma en vez de N layouts forzados. Cada escritura debe compararse con
+ * el último valor y saltarse si no cambió (AGENTS.md, 8.1).
  */
 @Injectable({ providedIn: 'root' })
 export class ScrollFrameService {
@@ -35,8 +35,8 @@ export class ScrollFrameService {
   };
 
   /**
-   * Registers a task; it runs once right away and then on every scroll/resize frame. Pass a
-   * DestroyRef to unregister automatically; the returned function also unregisters.
+   * Registra una tarea: se ejecuta una vez al momento y luego en cada fotograma de scroll/resize. Con un
+   * DestroyRef se da de baja sola; la función que devuelve también la da de baja.
    */
   register<T>(task: ScrollTask<T>, destroyRef?: DestroyRef): () => void {
     this.tasks.add(task as ScrollTask<unknown>);
@@ -50,7 +50,7 @@ export class ScrollFrameService {
     return off;
   }
 
-  /** Asks for a frame without scrolling (content changed, a section appeared...). */
+  /** Pide un fotograma sin que haya scroll (cambió el contenido, apareció una sección...). */
   request(): void {
     if (this.frameId || !this.tasks.size) return;
     this.frameId = this.zone.runOutsideAngular(() => requestAnimationFrame(() => this.run()));

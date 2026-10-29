@@ -154,7 +154,7 @@
   .state-label { display: none; }
 }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .drag-handle { min-width: 40px; min-height: 40px; }
   .link-action { display: inline-flex; align-items: center; min-height: 40px; }

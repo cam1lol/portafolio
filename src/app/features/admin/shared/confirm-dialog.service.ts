@@ -10,7 +10,7 @@ interface ConfirmState extends Required<ConfirmOptions> {
   resolve: (confirmed: boolean) => void;
 }
 
-/** Admin-only replacement for `window.confirm()`, rendered by `ConfirmDialogComponent` in the admin layout. */
+/** Sustituto de `window.confirm()` solo para el admin, lo pinta `ConfirmDialogComponent` en el layout del admin. */
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
   readonly state = signal<ConfirmState | null>(null);

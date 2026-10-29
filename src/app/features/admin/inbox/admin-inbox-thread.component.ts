@@ -27,7 +27,7 @@ export class AdminInboxThreadComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
 
-  /** Gmail opens with the subject and the visitor's message quoted. */
+  /** Gmail se abre con el asunto y el mensaje del visitante citado. */
   protected readonly mailto = computed(() => {
     const thread = this.thread();
     return thread ? this.inbox.replyMailto(thread, this.messages().map((message) => message.body).join('\n\n')) : '';
@@ -52,7 +52,7 @@ export class AdminInboxThreadComponent implements OnInit {
     });
   }
 
-  /** The mailto link opens the mail client; the conversation is marked replied at the same time. */
+  /** El enlace mailto abre el correo; a la vez la conversación se marca como respondida. */
   onReply(): void {
     const thread = this.thread();
     if (!thread || thread.status === 'replied') return;

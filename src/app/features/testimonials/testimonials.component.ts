@@ -15,7 +15,7 @@ interface Testimonial {
   initials: string;
 }
 
-/** Quotes from clients and colleagues (admin > Testimonios, migration 0012). Renders nothing when empty. */
+/** Citas de clientes y colegas (admin > Testimonios, migración 0012). No pinta nada si está vacío. */
 @Component({
   selector: 'app-testimonials',
   standalone: true,

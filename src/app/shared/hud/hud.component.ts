@@ -5,9 +5,9 @@ import { filter, map, startWith } from 'rxjs';
 import { RITUAL_EVENT } from '../../core/background/ring-layer.component';
 
 /**
- * Fixed HUD layer: corner ticks, a scroll progress line under the header and, on the home page,
- * the index of the section in view ("03 / 09 · EXPERIENCIA"). The index is read from the page
- * (`main section[id]` and its heading), so it follows hidden or reordered sections.
+ * Capa HUD fija: marcas de esquina, una línea de progreso de scroll bajo la cabecera y, en la portada,
+ * el índice de la sección visible ("03 / 09 · EXPERIENCIA"). El índice se lee de la página
+ * (`main section[id]` y su titular), así sigue a las secciones ocultas o reordenadas.
  */
 @Component({
   selector: 'app-hud',
@@ -32,16 +32,16 @@ export class HudComponent implements AfterViewInit {
   );
   protected readonly isAdmin = computed(() => this.url().startsWith('/admin'));
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
-  /** Easter egg label, shown while the rings run their ritual. */
+  /** Rótulo del easter egg, visible mientras los anillos hacen su ritual. */
   protected readonly ritual = signal(false);
 
   ngAfterViewInit(): void {
     const bar = this.progress().nativeElement;
     const index = this.index().nativeElement;
     let scheduled = false;
-    // The section list is re-read on navigation, resize and every 2 s (late content), not on every
-    // scroll frame. A frame only reads positions first and then writes, and writes only what changed,
-    // so it never forces an extra layout or re-shapes the label text while scrolling.
+    // La lista de secciones se relee al navegar, al cambiar el tamaño y cada 2 s (contenido tardío), no en
+    // cada fotograma de scroll. Cada fotograma primero lee posiciones y luego escribe solo lo que cambió,
+    // así nunca fuerza un layout extra ni rehace el texto del rótulo durante el scroll.
     let sections: HTMLElement[] = [];
     let stale = true;
     let lastScale = '';
@@ -54,7 +54,7 @@ export class HudComponent implements AfterViewInit {
         stale = false;
         lastIndex = -2;
       }
-      // Reads.
+      // Lecturas.
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const scale = max > 0 ? Math.min(1, window.scrollY / max).toFixed(4) : '0';
       const line = window.innerHeight * 0.4;
@@ -63,7 +63,7 @@ export class HudComponent implements AfterViewInit {
         if (sections[i].getBoundingClientRect().top <= line) current = i;
         else break;
       }
-      // Writes.
+      // Escrituras.
       if (scale !== lastScale) {
         lastScale = scale;
         bar.style.transform = `scaleX(${scale})`;
@@ -92,7 +92,7 @@ export class HudComponent implements AfterViewInit {
     this.zone.runOutsideAngular(() => {
       window.addEventListener('scroll', schedule, { passive: true });
       window.addEventListener('resize', refresh, { passive: true });
-      // New page or late content (data, deferred sections): recompute.
+      // Página nueva o contenido tardío (datos, secciones diferidas): recalcular.
       const sub = this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => setTimeout(refresh, 50));
       const interval = setInterval(refresh, 2000);
       let ritualTimer: ReturnType<typeof setTimeout> | undefined;

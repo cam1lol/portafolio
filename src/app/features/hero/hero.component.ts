@@ -21,10 +21,10 @@ export class HeroComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
 
   /**
-   * Scroll parallax: --hp goes 0 -> 1 while the hero scrolls away; the CSS splits the title lines
-   * apart, fades the text and sends the 3D object back. Only touches one CSS variable per frame,
-   * and only when it changes (nothing once the hero is out of view). The height is measured on
-   * resize and the scroll position in the scroll event, so a frame never forces a layout.
+   * Parallax de scroll: --hp va de 0 a 1 mientras el hero sale de pantalla; el CSS separa las líneas del
+   * título, desvanece el texto y aleja el objeto 3D. Solo toca una variable CSS por fotograma y solo si
+   * cambia (nada cuando el hero ya no se ve). La altura se mide al redimensionar y la posición en el
+   * evento de scroll, así ningún fotograma fuerza un layout.
    */
   ngAfterViewInit(): void {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -60,7 +60,7 @@ export class HeroComponent implements AfterViewInit {
     });
   }
 
-  /** Hero stats are stored as text in `site_content`; non-numeric input shows 0. */
+  /** Las cifras del hero se guardan como texto en `site_content`; lo que no sea numérico muestra 0. */
   protected toCount(value: string): number {
     const parsed = Number.parseInt(value, 10);
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;

@@ -4,9 +4,10 @@ import { RevealObserverService } from './reveal-observer.service';
 const DURATION = 1300;
 
 /**
- * Scan reveal (A9): the first time the image scrolls into view a cover lifts while an accent line
- * sweeps down over it. Styles in styles.css (.scan-reveal). Transform and opacity only; skipped
- * with reduced motion and in fx-lite, where the image simply shows.
+ * Revelado tipo escáner (A9): la primera vez que la imagen entra en pantalla, una tapa se levanta
+ * mientras una línea de acento la barre hacia abajo. Estilos en styles.css (.scan-reveal). Solo
+ * transform y opacity (barato, así que también corre en fx-lite); se salta con movimiento reducido, donde la
+ * imagen aparece sin más.
  */
 @Directive({
   selector: '[appScanReveal]',
@@ -20,8 +21,7 @@ export class ScanRevealDirective implements OnInit, OnDestroy {
   private timer = 0;
 
   ngOnInit(): void {
-    const lite = document.documentElement.classList.contains('fx-lite');
-    if (lite || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.host.classList.add('scan-done');
       return;
     }

@@ -4,7 +4,7 @@
 .sub { color: var(--steel); font-size: 12px; }
 .error-msg { padding: 10px 12px; margin: 0 0 14px; font-size: 12px; color: var(--ember); background: var(--ember-soft); border-left: 2px solid var(--ember); }
 
-/* Sticky so the groups stay one click away on this long page. */
+/* Fijo para que los grupos queden a un clic en esta página larga. */
 .group-index {
   position: sticky;
   top: var(--site-header-h);
@@ -131,10 +131,10 @@
 .view-site { float: right; margin-left: 12px; text-decoration: none; gap: 8px; }
 .view-site svg { width: 14px; height: 14px; }
 .state.dirty { color: var(--ember); }
-/* Jump targets clear the sticky group index. */
+/* Los destinos de salto quedan por debajo del índice fijo de grupos. */
 .group-card { scroll-margin-top: calc(var(--site-header-h) + 72px); }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .group-index button { min-height: 40px; }
 }

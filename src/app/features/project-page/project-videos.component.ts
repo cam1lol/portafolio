@@ -2,14 +2,14 @@ import { Component, ElementRef, computed, input, signal, viewChild } from '@angu
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ProjectVideo } from '../../core/data/project-details';
 
-/** Delay before a hover starts the preview, so sweeping the mouse across the grid loads nothing. */
+/** Retraso antes de que el hover arranque la vista previa, para que pasar el ratón por la cuadrícula no cargue nada. */
 const HOVER_INTENT_MS = 220;
 
 /**
- * Videos of a project: a grid of cards (poster, duration, title, description) that preview on
- * hover, and a modal player with previous/next. Nothing heavy is downloaded up front: cards show
- * the poster (or only the first frame's metadata), the hover preview mounts a <video> only while
- * hovered, and the player asks for metadata until it plays.
+ * Videos de un proyecto: una cuadrícula de tarjetas (póster, duración, título, descripción) con vista previa
+ * al pasar el ratón, y un reproductor en modal con anterior/siguiente. No se descarga nada pesado de
+ * entrada: las tarjetas muestran el póster (o solo los metadatos del primer fotograma), la vista previa
+ * monta un <video> solo mientras hay hover y el reproductor pide metadatos hasta que se reproduce.
  */
 @Component({
   selector: 'app-project-videos',
@@ -28,9 +28,9 @@ export class ProjectVideosComponent {
   protected readonly isOpen = signal(false);
   protected readonly current = signal(0);
   protected readonly active = computed(() => this.videos()[this.current()] ?? null);
-  /** True between "waiting" and "playing", to show the loading ring over the player. */
+  /** True entre "waiting" y "playing", para mostrar el anillo de carga sobre el reproductor. */
   protected readonly buffering = signal(false);
-  /** Card being previewed on hover (fine pointers only, never with reduced motion). */
+  /** Tarjeta en vista previa por hover (solo punteros precisos, nunca con movimiento reducido). */
   protected readonly previewing = signal<number | null>(null);
 
   private readonly canPreview =
@@ -48,8 +48,8 @@ export class ProjectVideosComponent {
   }
 
   /**
-   * The muted *property* (not the attribute Angular would set) is what lets the browser autoplay,
-   * so the preview starts here once it has data.
+   * La *propiedad* muted (no el atributo que pondría Angular) es lo que deja al navegador reproducir solo,
+   * así la vista previa empieza aquí en cuanto tiene datos.
    */
   protected playPreview(event: Event): void {
     const video = event.target as HTMLVideoElement;
@@ -70,7 +70,7 @@ export class ProjectVideosComponent {
     this.player()?.nativeElement.showModal();
   }
 
-  /** First frame ready: start playing (the click counts as permission); if blocked, leave the play button. */
+  /** Primer fotograma listo: empieza a reproducir (el clic cuenta como permiso); si se bloquea, queda el botón de play. */
   protected onPlayerReady(event: Event): void {
     const video = event.target as HTMLVideoElement;
     this.buffering.set(false);
@@ -81,7 +81,7 @@ export class ProjectVideosComponent {
     this.player()?.nativeElement.close();
   }
 
-  /** Native close (Esc, button, backdrop): stop the sound. */
+  /** Cierre nativo (Esc, botón, fondo): corta el sonido. */
   protected onClosed(): void {
     this.playerVideo()?.nativeElement.pause();
     this.buffering.set(false);
@@ -96,7 +96,7 @@ export class ProjectVideosComponent {
   }
 
   protected onKey(event: KeyboardEvent): void {
-    // Arrows switch videos unless the focus is on the player (where they seek).
+    // Las flechas cambian de video salvo que el foco esté en el reproductor (donde adelantan o retroceden).
     if ((event.target as HTMLElement).tagName === 'VIDEO') return;
     if (event.key === 'ArrowRight') this.step(1);
     if (event.key === 'ArrowLeft') this.step(-1);

@@ -15,7 +15,7 @@
   } @else {
     <app-form-steps [steps]="steps" [form]="form" />
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="submit()" (appSaveShortcut)="!submitting() && submit()" novalidate>
       <fieldset class="form-step" id="step-content">
         <legend class="mono">1 · CONTENIDO</legend>
         @for (field of config.fields; track field.name) {

@@ -26,7 +26,7 @@ import { ScanRevealDirective } from '../../shared/directives/scan-reveal.directi
 
 const SITE_NAME = 'Camilo Ayala';
 
-/** /proyectos/:slug — shareable, indexable page with the full project and its case study. */
+/** /proyectos/:slug: página indexable y para compartir con el proyecto completo y su caso de estudio. */
 @Component({
   selector: 'app-project-page',
   standalone: true,
@@ -45,11 +45,11 @@ export class ProjectPageComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   /**
-   * Admin live preview: the project being edited, rendered with the real page. In this mode the page
-   * does not touch the document title, the transitions or the analytics.
+   * Vista previa en vivo del admin: el proyecto que se está editando, pintado con la página real. En este
+   * modo la página no toca el título del documento, las transiciones ni las estadísticas.
    */
   readonly previewProject = input<Project | null>(null);
-  /** Admin examples: render only this section (no hero, facts, index or pager), e.g. "s-results". */
+  /** Ejemplos del admin: pinta solo esta sección (sin hero, ficha, índice ni paginador), p. ej. "s-results". */
   readonly focusSection = input<string | null>(null);
 
   protected show(id: string): boolean {
@@ -59,16 +59,16 @@ export class ProjectPageComponent {
 
   private readonly route = inject(ActivatedRoute);
   private readonly slug = toSignal(this.route.paramMap.pipe(map((params) => params.get('slug') ?? '')), { initialValue: '' });
-  /** Private draft link: /proyectos/<slug>?preview=<token>. */
+  /** Enlace privado de borrador: /proyectos/<slug>?preview=<token>. */
   private readonly previewToken = toSignal(this.route.queryParamMap.pipe(map((params) => params.get('preview') ?? '')), { initialValue: '' });
   private readonly projects = toSignal(this.projectsService.getPublished(), { initialValue: null });
-  /** The draft fetched with the private token (undefined: not asked or still loading). */
+  /** El borrador traído con el token privado (undefined: no se pidió o aún carga). */
   private readonly draft = signal<Project | null | undefined>(undefined);
 
   protected readonly index = computed(() => (this.projects() ?? []).findIndex((p) => p.slug === this.slug()));
   private readonly published = computed<Project | null>(() => (this.projects() ?? [])[this.index()] ?? null);
   protected readonly project = computed<Project | null>(() => this.previewProject() ?? this.published() ?? this.draft() ?? null);
-  /** Shown through the private link while not published: a banner says so and search engines skip it. */
+  /** Visto por el enlace privado sin estar publicado: un aviso lo indica y los buscadores lo ignoran. */
   protected readonly isDraft = computed(() => !this.previewProject() && !this.published() && !!this.draft());
   private readonly isAdminPreview = computed(() => !!this.previewProject());
   protected readonly loaded = computed(
@@ -80,7 +80,7 @@ export class ProjectPageComponent {
     return this.index() >= 0 && this.index() < list.length - 1 ? list[this.index() + 1] : null;
   });
 
-  /** "02": position among the published projects (file number of the dossier). Empty for drafts and previews. */
+  /** "02": posición entre los proyectos publicados (número de expediente). Vacío en borradores y vistas previas. */
   protected readonly fileNo = computed(() => (this.index() >= 0 && !this.previewProject() ? this.pad(this.index() + 1) : ''));
   protected readonly fileTotal = computed(() => this.pad((this.projects() ?? []).length));
 
@@ -88,7 +88,7 @@ export class ProjectPageComponent {
     return String(n).padStart(2, '0');
   }
 
-  /** The name in one line, or two (the second drawn in outline) when it has several words. */
+  /** El nombre en una línea, o en dos (la segunda en contorno) si tiene varias palabras. */
   protected titleLines(project: Project): string[] {
     const words = project.name.trim().split(/\s+/);
     if (words.length < 2) return [project.name.trim()];
@@ -109,23 +109,23 @@ export class ProjectPageComponent {
     return project ? relatedProjects(project, this.projects() ?? []) : [];
   });
 
-  /** Selected screen in the tour; back to the first one when the project changes. */
+  /** Pantalla elegida en el recorrido; vuelve a la primera si cambia el proyecto. */
   protected readonly screenIndex = linkedSignal(() => (this.project(), 0));
   protected readonly screen = computed(() => this.project()?.screens[this.screenIndex()] ?? null);
 
-  /** Gallery lightbox (native <dialog>: focus trap and Esc for free). */
+  /** Visor ampliado de la galería (<dialog> nativo: trampa de foco y Esc sin código extra). */
   private readonly lightbox = viewChild<ElementRef<HTMLDialogElement>>('lightbox');
   protected readonly photoIndex = signal(0);
   protected readonly photo = computed(() => this.project()?.gallery[this.photoIndex()] ?? null);
 
   constructor() {
-    // Going back, the list card of this project carries the shared names, so the page shrinks into it.
+    // Al volver, la tarjeta de este proyecto en la lista lleva los nombres compartidos, así la página se encoge hacia ella.
     effect(() => {
       const slug = this.slug();
       if (slug && !this.isAdminPreview()) this.vt.activeSlug.set(slug);
     });
 
-    // Private draft link: only asked when the slug is not among the published projects.
+    // Enlace privado de borrador: solo se pide si el slug no está entre los proyectos publicados.
     effect(() => {
       const token = this.previewToken();
       const slug = this.slug();
@@ -133,7 +133,7 @@ export class ProjectPageComponent {
       untracked(() => this.projectsService.getPreview(slug, token).subscribe((draft) => this.draft.set(draft)));
     });
 
-    // Title and description per language, for sharing and search engines.
+    // Título y descripción por idioma, para compartir y para buscadores.
     effect(() => {
       if (this.isAdminPreview()) return;
       const project = this.project();
@@ -153,8 +153,8 @@ export class ProjectPageComponent {
   }
 
   /**
-   * Scroll-driven hero: the giant number drifts down, the title lines move apart and the name band
-   * slides sideways. Transforms only, written when they change and only while on screen (AGENTS 8.1).
+   * Hero ligado al scroll: el número gigante baja, las líneas del título se separan y la banda con el
+   * nombre se desliza de lado. Solo transforms, escritos si cambian y solo mientras se ven (AGENTS 8.1).
    */
   private driveHero(): void {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -198,9 +198,9 @@ export class ProjectPageComponent {
   }
 
   /**
-   * Analytics (migration 0014): how far down the visitor read and for how long, sent once when they
-   * leave the project (another project, another page or closing the tab). Reads the scroll through
-   * the shared ScrollFrameService (measure only, no DOM writes). Not for drafts or the admin preview.
+   * Estadísticas (migración 0014): hasta dónde leyó el visitante y cuánto tiempo, enviado una vez al salir
+   * del proyecto (otro proyecto, otra página o cerrar la pestaña). Lee el scroll con el ScrollFrameService
+   * compartido (solo mide, no escribe en el DOM). Ni en borradores ni en la vista previa del admin.
    */
   private trackReading(): void {
     let current: { slug: string; start: number; depth: number } | null = null;
@@ -239,8 +239,8 @@ export class ProjectPageComponent {
     });
   }
 
-  /** Localized text: the English value when browsing in English, falling back to Spanish. */
-  /** Problem / process / result steps that have text in the current language (ES fallback). */
+  /** Texto según el idioma: el valor en inglés si se navega en inglés; si no hay, el español. */
+  /** Pasos problema / proceso / resultado con texto en el idioma actual (con respaldo en español). */
   protected storySteps(p: Project): { key: string; label: string; text: string }[] {
     const s = p.story;
     return [
@@ -250,15 +250,15 @@ export class ProjectPageComponent {
     ].filter((step) => step.text);
   }
 
-  /** Images for the pinned story screen: the screens first, then the gallery, then the card image. */
+  /** Imágenes para la pantalla fija de la historia: primero las pantallas, luego la galería y luego la imagen de la tarjeta. */
   protected storyImages(p: Project): string[] {
     const images = [...p.screens.map((s) => s.image), ...p.gallery.map((g) => g.image), p.previewImage ?? ''].filter((src) => src.trim());
     return images.slice(0, 3);
   }
 
   /**
-   * Degrees a result ring fills to: percentages ("-40 %", "94%") or plain numbers from 0 to 100.
-   * Anything else (e.g. "3x", "1.2 s") has no ring and shows as a big number.
+   * Grados hasta los que se llena un anillo: porcentajes ("-40 %", "94%") o números simples de 0 a 100.
+   * Cualquier otra cosa (p. ej. "3x", "1.2 s") no tiene anillo y se muestra como número grande.
    */
   protected ringAngle(value: string): number | null {
     const match = value.trim().match(/^[-+]?\s*(\d+(?:[.,]\d+)?)\s*(%?)$/);
@@ -268,7 +268,7 @@ export class ProjectPageComponent {
     return Math.min(100, n) * 3.6;
   }
 
-  /** Rotation of each half arc of the ring: the right half fills first, then the left one. */
+  /** Giro de cada medio arco del anillo: primero se llena la mitad derecha y luego la izquierda. */
   protected halfTurn(value: string, half: 0 | 1): number {
     const angle = this.ringAngle(value) ?? 0;
     return half === 0 ? Math.min(angle, 180) : Math.max(0, angle - 180);
@@ -305,9 +305,9 @@ export class ProjectPageComponent {
     if (event.key === 'ArrowLeft') this.stepPhoto(-1);
   }
 
-  // ---- Sections and their index (left column)
+  // ---- Secciones y su índice (columna izquierda)
 
-  /** Sections this project has, in page order, for the index and the numbered headings. */
+  /** Secciones que tiene este proyecto, en el orden de la página, para el índice y los titulares numerados. */
   protected readonly sections = computed(() => {
     const p = this.project();
     if (!p) return [];
@@ -330,20 +330,20 @@ export class ProjectPageComponent {
     return list.filter((section) => section.show).sort((a, b) => this.rank(a.id, order) - this.rank(b.id, order));
   });
 
-  /** Order chosen in the admin ("Organizar la página"), completed with the default one. */
+  /** Orden elegido en el admin ("Organizar la página"), completado con el de por defecto. */
   private readonly sectionOrder = computed(() => effectiveSectionOrder(this.project()?.sectionOrder ?? []));
 
   private rank(id: string, order: string[]): number {
     const index = order.indexOf(id);
-    return index < 0 ? 100 : index; // related (not movable) stays at the end
+    return index < 0 ? 100 : index; // relacionados (no se mueve) queda al final
   }
 
-  /** CSS order of a section in the column (the markup keeps a fixed order). */
+  /** Orden CSS de una sección en la columna (el marcado mantiene un orden fijo). */
   protected orderOf(id: string): number {
     return this.rank(id, this.sectionOrder());
   }
 
-  /** Section crossing the upper third of the screen (scroll spy through the shared ScrollFrameService). */
+  /** Sección que cruza el tercio superior de la pantalla (seguimiento con el ScrollFrameService compartido). */
   protected readonly activeSection = signal('');
 
   protected num(id: string): string {
@@ -375,17 +375,17 @@ export class ProjectPageComponent {
     );
   }
 
-  /** Shown when the project has a mobile version (clip or captures); the desktop capture is optional. */
+  /** Se muestra si el proyecto tiene versión móvil (clip o capturas); la captura de escritorio es opcional. */
   protected hasDevices(project: Project): boolean {
     return !!project.mobileVideo.trim() || project.mobileImages.length > 0;
   }
 
-  /** "Escritorio y móvil" with both versions, "Versión móvil" with the phone alone. */
+  /** "Escritorio y móvil" con las dos versiones, "Versión móvil" con el teléfono solo. */
   protected devicesLabel(project: Project): string {
     return project.previewImage?.trim() ? 'pp_devices' : 'pp_mobile_version';
   }
 
-  /** Points of interest are placed on the card image. */
+  /** Los puntos de interés se colocan sobre la imagen de la tarjeta. */
   protected hasHotspots(project: Project): boolean {
     return !!project.previewImage?.trim() && project.hotspots.length > 0;
   }
@@ -394,7 +394,7 @@ export class ProjectPageComponent {
     return !!this.longText(project) || this.highlights(project).length > 0 || project.stack.length > 0;
   }
 
-  /** The fact sheet as label/value pairs (only the filled ones). */
+  /** La ficha como pares etiqueta/valor (solo los rellenos). */
   protected factItems(project: Project): { label: string; value: string }[] {
     const f = project.facts;
     return [
@@ -406,7 +406,7 @@ export class ProjectPageComponent {
     ].filter((item) => item.value?.trim());
   }
 
-  /** Team stored as a number by the admin picker: "Solo yo" / "4 personas" in the visitor's language. */
+  /** Equipo guardado como número por el selector del admin: "Solo yo" / "4 personas" en el idioma del visitante. */
   protected teamText(team: string): string {
     const value = (team ?? '').trim();
     if (!/^\d+$/.test(value)) return value;
@@ -414,7 +414,7 @@ export class ProjectPageComponent {
     return n === 1 ? this.transloco.translate('pp_team_solo') : this.transloco.translate('pp_team_n', { n });
   }
 
-  /** Address shown in the browser frame of the hero: the live site, else this page. */
+  /** Dirección que se ve en el marco de navegador del hero: el sitio en vivo o, si no hay, esta página. */
   protected displayUrl(project: Project): string {
     return (project.liveUrl || `${location.host}/proyectos/${project.slug}`).replace(/^https?:\/\//, '').replace(/\/$/, '');
   }

@@ -73,7 +73,8 @@
 .table-head,
 .projects-row {
   display: grid;
-  grid-template-columns: 32px 1.6fr 1fr 1fr 90px 140px;
+  /* Las acciones necesitan sitio para Editar, Duplicar y Borrar (con 140px se cortaba Borrar). */
+  grid-template-columns: 32px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 90px 220px;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
@@ -202,8 +203,24 @@
 
 .video-tag { flex-shrink: 0; padding: 2px 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--bone-dim); font-size: 9px; letter-spacing: .08em; }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .drag-handle { min-width: 40px; min-height: 40px; }
   .link-action { display: inline-flex; align-items: center; min-height: 40px; }
+}
+
+/* Hasta 1180px (con la barra lateral del panel la tabla no cabe): cada fila pasa a ser una tarjeta
+   (asa, nombre e interruptor arriba; tipo y estado debajo; acciones en su propia línea).
+   Sin encabezado, que ya no alinea con nada. */
+@media (max-width: 1180px) {
+  .table-head { display: none; }
+  .projects-row { display: flex; flex-wrap: wrap; gap: 8px 12px; padding: 14px 12px; }
+  .projects-row .col-drag { flex: 0 0 28px; }
+  .projects-row .col-name { flex: 1 1 calc(100% - 120px); }
+  /* En el HTML el interruptor va después del tipo y el estado: aquí sube a la primera línea. */
+  .projects-row .col-published { flex: 0 0 auto; order: 1; }
+  .projects-row .col-type { order: 2; margin-left: 40px; }
+  .projects-row .col-status { order: 3; }
+  .projects-row .col-actions { order: 4; }
+  .projects-row .col-actions { flex: 1 0 100%; flex-wrap: wrap; padding-left: 40px; gap: 4px 18px; }
 }

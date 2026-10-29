@@ -9,7 +9,7 @@ const WORDS: Record<Unit, { es: [string, string]; en: [string, string] }> = {
   years: { es: ['año', 'años'], en: ['year', 'years'] },
 };
 
-/** "3 meses", "1 year", "6 semanas"... -> amount and unit; null when it is free text. */
+/** "3 meses", "1 year", "6 semanas"... -> cantidad y unidad; null si es texto libre. */
 export function parseDuration(text: string): { amount: number; unit: Unit } | null {
   const match = /^\s*(\d{1,3})\s*([a-zñ]+)/i.exec(text ?? '');
   if (!match) return null;
@@ -24,8 +24,8 @@ export function formatDuration(amount: number, unit: Unit, lang: 'es' | 'en'): s
 }
 
 /**
- * Duration as amount + unit instead of free text: writes the Spanish and the English fields at once
- * ("3 meses" / "3 months"), so there are no typos and nothing to translate.
+ * Duración como cantidad + unidad en vez de texto libre: escribe a la vez el campo en español y en inglés
+ * ("3 meses" / "3 months"), sin erratas y sin nada que traducir.
  */
 @Component({
   selector: 'app-duration-picker',
@@ -66,7 +66,7 @@ export class DurationPickerComponent {
   protected readonly unitValue = signal<Unit>('months');
 
   constructor() {
-    // Loads what was saved (either language); free text that is not a duration stays as it is.
+    // Carga lo guardado (en cualquier idioma); el texto libre que no es una duración se queda como está.
     effect(() => {
       const es = this.es();
       const en = this.en();

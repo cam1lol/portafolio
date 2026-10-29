@@ -17,13 +17,16 @@ interface Command {
   run: () => void;
 }
 
-/** Lowercase without accents, so "experiencia" finds "Experiencia" and "diseno" finds "diseño". */
+/** Minúsculas y sin tildes, para que "experiencia" encuentre "Experiencia" y "diseno" encuentre "diseño". */
 const normalize = (text: string) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
+/** Evento de ventana que abre la paleta desde cualquier sitio (por ejemplo, la página 404). */
+export const OPEN_PALETTE_EVENT = 'portfolio:open-palette';
+
 /**
- * Ctrl+K / Cmd+K command palette: jump to a section or project, switch language, theme or sound,
- * copy the email, download the CV, open recruiter mode or the admin. Native <dialog> (focus stays
- * inside, Esc closes); arrows move, Enter runs.
+ * Paleta de comandos Ctrl+K / Cmd+K: saltar a una sección o proyecto, cambiar idioma, tema o sonido,
+ * copiar el email, descargar el CV, abrir el modo reclutador o el admin. <dialog> nativo (el foco se
+ * queda dentro, Esc cierra); las flechas mueven y Enter ejecuta.
  */
 @Component({
   selector: 'app-command-palette',
@@ -43,7 +46,7 @@ export class CommandPaletteComponent {
 
   private readonly projects = toSignal(inject(ProjectsService).getPublished(), { initialValue: [] });
   private readonly lang = toSignal(this.transloco.langChanges$, { initialValue: this.transloco.getActiveLang() });
-  /** The loaded dictionary (empty until it arrives): labels read it directly, no early lookups. */
+  /** El diccionario cargado (vacío hasta que llega): las etiquetas lo leen directamente, sin búsquedas prematuras. */
   private readonly dictionary = toSignal(this.transloco.selectTranslation(), { initialValue: {} as Record<string, unknown> });
 
   protected readonly query = signal('');
@@ -126,6 +129,11 @@ export class CommandPaletteComponent {
     this.dialog().nativeElement.close();
   }
 
+  @HostListener('window:' + OPEN_PALETTE_EVENT)
+  protected onOpenRequest(): void {
+    this.open();
+  }
+
   @HostListener('document:keydown', ['$event'])
   protected onGlobalKey(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -157,7 +165,7 @@ export class CommandPaletteComponent {
   protected execute(command: Command): void {
     this.sound.click();
     command.run();
-    // Keep it open for toggles (language, theme, sound, copy) so the change can be seen.
+    // Se mantiene abierta en los interruptores (idioma, tema, sonido, copiar) para que se vea el cambio.
     if (!['lang', 'theme', 'sound', 'email'].includes(command.id)) this.close();
   }
 
@@ -179,7 +187,7 @@ export class CommandPaletteComponent {
     );
   }
 
-  /** Backdrop click closes (the click lands on the dialog element itself, outside the panel). */
+  /** Un clic en el fondo la cierra (el clic cae en el propio dialog, fuera del panel). */
   protected onDialogClick(event: MouseEvent): void {
     if (event.target === this.dialog().nativeElement) this.close();
   }

@@ -11,7 +11,7 @@
   </div>
 
   @if (!typeChosen()) {
-    <!-- Step 1: type catalog -->
+    <!-- Paso 1: catálogo de tipos -->
     <p class="hint step-hint">Paso 1 de 2. Elige qué tipo de contenido vas a agregar. Después del primer guardado el tipo ya no se puede cambiar.</p>
     <div class="type-catalog">
       @for (type of types; track type) {
@@ -27,7 +27,7 @@
 
     <div class="editor-grid">
       <div class="form-card">
-        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <form [formGroup]="form" (ngSubmit)="submit()" (appSaveShortcut)="!submitting() && submit()" novalidate>
           <div class="type-badge-row">
             <span class="type-badge mono">TIPO · {{ typeLabels[form.controls.type.value] | uppercase }}</span>
             @if (isEditMode()) {

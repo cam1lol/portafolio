@@ -1,7 +1,7 @@
 import { Component, computed, input, signal } from '@angular/core';
 
 export interface DayCount {
-  /** Local date, YYYY-MM-DD. */
+  /** Fecha local, AAAA-MM-DD. */
   date: string;
   count: number;
 }
@@ -12,7 +12,7 @@ function localKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
-/** One entry per day (oldest first, ending today), counting visits by the viewer's local date. */
+/** Una entrada por día (de la más antigua a hoy), contando visitas por la fecha local de quien mira. */
 export function bucketVisitsByDay(timestamps: string[], days: number, today = new Date()): DayCount[] {
   const buckets: DayCount[] = [];
   const index = new Map<string, number>();
@@ -49,7 +49,7 @@ function parseDay(key: string): Date {
   return new Date(year, month - 1, day);
 }
 
-/** Single-series bar chart of daily visits (ember bars, text in ink tokens, hover tooltip, table view). */
+/** Gráfico de barras de una serie con las visitas diarias (barras de acento, texto en tokens de tinta, tooltip, vista de tabla). */
 @Component({
   selector: 'app-visits-chart',
   standalone: true,
@@ -115,7 +115,7 @@ export class VisitsChartComponent {
     return `Día con más: ${dateFormat.format(parseDay(day.date))} (${day.count})`;
   }
 
-  /** Rounded top (the data end), square bottom anchored to the baseline. */
+  /** Arriba redondeado (el extremo del dato), abajo recto apoyado en la línea base. */
   private barPath(x: number, width: number, height: number): string {
     if (height <= 0) return '';
     const r = Math.min(RADIUS, width / 2, height);

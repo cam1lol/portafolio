@@ -10,14 +10,15 @@
       @for (option of types; track option.value) {
         <button type="button" [class.on]="type() === option.value" [attr.aria-pressed]="type() === option.value" (click)="type.set(option.value)">
           {{ option.key === '3D' ? '3D' : (option.key | transloco) }}
+          @if (loaded()) { <span class="n mono" [class.zero]="!typeCounts()[option.value]">{{ pad(typeCounts()[option.value]) }}</span> }
         </button>
       }
     </div>
     <div class="selects">
       <label class="visually-hidden" for="pi-status">{{ 'pi_any_status' | transloco }}</label>
       <select id="pi-status" [value]="status()" (change)="status.set($any($event.target).value)">
-        <option value="all">{{ 'pi_any_status' | transloco }}</option>
-        @for (option of statuses; track option) { <option [value]="option">{{ 'pp_status_' + option | transloco }}</option> }
+        <option value="all">{{ 'pi_any_status' | transloco }}{{ loaded() ? ' (' + statusCounts()['all'] + ')' : '' }}</option>
+        @for (option of statuses; track option) { <option [value]="option">{{ 'pp_status_' + option | transloco }}{{ loaded() ? ' (' + statusCounts()[option] + ')' : '' }}</option> }
       </select>
       <label class="visually-hidden" for="pi-tech">{{ 'pi_any_tech' | transloco }}</label>
       <select id="pi-tech" [value]="tech()" (change)="tech.set($any($event.target).value)">

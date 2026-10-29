@@ -1,6 +1,6 @@
 .contact {
   text-align: center;
-  padding-block: 120px; /* vertical only: .wrap keeps the side gutter */
+  padding-block: 120px; /* solo vertical: .wrap conserva el margen lateral */
 }
 
 .contact h2 {
@@ -76,8 +76,9 @@
 }
 
 .contact-avail:not(:empty) { margin-bottom: 28px; }
+.contact-clock { margin-top: 14px; }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .direct a { display: inline-block; padding: 12px 2px; }
 }

@@ -24,7 +24,7 @@ import {
   emptyStory,
 } from '../../../core/data/project-details';
 
-/** Form controls for the optional detail sections of a project (0010). Every field may stay empty. */
+/** Controles de formulario de las secciones de detalle opcionales de un proyecto (0010). Todo puede quedar vacío. */
 
 const SHORT = 80;
 const TITLE = 120;
@@ -54,7 +54,7 @@ export type VideoGroup = FormGroup<Controls<ProjectVideo>>;
 export type ChapterGroup = FormGroup<Controls<ProjectChapter>>;
 export type HotspotGroup = FormGroup<Controls<ProjectHotspot>>;
 
-/** A point of interest: where it is (percent of the image) and its bilingual label. */
+/** Un punto de interés: dónde está (porcentaje de la imagen) y su etiqueta bilingüe. */
 export function hotspotGroup(item?: Partial<ProjectHotspot>): HotspotGroup {
   return new FormGroup({
     x: new FormControl(item?.x ?? 50, { nonNullable: true }),
@@ -64,7 +64,7 @@ export function hotspotGroup(item?: Partial<ProjectHotspot>): HotspotGroup {
   });
 }
 
-/** Problem / process / result, bilingual (empty = the strip is not shown). */
+/** Problema / proceso / resultado, bilingüe (vacío = la franja no se muestra). */
 export function storyGroup(story: ProjectStory = emptyStory()): FormGroup<Controls<ProjectStory>> {
   return new FormGroup({
     challengeEs: optional(STORY, true, story.challengeEs),
@@ -145,18 +145,18 @@ export function versionGroup(item?: ProjectVersion): VersionGroup {
 
 const CHAPTER_BODY = 6000;
 const CHAPTER_CODE = 12000;
-/** Code keeps tabs and line breaks; every other control character is rejected. */
+/** El código conserva tabuladores y saltos de línea; cualquier otro carácter de control se rechaza. */
 const CODE_CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/;
 const codeValidator: ValidatorFn = (control) => (typeof control.value === 'string' && CODE_CONTROL_CHARS.test(control.value) ? { controlChars: true } : null);
 
 const filled = (group: AbstractControl, key: string) => String(group.get(key)?.value ?? '').trim() !== '';
 
-/** Group check: once any of `when` has content, `key` must have it too (a half-filled item would be dropped). */
+/** Comprobación de grupo: si algún campo de `when` tiene contenido, `key` también debe tenerlo (un elemento a medias se descartaría). */
 function needs(key: string, when: string[], error: string): ValidatorFn {
   return (group) => (!filled(group, key) && when.some((other) => filled(group, other)) ? { [error]: true } : null);
 }
 
-/** What each chapter type needs once it has started being filled. */
+/** Lo que necesita cada tipo de capítulo cuando ya se empezó a rellenar. */
 const chapterValidator: ValidatorFn = (group) => {
   const type = group.get('type')?.value as ChapterType;
   const any = (...keys: string[]) => keys.some((key) => filled(group, key));
@@ -168,7 +168,7 @@ const chapterValidator: ValidatorFn = (group) => {
   return null;
 };
 
-/** Message for an item-level error (shown inside the item and summarised in its folded header). */
+/** Mensaje de un error de elemento (se ve dentro del elemento y resumido en su cabecera plegada). */
 export function itemErrorMessage(group: AbstractControl): string | null {
   const errors = group.errors ?? {};
   if (errors['needsValue']) return 'Falta la cifra: un resultado sin número no se muestra.';
@@ -181,7 +181,7 @@ export function itemErrorMessage(group: AbstractControl): string | null {
   return null;
 }
 
-/** One case study chapter; a type name starts an empty chapter of that type. */
+/** Un capítulo del caso de estudio; un nombre de tipo crea un capítulo vacío de ese tipo. */
 export function chapterGroup(item: ProjectChapter | ChapterType): ChapterGroup {
   const chapter = typeof item === 'string' ? emptyChapter(item) : item;
   return new FormGroup({
@@ -217,8 +217,8 @@ export function videoGroup(item?: ProjectVideo): VideoGroup {
 }
 
 /**
- * "How many videos": adds empty slots until the list has `count` items. Never removes, so lowering
- * the number cannot wipe filled videos; those are removed one by one with QUITAR.
+ * "¿Cuántos videos?": añade huecos vacíos hasta que la lista tenga `count` elementos. Nunca quita, así
+ * bajar el número no borra videos rellenos; esos se quitan uno a uno con QUITAR.
  */
 export function fillToCount<G extends FormGroup>(array: FormArray<G>, count: number, create: () => G): number {
   const target = Math.min(Math.max(0, Math.floor(count)), MAX_ITEMS);
@@ -261,7 +261,7 @@ function fill<G extends FormGroup, T>(array: FormArray<G>, items: T[], create: (
   for (const item of items) array.push(create(item));
 }
 
-/** Loads saved details into the form (edit mode). */
+/** Carga los detalles guardados en el formulario (modo edición). */
 export function patchDetails(controls: DetailControls, details: ProjectDetails): void {
   controls.featured.setValue(details.featured);
   controls.facts.setValue(details.facts);
@@ -283,7 +283,7 @@ export function patchDetails(controls: DetailControls, details: ProjectDetails):
   fill(controls.hotspots, details.hotspots ?? [], hotspotGroup);
 }
 
-/** Reads the form back as `ProjectDetails` (empty items are dropped by the service mapping). */
+/** Lee el formulario como `ProjectDetails` (el mapeo del servicio descarta los elementos vacíos). */
 export function readDetails(controls: DetailControls): ProjectDetails {
   return {
     featured: controls.featured.value,
@@ -307,7 +307,7 @@ export function readDetails(controls: DetailControls): ProjectDetails {
   };
 }
 
-/** Moves an item up (-1) or down (+1) and marks the form dirty. */
+/** Sube (-1) o baja (+1) un elemento y marca el formulario como modificado. */
 export function moveItem(array: FormArray, index: number, delta: -1 | 1): void {
   const target = index + delta;
   if (target < 0 || target >= array.length) return;

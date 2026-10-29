@@ -1,5 +1,5 @@
 .block {
-  /* Vertical only, so .wrap keeps its side gutter on mobile. */
+  /* Solo vertical, para que .wrap conserve su margen lateral en móvil. */
   padding-top: 96px;
   padding-bottom: 96px;
   border-top: 1px solid var(--line-soft);
@@ -41,7 +41,7 @@ blockquote {
   line-height: 1.65;
   white-space: pre-line;
 }
-/* Typographic opening quote mark, in the signal color. */
+/* Comilla tipográfica de apertura, en el color de acento. */
 blockquote::before {
   content: '\201C';
   position: absolute;

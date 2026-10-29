@@ -18,7 +18,7 @@ import { AdminCollectionFormComponent } from './collections/admin-collection-for
 import { AdminSiteTextsComponent } from './site-texts/admin-site-texts.component';
 import { unsavedChangesGuard } from './shared/unsaved-changes.guard';
 
-/** List + create + edit routes for one simple collection (see collections/collection.config.ts). */
+/** Rutas de lista + crear + editar para una colección simple (ver collections/collection.config.ts). */
 function collectionRoutes(collection: string): Routes {
   return [
     { path: collection, component: AdminCollectionListComponent, data: { collection } },
@@ -53,7 +53,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'site-texts', component: AdminSiteTextsComponent, canDeactivate: [unsavedChangesGuard] },
       { path: 'structure', component: AdminStructureComponent },
       { path: 'scene', component: AdminSceneComponent, canDeactivate: [unsavedChangesGuard] },
-      // Visibility, home order and the blocks list now live together in "structure".
+      // La visibilidad, el orden de la portada y la lista de bloques viven ahora juntos en "structure".
       { path: 'visibility', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'layout', redirectTo: 'structure', pathMatch: 'full' },
       { path: 'blocks', redirectTo: 'structure', pathMatch: 'full' },

@@ -1,5 +1,5 @@
 .palette {
-  /* margin: auto restores the native centring that the global reset removes. */
+  /* margin: auto recupera el centrado nativo que quita el reset global. */
   inset: 0;
   margin: 12vh auto auto;
   width: min(640px, 100vw - 32px);

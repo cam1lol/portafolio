@@ -2,10 +2,10 @@ import { Component, input } from '@angular/core';
 import { IconComponent } from '../icons/icon.component';
 
 /**
- * Generated cover for a project without image or clip, so its card keeps the same height and
- * structure as the others until real media is added: a HUD panel (static technical grid, corner
- * ticks), the project icon large with its perpetual motion and the project initials (the type label
- * is already on the card). Only the icon moves (its usual animation); the rest is painted once.
+ * Portada generada para un proyecto sin imagen ni clip, para que su tarjeta mantenga la misma altura y
+ * estructura que las demás hasta que tenga medios reales: un panel HUD (rejilla técnica estática,
+ * marcas de esquina), el icono del proyecto en grande con su movimiento y las iniciales (la etiqueta
+ * de tipo ya está en la tarjeta). Solo se mueve el icono; el resto se pinta una vez.
  */
 @Component({
   selector: 'app-project-cover-art',
@@ -36,7 +36,7 @@ export class ProjectCoverArtComponent {
   readonly icon = input('box');
   readonly name = input('');
 
-  /** "Gestion Empresarial" -> GE; one word ("chatBot", "Crud_usuarios") -> its first two letters. */
+  /** "Gestion Empresarial" -> GE; una sola palabra ("chatBot", "Crud_usuarios") -> sus dos primeras letras. */
   protected initials(): string {
     const words = this.name().split(/[\s_-]+/).filter(Boolean);
     const letters = words.length > 1 ? words.slice(0, 2).map((word) => word[0]) : [...(words[0] ?? '')].slice(0, 2);

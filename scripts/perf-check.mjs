@@ -1,12 +1,14 @@
-// Fluidity check (AGENTS.md, 8.1): opens Chrome (or Edge) WITH a window, so the real GPU is used,
-// and counts the frames that actually reach the screen (DrawFrame on the page's compositor) on the
-// home page (idle and wheel scrolling) and on a project page. Fails if any scenario is not fluid.
+// Comprobación de fluidez (AGENTS.md, 8.1): abre Chrome (o Edge) CON ventana, para usar la GPU real, y
+// cuenta los fotogramas que de verdad llegan a la pantalla (DrawFrame en el compositor de la página) en
+// la portada (quieta y con scroll de rueda) y en una página de proyecto. Falla si algún escenario no es fluido.
 //
-//   npm run perf                       measures http://localhost:4200 (start "npm start" first)
+//   npm run perf                       mide http://localhost:4200 (antes arranca "npm start")
 //   npm run perf -- --url http://127.0.0.1:4401 --cpu 4
 //
-// Options: --url <base>, --cpu <n> (CPU slowdown, like a modest laptop), --browser <path>
-// (or CHROME_PATH). No dependencies: Node 22 (fetch, WebSocket) and an installed browser.
+//   npm run perf -- --mobile --cpu 4    como un teléfono: 390x844, densidad 3x, táctil, scroll con el dedo
+//
+// Opciones: --url <base>, --cpu <n> (ralentiza la CPU, como un portátil modesto), --mobile, --browser <ruta>
+// (o CHROME_PATH). Sin dependencias: Node 22 (fetch, WebSocket) y un navegador instalado.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -17,9 +19,10 @@ const args = Object.fromEntries(
 );
 const BASE = (args.url || process.env.PERF_URL || 'http://localhost:4200').replace(/\/$/, '');
 const CPU = Number(args.cpu || 1);
+const MOBILE = 'mobile' in args;
 const PORT = 9333;
 const MIN_FPS = 60;
-const MAX_SLOW_SHARE = 0.05; // at most 5% of frames over 25 ms
+const MAX_SLOW_SHARE = 0.05; // como mucho un 5% de fotogramas por encima de 25 ms
 
 function findBrowser() {
   const candidates = [
@@ -98,9 +101,9 @@ async function main() {
       await sleep(4000);
     };
 
-    // Skip the first-visit intro and measure the full effects (not the light mode).
+    // Salta la intro de la primera visita y mide los efectos completos (no el modo ligero).
     await navigate(BASE + '/');
-    await evaluate(`localStorage.setItem('ca-boot-seen-v1', '1'); localStorage.removeItem('ca-fx-lite-v1'); 1`);
+    await evaluate(`localStorage.setItem('ca-boot-seen-v1', '1'); localStorage.removeItem('ca-fx-lite-v2'); 1`);
 
     const trace = async (label, during) => {
       const events = [];
@@ -115,6 +118,12 @@ async function main() {
     const warmUp = () =>
       evaluate(`new Promise(async (res) => { document.documentElement.classList.remove('fx-lite'); const h = document.documentElement.scrollHeight; for (let y = 0; y < h; y += 400) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } scrollTo(0, 0); setTimeout(() => res(1), 1200); })`);
     const wheel = async (ms) => {
+      if (MOBILE) {
+        // Deslizar con el dedo, varias veces, como al leer en un teléfono.
+        const end = Date.now() + ms;
+        while (Date.now() < end) await page.send('Input.synthesizeScrollGesture', { x: 195, y: 600, yDistance: -500, speed: 1600, gestureSourceType: 'touch' });
+        return;
+      }
       const end = Date.now() + ms;
       while (Date.now() < end) {
         page.send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 700, y: 450, deltaX: 0, deltaY: 50 });
@@ -123,13 +132,17 @@ async function main() {
     };
 
     await page.send('Emulation.setCPUThrottlingRate', { rate: CPU });
+    if (MOBILE) {
+      await page.send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 3, mobile: true });
+      await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    }
 
     await navigate(BASE + '/');
     await warmUp();
     await trace('Portada, parada', () => sleep(3000));
     await trace('Portada, scroll', () => wheel(3500));
 
-    // First project, if there is one.
+    // El primer proyecto, si hay alguno.
     await navigate(BASE + '/proyectos');
     const project = await evaluate(`(document.querySelector('a[href^="/proyectos/"]') || {}).getAttribute?.('href') || ''`);
     if (project) {
@@ -157,7 +170,7 @@ async function main() {
   process.exit(failed ? 1 : 0);
 }
 
-/** Frames drawn by the page's compositor (the busiest renderer Compositor thread). */
+/** Fotogramas dibujados por el compositor de la página (el hilo Compositor más ocupado del renderer). */
 function summarize(events) {
   const threads = new Map(events.filter((e) => e.ph === 'M' && e.name === 'thread_name').map((e) => [`${e.pid}:${e.tid}`, e.args.name]));
   const byThread = new Map();

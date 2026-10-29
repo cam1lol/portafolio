@@ -5,10 +5,10 @@ const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/<>[]_#*+=';
 const DURATION = 650;
 
 /**
- * HUD "decode" for a heading: random glyphs resolve into the text from left to right. It waits for
- * a running project transition to finish (the title arrives by morphing first). Screen readers get
- * the real text at all times; the glyphs are aria-hidden. Skipped with reduced motion.
- * With `scrambleOnView` (section headings) it also waits until the heading scrolls into view.
+ * "Descifrado" HUD de un titular: glifos al azar que se resuelven en el texto de izquierda a derecha.
+ * Espera a que termine una transición de proyecto en curso (el título llega primero transformándose).
+ * Los lectores de pantalla siempre reciben el texto real; los glifos van con aria-hidden. Se salta con
+ * movimiento reducido. Con `scrambleOnView` (titulares de sección) además espera a que entre en pantalla.
  */
 @Directive({ selector: '[appScramble]', standalone: true })
 export class ScrambleDirective implements OnDestroy {
@@ -39,7 +39,7 @@ export class ScrambleDirective implements OnDestroy {
       const waiting = this.onView() && !this.inView();
       untracked(() => {
         if (busy || waiting) {
-          this.render(text); // plain text while the morph runs (it is what the snapshot shows)
+          this.render(text); // texto plano mientras corre la transformación (es lo que muestra la captura)
           return;
         }
         if (text === this.played) return;
@@ -55,7 +55,7 @@ export class ScrambleDirective implements OnDestroy {
       this.render(text);
       return;
     }
-    // Lock the height of the final text so changing glyph widths never reflow the page below.
+    // Fija la altura del texto final para que el ancho cambiante de los glifos no mueva la página.
     this.render(text);
     this.el.style.minHeight = `${this.el.offsetHeight}px`;
     const start = performance.now();
@@ -70,10 +70,10 @@ export class ScrambleDirective implements OnDestroy {
       if (progress < 1) this.frame = requestAnimationFrame(tick);
       else this.el.style.minHeight = '';
     };
-    tick(start); // first frame right away, so the heading is never empty
+    tick(start); // primer fotograma al momento, para que el titular nunca quede vacío
   }
 
-  /** Real text for assistive tech; `shown` (the glyphs) only for the eyes. */
+  /** Texto real para tecnologías de apoyo; `shown` (los glifos) solo para la vista. */
   private render(text: string, shown = text): void {
     if (shown === text) {
       this.el.textContent = text;

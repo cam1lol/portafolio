@@ -7,10 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Desarrollador full-stack y diseñador 3D en Bogotá. Productos web rápidos y experiencias interactivas con Angular, Three.js y criterio editorial en cada detalle.">
   <meta name="theme-color" content="#0A0B0D">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Icono: Monograma CA. El SVG lo usan los navegadores modernos (sizes="32x32" en el .ico evita que Chrome
+       prefiera el .ico al SVG); el .ico es el respaldo y el PNG de 180 px es el icono de pantalla de inicio de iOS. -->
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-  <!-- Link previews (LinkedIn, WhatsApp, X...). __SITE_URL__ is replaced after the build by
-       scripts/seo.mjs with the production domain (SITE_URL or Vercel's production URL). -->
+  <!-- Vistas previas de enlaces (LinkedIn, WhatsApp, X...). scripts/seo.mjs cambia __SITE_URL__ tras el build
+       por el dominio de producción (SITE_URL o la URL de producción de Vercel). -->
   <link rel="canonical" href="__SITE_URL__/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Camilo Ayala">
@@ -28,7 +32,7 @@
   <meta name="twitter:description" content="Productos web rápidos y experiencias interactivas con Angular, Three.js y criterio editorial.">
   <meta name="twitter:image" content="__SITE_URL__/og.png">
 
-  <!-- Structured data for search engines: only what is already public on the site. -->
+  <!-- Datos estructurados para buscadores: solo lo que ya es público en el sitio. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",

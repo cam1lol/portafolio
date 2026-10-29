@@ -5,7 +5,7 @@ import { ExperienceService } from '../../../core/data/experience.service';
 import { CollectionsService } from '../../../core/data/collections.service';
 
 export interface FormSuggestions {
-  /** Addresses already used, to keep each project's /proyectos/<slug> unique. */
+  /** Direcciones ya usadas, para que el /proyectos/<slug> de cada proyecto sea único. */
   slugs: { id: string; slug: string }[];
   stack: string[];
   typeLabels: string[];
@@ -21,10 +21,10 @@ export interface FormSuggestions {
 const EMPTY: FormSuggestions = { slugs: [], stack: [], typeLabels: [], rolesEs: [], rolesEn: [], teams: [], durationsEs: [], durationsEn: [], clients: [], languages: [] };
 
 /**
- * What the admin already wrote elsewhere, offered back as suggestions so the forms are mostly
- * choosing instead of typing: technologies (projects, experience, ticker), type labels, roles,
- * team sizes, durations, clients and code languages. Only real values from your own data, most
- * used first. Loaded once per session and refreshed after saving.
+ * Lo que el admin ya escribió en otros sitios, ofrecido como sugerencia para que los formularios sean
+ * sobre todo elegir y no escribir: tecnologías (proyectos, experiencia, ticker), etiquetas de tipo,
+ * roles, tamaños de equipo, duraciones, clientes y lenguajes de código. Solo valores reales de tus
+ * propios datos, los más usados primero. Se carga una vez por sesión y se refresca al guardar.
  */
 @Injectable({ providedIn: 'root' })
 export class FormSuggestionsService {
@@ -59,7 +59,7 @@ export class FormSuggestionsService {
   }
 }
 
-/** Distinct values (case-insensitive, first spelling kept), most frequent first, then alphabetical. */
+/** Valores distintos (sin distinguir mayúsculas, se conserva la primera escritura), los más frecuentes primero y luego por orden alfabético. */
 export function rank(values: string[]): string[] {
   const counts = new Map<string, { value: string; count: number }>();
   for (const raw of values) {

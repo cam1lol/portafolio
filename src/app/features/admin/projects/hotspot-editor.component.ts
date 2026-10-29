@@ -7,9 +7,9 @@ import { HotspotGroup, hotspotGroup } from './project-details.form';
 const round = (value: number) => Math.min(100, Math.max(0, Math.round(value * 10) / 10));
 
 /**
- * Points of interest on the card image (A8). Click the image to add a point, drag a point (or focus
- * it and use the arrow keys) to move it, and write its label below. Points without a label are not
- * saved.
+ * Puntos de interés sobre la imagen de la tarjeta (A8). Clic en la imagen para añadir un punto,
+ * arrastrar un punto (o enfocarlo y usar las flechas) para moverlo, y escribir su etiqueta debajo.
+ * Los puntos sin etiqueta no se guardan.
  */
 @Component({
   selector: 'app-hotspot-editor',
@@ -113,7 +113,7 @@ export class HotspotEditorComponent {
       pin.removeEventListener('pointerup', up);
       pin.removeEventListener('pointercancel', up);
       if (this.dragged) this.spots().markAsDirty();
-      // The click that follows a drag must not add a point.
+      // El clic que sigue a un arrastre no debe añadir un punto.
       setTimeout(() => (this.dragged = false));
     };
     pin.addEventListener('pointermove', move);

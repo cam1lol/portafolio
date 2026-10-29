@@ -4,8 +4,8 @@ import { ProjectStats, ProjectViewsService, summarizeViews } from '../../../core
 import { ProjectsService } from '../../../core/data/projects.service';
 
 /**
- * Dashboard: which projects get opened and how far their case study is read (last 30 days,
- * migration 0014). Your own visits while logged in are not counted.
+ * Dashboard: qué proyectos se abren y hasta dónde se lee su caso de estudio (últimos 30 días,
+ * migración 0014). Tus propias visitas con sesión iniciada no cuentan.
  */
 @Component({
   selector: 'app-project-stats',

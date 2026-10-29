@@ -1,37 +1,37 @@
 :host { display: block; }
 
-/* Index in a left gutter, content in a readable column; full-bleed media breaks out of both. */
+/* Índice en un margen a la izquierda, contenido en una columna legible; los medios a sangre se salen de ambos. */
 .ch { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 0 24px; margin: 0 0 96px; }
 .ch:last-child { margin-bottom: 0; }
 .ch > :not(.ch-no) { grid-column: 2; }
 .ch-no { position: relative; grid-column: 1; grid-row: 1 / span 3; align-self: start; padding-top: 6px; color: var(--ember); font-size: 11px; letter-spacing: .12em; }
-/* Index rule; where scroll-driven animations exist it draws in as the chapter enters. */
+/* Línea del índice; donde existen las animaciones ligadas al scroll, se dibuja al entrar el capítulo. */
 .ch-no::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--ember); transform-origin: left; }
 .ch-of { color: var(--steel); }
 
 .ch.full { display: block; }
 .ch.full .ch-no { display: inline-block; margin-bottom: 18px; }
-/* "Full width" spans the whole content column (the page has a side index, so not the window). */
+/* "Ancho completo" ocupa toda la columna de contenido (la página tiene índice lateral, no la ventana). */
 .ch.full .ch-figure { width: 100%; }
 .ch.full .ch-frame { aspect-ratio: 21 / 9; max-height: 80vh; }
 
 
-/* ---- Text */
+/* ---- Texto */
 .ch-title { max-width: 22ch; margin: 0 0 18px; color: var(--bone); font: 800 clamp(28px, 3.4vw, calc(var(--maxw) * .034)) / 1.08 'Archivo', sans-serif; letter-spacing: -.01em; }
 .ch-body { max-width: 68ch; color: var(--bone-dim); font-size: 17px; line-height: 1.75; white-space: pre-line; }
 
-/* ---- Figures (image, before/after, model) */
+/* ---- Figuras (imagen, antes/después, modelo) */
 .ch-figure { margin: 0; }
 .ch-frame { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
 .ch-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
 figcaption { margin-top: 12px; color: var(--steel); font-size: 11px; letter-spacing: .08em; }
 
-/* Entrance: the frame opens from a horizontal slit (class "in" from appReveal). */
+/* Entrada: el marco se abre desde una rendija horizontal (clase "in" de appReveal). */
 .ch-frame { clip-path: inset(18% 0 18% 0); opacity: 0; transition: clip-path 1s var(--ease), opacity .6s ease; }
 .ch-frame.in { clip-path: inset(0); opacity: 1; }
 
-/* ---- Before / after: the range input covers the frame, so mouse, touch and keyboard all drag it.
-   Registered so it can animate: on reveal the divider sweeps once to show that it moves. */
+/* ---- Antes / después: el input range cubre el marco, así ratón, toque y teclado lo arrastran.
+   Se registra para poder animarlo: al aparecer, el divisor hace un barrido para mostrar que se mueve. */
 @property --split { syntax: '<percentage>'; inherits: true; initial-value: 50%; }
 .ch-compare.in { animation: cmp-hint 1.6s var(--ease) .6s 1; }
 @keyframes cmp-hint { 0%, 100% { --split: 50%; } 35% { --split: 30%; } 70% { --split: 66%; } }
@@ -47,13 +47,13 @@ figcaption { margin-top: 12px; color: var(--steel); font-size: 11px; letter-spac
 .ch-compare input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
 .ch-compare:has(input:focus-visible) { outline: 2px solid var(--ember); outline-offset: 3px; }
 
-/* ---- Quote */
+/* ---- Cita */
 .ch-quote { margin: 0; padding: 8px 0 8px 28px; border-left: 2px solid var(--ember); }
 .q-mark { display: block; margin-bottom: 10px; color: var(--ember); font-size: 13px; }
 .ch-quote p { max-width: 30ch; margin: 0; color: var(--bone); font: 700 clamp(24px, 2.8vw, calc(var(--maxw) * .028)) / 1.25 'Archivo', sans-serif; }
 .ch-quote footer { margin-top: 18px; color: var(--steel); font-size: 12px; letter-spacing: .1em; }
 
-/* ---- Code: a terminal card whose lines type in one after another. */
+/* ---- Código: una tarjeta de terminal cuyas líneas se escriben una tras otra. */
 .ch-code { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
 .code-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line-soft); color: var(--steel); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
 .dots { display: inline-flex; gap: 6px; }
@@ -65,14 +65,14 @@ figcaption { margin-top: 12px; color: var(--steel); font-size: 11px; letter-spac
 .ch-code.in .ln { animation: ln-in .32s var(--ease) both; animation-delay: calc(min(var(--i), 40) * 40ms); }
 @keyframes ln-in { from { opacity: 0; } to { opacity: 1; } }
 .ch-code figcaption { margin: 0; padding: 0 18px 14px; }
-/* Terminal caret after the last line, shown once that line has typed in. */
+/* Cursor de terminal tras la última línea, visible cuando esa línea ya se escribió. */
 .ch-code .ln:last-child::after { content: ''; display: inline-block; width: .55em; height: 1.05em; margin-left: calc(3ch + 14px); vertical-align: -2px; background: var(--ember); animation: caret 1.1s steps(1) infinite; }
 @keyframes caret { 50% { opacity: 0; } }
 
-/* ---- 3D model */
+/* ---- Modelo 3D */
 .model-ph { display: grid; place-items: center; min-height: 420px; border: 1px dashed var(--line); border-radius: var(--r); color: var(--steel); font-size: 11px; letter-spacing: .14em; }
 
-/* Images drift a little against the scroll (scroll-driven; browsers without it show them still). */
+/* Las imágenes se desplazan un poco contra el scroll (ligado al scroll; sin soporte quedan quietas). */
 @supports (animation-timeline: view()) {
   .t-image .ch-frame img { scale: 1.12; animation: ch-drift linear both; animation-timeline: view(); animation-range: cover; }
   @keyframes ch-drift { from { translate: 0 -5%; } to { translate: 0 5%; } }

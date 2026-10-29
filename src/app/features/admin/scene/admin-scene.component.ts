@@ -5,16 +5,17 @@ import { HasUnsavedChanges } from '../shared/unsaved-changes.guard';
 import { SiteContentService } from '../../../core/data/site-content.service';
 import { SceneService } from '../../../core/scene/scene.service';
 import { SCENE_FIELDS, SceneKey, SceneSettings, applyScene } from '../../../core/scene/scene.config';
+import { SaveShortcutDirective } from '../shared/save-shortcut.directive';
 
 /**
- * "Director de escena": how the public site performs (rings, rhythm, rain, transitions, intro,
- * sound, light mode). Choices preview live in this browser (the rings run behind the panel too)
- * and reach every visitor once saved; leaving without saving restores the saved scene.
+ * "Director de escena": cómo se comporta el sitio público (anillos, ritmo, lluvia, transiciones, intro,
+ * sonido, modo ligero). Las opciones se previsualizan en vivo en este navegador (los anillos también
+ * giran detrás del panel) y llegan a todos los visitantes al guardar; salir sin guardar restaura la escena guardada.
  */
 @Component({
   selector: 'app-admin-scene',
   standalone: true,
-  imports: [AdminPageHeaderComponent],
+  imports: [AdminPageHeaderComponent, SaveShortcutDirective],
   templateUrl: './admin-scene.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-scene.component.css'],
 })
@@ -31,7 +32,7 @@ export class AdminSceneComponent implements HasUnsavedChanges, OnDestroy {
   protected readonly dirty = computed(() => SCENE_FIELDS.some((field) => this.draft()[field.key] !== this.saved()[field.key]));
 
   constructor() {
-    // The saved scene may arrive after the page opens (direct load): adopt it unless editing.
+    // La escena guardada puede llegar después de abrir la página (carga directa): se adopta salvo que se esté editando.
     effect(() => {
       const settings = this.scene.settings();
       untracked(() => {
@@ -47,7 +48,7 @@ export class AdminSceneComponent implements HasUnsavedChanges, OnDestroy {
     applyScene(this.draft());
   }
 
-  /** Arrow keys move the choice inside a group, like native radio buttons. */
+  /** Las flechas mueven la elección dentro de un grupo, como los radio buttons nativos. */
   protected onKey(event: KeyboardEvent, key: SceneKey, values: string[]): void {
     const step = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 0;
     if (!step) return;
@@ -89,7 +90,7 @@ export class AdminSceneComponent implements HasUnsavedChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Unsaved previews do not stay applied after leaving the page.
+    // Las previsualizaciones sin guardar no se quedan aplicadas al salir de la página.
     if (this.dirty()) applyScene(this.saved());
   }
 }

@@ -1,12 +1,12 @@
-/* A11: horizontal run of project cards (wide screens, more than 3 projects). The run gets the
-   class .h-on and its height from projects.component.ts (driveRun); the track moves with transform. */
+/* A11: carrusel horizontal de tarjetas de proyecto (pantallas anchas, más de 3 proyectos). El carrusel
+   recibe la clase .h-on y su altura desde projects.component.ts (driveRun); la pista se mueve con transform. */
 .run-meta { display: none; }
 
 .run.h-on { position: relative; }
 .run.h-on .run-pin {
   position: sticky; top: var(--site-header-h); display: flex; flex-direction: column; justify-content: center; gap: 22px;
   height: calc(100vh - var(--site-header-h)); overflow: clip;
-  /* Full viewport width, so cards come in and leave at the screen edges; the padding keeps them aligned with the content. */
+  /* Todo el ancho de la pantalla, para que las tarjetas entren y salgan por los bordes; el padding las mantiene alineadas con el contenido. */
   width: 100vw; margin-left: calc(50% - 50vw); padding-left: calc(50vw - 50%);
 }
 .run.h-on .grid-cards { display: flex; gap: 14px; width: max-content; will-change: transform; }
@@ -17,3 +17,12 @@
 .run-count b { color: var(--ember); font-weight: 400; }
 .run-bar { flex: 1; height: 2px; background: var(--line); }
 .run-bar i { display: block; height: 100%; background: var(--ember); transform: scaleX(0); transform-origin: left; }
+
+/* Tarjeta de cierre cuando hay más de 7 proyectos: el número de los que faltan y el enlace a /proyectos. */
+.more-card { justify-content: center; align-items: flex-start; gap: 12px; min-height: 260px; border-style: dashed; color: var(--bone); text-decoration: none; }
+.more-card:hover, .more-card:focus-visible { border-style: solid; border-color: var(--ember); }
+.more-card:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+.more-n { color: var(--ember); font: 900 clamp(48px, 6vw, 72px)/1 'Archivo', sans-serif; letter-spacing: -.03em; }
+.more-t { color: var(--steel); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.more-go { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; color: var(--ember); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.more-go svg { width: 14px; height: 14px; }

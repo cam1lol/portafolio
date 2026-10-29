@@ -3,9 +3,9 @@ import { Injectable, signal } from '@angular/core';
 const STORAGE_KEY = 'ca-sound';
 
 /**
- * Optional interface sounds, off by default (toggle in the header and Ctrl+K). Synthesized with the
- * Web Audio API: no audio files to download. The AudioContext is created on the first sound after
- * the visitor turned sound on, which is always right after a click (browser autoplay rules).
+ * Sonidos de interfaz opcionales, apagados por defecto (botón en la cabecera y Ctrl+K). Sintetizados
+ * con la Web Audio API: no hay archivos de audio. El AudioContext se crea con el primer sonido tras
+ * activarlo, que siempre llega justo después de un clic (reglas de autoplay del navegador).
  */
 @Injectable({ providedIn: 'root' })
 export class SoundService {
@@ -13,7 +13,7 @@ export class SoundService {
   private ctx: AudioContext | null = null;
   private lastTick = 0;
 
-  /** Default from the admin (Escena), used only while the visitor has not toggled sound. */
+  /** Valor por defecto del admin (Escena); solo se usa mientras el visitante no haya tocado el sonido. */
   applyDefault(on: boolean): void {
     try {
       if (localStorage.getItem(STORAGE_KEY) !== null) return;
@@ -27,12 +27,12 @@ export class SoundService {
     try {
       localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
     } catch {
-      /* storage blocked: the choice lasts for this visit */
+      /* almacenamiento bloqueado: la elección dura solo esta visita */
     }
     if (next) this.click();
   }
 
-  /** Hovering a link, button or card: a very short high blip (throttled). */
+  /** Pasar sobre un enlace, botón o tarjeta: un pitido agudo muy corto (limitado en frecuencia). */
   tick(): void {
     const now = performance.now();
     if (now - this.lastTick < 60) return;
@@ -40,17 +40,17 @@ export class SoundService {
     this.tone(1900, 0.025, 0.035, 'sine');
   }
 
-  /** Pressing something. */
+  /** Pulsar algo. */
   click(): void {
     this.tone(620, 0.06, 0.07, 'triangle');
   }
 
-  /** A page or modal transition: a soft rising sweep. */
+  /** Transición de página o modal: un barrido suave ascendente. */
   whoosh(): void {
     this.sweep(180, 720, 0.32, 0.05);
   }
 
-  /** Easter egg: a low ember chord. */
+  /** Easter egg: un acorde grave. */
   ritual(): void {
     [110, 164.8, 220].forEach((freq, i) => this.tone(freq, 1.6, 0.06, 'sawtooth', i * 0.08));
   }

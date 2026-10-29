@@ -17,7 +17,7 @@ export class ModelUploadComponent implements OnInit {
   private readonly supabase = inject(SupabaseService);
   private readonly modelAssets = inject(ModelAssetsService);
 
-  /** `library`: upload only (Modelos 3D page), no picker and no "remove from block". */
+  /** `library`: solo subir (página Modelos 3D), sin selector y sin "quitar del bloque". */
   @Input() mode: 'block' | 'library' = 'block';
   @Input() value = '';
   @Input() metadata: ModelAssetMetadata = { title: '', author: '', license: '' };

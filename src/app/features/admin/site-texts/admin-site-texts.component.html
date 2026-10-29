@@ -20,7 +20,7 @@
     <p class="sub">Cargando textos…</p>
   } @else {
     @for (group of groups; track group.id; let groupIndex = $index) {
-      <form class="group-card" [id]="'group-' + group.id" [formGroup]="forms[group.id]" (ngSubmit)="save(group)" novalidate>
+      <form class="group-card" [id]="'group-' + group.id" [formGroup]="forms[group.id]" (ngSubmit)="save(group)" (appSaveShortcut)="saveState()[group.id] !== 'saving' && save(group)" saveShortcutScoped novalidate>
         <div class="group-head">
           <div>
             <span class="group-index-no mono">{{ (groupIndex + 1).toString().padStart(2, '0') }}</span>

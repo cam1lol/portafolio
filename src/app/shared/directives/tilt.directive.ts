@@ -3,10 +3,10 @@ import { Directive, ElementRef, NgZone, OnDestroy, inject } from '@angular/core'
 const MAX_DEG = 6;
 
 /**
- * Mouse: the card leans toward the cursor (up to 6 degrees) with an ember glare that follows it;
- * pressing flattens it at once, so the open transition starts from a straight card.
- * Touch: the card flips in (3D) with one glare sweep the first time it scrolls into view, and
- * sinks with a flash when tapped. Nothing with reduced motion.
+ * Ratón: la tarjeta se inclina hacia el cursor (hasta 6 grados) con un reflejo que lo sigue; al pulsar
+ * se aplana al instante, así la transición de apertura parte de una tarjeta recta.
+ * Táctil: la tarjeta entra girando en 3D con un barrido de reflejo la primera vez que aparece, y se
+ * hunde con un destello al tocarla. Nada con movimiento reducido.
  */
 @Directive({ selector: '[appTilt]', standalone: true })
 export class TiltDirective implements OnDestroy {
@@ -78,7 +78,7 @@ export class TiltDirective implements OnDestroy {
     this.sweep(0.22, 450, 0);
   };
 
-  /** One diagonal ember highlight across the card. */
+  /** Un reflejo diagonal sobre la tarjeta. */
   private sweep(strength: number, duration: number, delay: number): void {
     const glare = this.ensureGlare();
     glare.style.transition = 'none';

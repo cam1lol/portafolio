@@ -4,9 +4,9 @@ const SEEN_KEY = 'ca-boot-seen-v1';
 const DURATION = 950;
 
 /**
- * First-visit intro (< 1 s): the CA mark draws itself in HUD lines with the Bogota coordinates,
- * then the screen opens upward onto the hero, which has been rendering behind it. Shown once per
- * browser, only when landing on the home page; any click or key skips it.
+ * Intro de la primera visita (< 1 s): la marca CA se dibuja en líneas HUD con las coordenadas de
+ * Bogotá y la pantalla se abre hacia arriba sobre el hero, que ya se estaba pintando detrás. Se ve
+ * una vez por navegador, solo al entrar por la portada; cualquier clic o tecla la salta.
  */
 @Component({
   selector: 'app-boot',
@@ -45,7 +45,7 @@ export class BootComponent implements OnInit, OnDestroy {
   private timer: ReturnType<typeof setTimeout> | undefined;
   private readonly onKey = () => this.finish();
 
-  /** Only on a first visit that lands on the home page, and never with reduced motion. */
+  /** Solo en una primera visita que entra por la portada, y nunca con movimiento reducido. */
   static shouldShow(path: string): boolean {
     if (path !== '/' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
     try {
@@ -53,7 +53,7 @@ export class BootComponent implements OnInit, OnDestroy {
       localStorage.setItem(SEEN_KEY, '1');
       return true;
     } catch {
-      return false; // storage blocked (private mode): skip rather than show it on every visit
+      return false; // almacenamiento bloqueado (modo privado): mejor saltarla que mostrarla en cada visita
     }
   }
 

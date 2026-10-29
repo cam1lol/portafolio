@@ -49,7 +49,7 @@ import { exampleChapter } from './block-examples';
 import { ProjectChaptersComponent } from '../../project-page/project-chapters.component';
 import { Project } from '../../../core/data/project.model';
 
-/** Name and one-line purpose of each chapter type, shown in the type picker and the folded headers. */
+/** Nombre y propósito en una línea de cada tipo de capítulo, para el selector de tipo y las cabeceras plegadas. */
 const CHAPTER_INFO: Record<ChapterType, { label: string; desc: string }> = {
   text: { label: 'Texto', desc: 'Un título y párrafos: el relato del proyecto.' },
   image: { label: 'Imagen', desc: 'Una imagen grande, contenida o a todo el ancho.' },
@@ -59,7 +59,7 @@ const CHAPTER_INFO: Record<ChapterType, { label: string; desc: string }> = {
   model: { label: 'Modelo 3D', desc: 'Un GLB de tu biblioteca que se puede girar.' },
 };
 
-/** Repeatable detail lists and the factory that builds a new empty item for each. */
+/** Listas repetibles de detalle y la fábrica que crea un elemento vacío nuevo para cada una. */
 const LIST_FACTORIES = {
   results: resultGroup,
   screens: screenGroup,
@@ -89,7 +89,7 @@ function writePref(key: string, value: string): void {
     localStorage.setItem(PREFS_KEY, JSON.stringify({ ...prefs, [key]: value }));
   } catch {}
 }
-/** Lists checked for errors on save (chapters are built by type, so they are not in LIST_FACTORIES). */
+/** Listas que se revisan en busca de errores al guardar (los capítulos se construyen por tipo, no están en LIST_FACTORIES). */
 const LIST_KEYS = [...Object.keys(LIST_FACTORIES), 'chapters'] as (DetailList | 'chapters')[];
 
 const NAME_MAX = 120;
@@ -138,16 +138,16 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   private readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly translator = inject(TranslatorService);
   private readonly suggestionsService = inject(FormSuggestionsService);
-  /** What was already used in other projects, offered as suggestions (stack, labels, roles...). */
+  /** Lo que ya se usó en otros proyectos, ofrecido como sugerencia (stack, etiquetas, roles...). */
   protected readonly suggestions = this.suggestionsService.suggestions;
-  /** The admin shell gives this page more of the screen and an icon-only menu. */
+  /** El marco del admin da a esta página más pantalla y un menú solo de iconos. */
   readonly wideLayout = true;
 
-  // ---- Editing preferences (remembered in this browser)
+  // ---- Preferencias de edición (se recuerdan en este navegador)
 
-  /** `es`: only Spanish fields on screen, English filled by the translator; `both`: side by side. */
+  /** `es`: solo los campos en español en pantalla, el inglés lo rellena el traductor; `both`: lado a lado. */
   protected readonly editLang = signal<'es' | 'both'>(readPref('lang') === 'both' ? 'both' : 'es');
-  /** The long explanations under fields and steps. */
+  /** Las explicaciones largas bajo los campos y los pasos. */
   protected readonly hintsOn = signal(readPref('hints') !== 'off');
 
   protected setEditLang(lang: 'es' | 'both'): void {
@@ -160,7 +160,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     writePref('hints', this.hintsOn() ? 'on' : 'off');
   }
 
-  /** Spanish/English pairs of the step on screen whose English side is still empty. */
+  /** Pares español/inglés del paso en pantalla cuyo lado en inglés sigue vacío. */
   protected readonly missingInStep = computed(() => {
     this.value();
     this.translator.version();
@@ -172,7 +172,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     return translationPairs(this.form).filter((pair) => step.controls.some((control) => containsControl(control, pair.es)));
   }
 
-  /** Highlights are two lists: English rows missing for the Spanish ones (Historia step). */
+  /** Los puntos destacados son dos listas: filas en inglés que faltan para las españolas (paso Historia). */
   private missingHighlights(): number {
     if (this.steps[this.activeStep()].id !== 'step-story') return 0;
     return Math.max(0, this.highlightsEs.length - this.highlightsEn.length);
@@ -229,7 +229,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   });
 
   private readonly c = this.form.controls;
-  /** Ordered by what the visitor sees: who it is, the card, the story, the data, then the extras. */
+  /** En el orden en que lo ve el visitante: quién es, la tarjeta, la historia, los datos y luego los extras. */
   protected readonly steps: FormStep[] = [
     { id: 'step-identity', label: 'Identidad', controls: [this.c.name, this.c.slug, this.c.typeLabel, this.c.icon, this.c.stack] },
     { id: 'step-card', label: 'Tarjeta y portada', controls: [this.c.previewImage, this.c.previewVideo, this.c.demoVideoUrl, this.c.repoUrl, this.c.liveUrl] },
@@ -241,14 +241,14 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     { id: 'step-publish', label: 'Revisar y publicar', controls: [this.c.published, this.c.featured] },
   ];
 
-  /** Step on screen (the rail shows one at a time). */
+  /** Paso en pantalla (el carril muestra uno a la vez). */
   protected readonly activeStep = signal(0);
   protected readonly lastStep = this.steps.length - 1;
 
-  /** Form value as a signal, for the card preview and the review step. */
+  /** Valor del formulario como señal, para la vista previa de la tarjeta y el paso de revisión. */
   protected readonly value = signal(this.form.getRawValue());
 
-  /** "Revisar y publicar": every public section, whether it will show and where to fill it. */
+  /** "Revisar y publicar": cada sección pública, si se va a mostrar y dónde rellenarla. */
   protected readonly review = computed(() => {
     const v = this.value();
     const has = (text: string) => text.trim() !== '';
@@ -273,9 +273,9 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     ];
   });
 
-  /** Items of the repeatable lists whose body is unfolded (new ones open, loaded ones folded). */
+  /** Elementos de las listas repetibles con el cuerpo desplegado (los nuevos abiertos, los cargados plegados). */
   private readonly openItems = signal(new Set<AbstractControl>());
-  /** Factory for new tags, so they keep the list item validators. */
+  /** Fábrica de etiquetas nuevas, para que conserven los validadores de los elementos de lista. */
   protected readonly newListItem = listItemControl;
 
   protected readonly isEditMode = signal(false);
@@ -284,12 +284,12 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   protected readonly errorMessage = signal('');
 
   private projectId: string | null = null;
-  /** The slug follows the name until it is edited by hand (or the project already exists). */
+  /** El slug sigue al nombre hasta que se edita a mano (o el proyecto ya existe). */
   private slugEdited = false;
 
   constructor() {
     this.suggestionsService.load();
-    // The address check needs the other projects: re-run it when they arrive.
+    // La comprobación de la dirección necesita los demás proyectos: se repite cuando llegan.
     effect(() => {
       this.suggestions();
       untracked(() => this.form.controls.slug.updateValueAndValidity({ emitEvent: false }));
@@ -299,7 +299,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     });
     this.form.valueChanges.subscribe(() => this.value.set(this.form.getRawValue()));
 
-    // A new step starts at the top of the form, not where the previous one was scrolled to.
+    // Un paso nuevo empieza arriba del formulario, no donde estaba el scroll del anterior.
     let first = true;
     effect(() => {
       this.activeStep();
@@ -330,7 +330,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     });
   }
 
-  /** Item-level problem (half-filled result, video without file...), once the item was touched. */
+  /** Problema de un elemento (resultado a medias, video sin archivo...), cuando ya se tocó. */
   protected itemError(item: AbstractControl): string | null {
     return item.touched || item.dirty ? itemErrorMessage(item) : null;
   }
@@ -339,7 +339,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     return item.invalid && item.touched;
   }
 
-  /** First filled field of an item, for its folded header. */
+  /** Primer campo relleno de un elemento, para su cabecera plegada. */
   protected itemSummary(item: AbstractControl, ...keys: string[]): string {
     for (const key of keys) {
       const value = item.get(key)?.value;
@@ -348,7 +348,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     return '';
   }
 
-  /** Thumbnail for a folded item: the first of its fields that holds an image. */
+  /** Miniatura de un elemento plegado: el primero de sus campos que tenga una imagen. */
   protected itemThumb(item: AbstractControl, ...keys: string[]): string {
     for (const key of keys) {
       const value = item.get(key)?.value;
@@ -357,10 +357,10 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     return '';
   }
 
-  // ---- Live preview (the real project page, fed with the form) and the private draft link
+  // ---- Vista previa en vivo (la página real del proyecto, alimentada por el formulario) y el enlace privado de borrador
 
   protected readonly previewOpen = signal(false);
-  /** Rebuilt on every change of the form (value() follows it). */
+  /** Se reconstruye con cada cambio del formulario (value() lo sigue). */
   protected readonly previewProject = computed<Project>(() => {
     this.value();
     return { ...this.buildPayload(), id: this.projectId ?? 'preview' };
@@ -370,7 +370,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.previewOpen.set(open);
   }
 
-  /** null: not loaded yet or migration 0014 missing; '' while loading. */
+  /** null: aún no cargado o falta la migración 0014; '' mientras carga. */
   protected readonly previewToken = signal<string | null>(null);
   protected readonly draftLink = computed(() => {
     const token = this.previewToken();
@@ -405,7 +405,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     });
   }
 
-  // ---- "¿Cómo se ve?": one section of the real page (yours, or an example while it is empty)
+  // ---- "¿Cómo se ve?": una sección de la página real (la tuya, o un ejemplo mientras está vacía)
 
   protected readonly exampleOpen = signal<string | null>(null);
 
@@ -413,11 +413,11 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.exampleOpen.update((open) => (open === id ? null : id));
   }
 
-  /** Chapter type under the pointer (or focus) in the picker, previewed live next to the cards. */
+  /** Tipo de capítulo bajo el puntero (o el foco) en el selector, con vista previa en vivo junto a las tarjetas. */
   protected readonly hoverChapterType = signal<ChapterType>('text');
   protected readonly hoverChapter = computed(() => [exampleChapter(this.hoverChapterType())]);
 
-  // ---- "Organizar la página": order of the project page sections
+  // ---- "Organizar la página": orden de las secciones de la página del proyecto
 
   protected readonly organizerOpen = signal(false);
 
@@ -428,26 +428,26 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.toast.show('Orden de la página actualizado. Se guarda con el proyecto.');
   }
 
-  // ---- Pickers and checks
+  // ---- Selectores y comprobaciones
 
-  /** Years offered for the fact sheet: next year back to 2010. */
+  /** Años que se ofrecen para la ficha: del año que viene hacia atrás hasta 2010. */
   protected readonly years = Array.from({ length: new Date().getFullYear() + 2 - 2010 }, (_, i) => String(new Date().getFullYear() + 1 - i));
 
-  /** Code languages: the ones already used first, then the common ones. */
+  /** Lenguajes de código: primero los ya usados, luego los comunes. */
   protected readonly languageOptions = computed(() => rank([...this.suggestions().languages, ...COMMON_LANGUAGES]));
 
-  /** Another project already has this address (its page would be unreachable). */
+  /** Otro proyecto ya tiene esta dirección (su página quedaría inaccesible). */
   private slugTaken(slug: string): { slugTaken: true } | null {
     const taken = this.suggestions?.().slugs.some((entry) => entry.slug === slug && entry.id !== this.projectId);
     return taken ? { slugTaken: true } : null;
   }
 
-  // ---- Focus point of the card image (what stays visible when it is cropped)
+  // ---- Punto de enfoque de la imagen de la tarjeta (lo que se ve siempre al recortarla)
 
   protected readonly focusPoints = MEDIA_FOCUS_POINTS;
   protected readonly focusLabels = ['Arriba a la izquierda', 'Arriba', 'Arriba a la derecha', 'Izquierda', 'Centro', 'Derecha', 'Abajo a la izquierda', 'Abajo', 'Abajo a la derecha'];
 
-  /** Segmented choices (story layout, results style): set the value and mark it for saving. */
+  /** Opciones segmentadas (diseño de la historia, estilo de resultados): fija el valor y lo marca para guardar. */
   protected setChoice<T>(control: FormControl<T>, value: T): void {
     control.setValue(value);
     control.markAsDirty();
@@ -458,7 +458,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.form.controls.mediaFocus.markAsDirty();
   }
 
-  // ---- Chapters
+  // ---- Capítulos
 
   protected readonly chapterTypes: { type: ChapterType; label: string; desc: string }[] = CHAPTER_TYPES.map((type) => ({ type, ...CHAPTER_INFO[type] }));
   protected readonly chapterPickerOpen = signal(false);
@@ -493,7 +493,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     moveItem(this.form.controls.chapters, index, delta);
   }
 
-  /** Folded header of a chapter: what identifies it for its type. */
+  /** Cabecera plegada de un capítulo: lo que lo identifica según su tipo. */
   protected chapterSummary(chapter: ChapterGroup): string {
     const keys: Record<ChapterType, string[]> = {
       text: ['titleEs', 'titleEn', 'bodyEs'],
@@ -531,18 +531,18 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.form.markAsDirty();
   }
 
-  /** Uploading the demo also gives a hover clip: use it for the card if there is none yet. */
+  /** Subir la demo también da un clip de hover: se usa para la tarjeta si aún no tiene. */
   onDemoUploaded(upload: MediaUpload): void {
     if (upload.preview && !this.form.controls.previewVideo.value) this.onPreviewVideoChange(upload.preview);
   }
 
-  /** An uploaded video brings its own poster, hover clip and duration; they replace the previous video's. */
+  /** Un video subido trae su propio póster, clip de hover y duración; sustituyen a los del video anterior. */
   onVideoUploaded(group: FormGroup, upload: MediaUpload): void {
     group.patchValue({ poster: upload.poster ?? '', preview: upload.preview ?? '', ...(upload.duration ? { duration: upload.duration } : {}) });
     group.markAsDirty();
   }
 
-  /** A screen's still defaults to the poster of its uploaded video. */
+  /** La imagen de una pantalla toma por defecto el póster de su video subido. */
   onScreenUploaded(group: FormGroup, upload: MediaUpload): void {
     if (upload.poster && !group.get('image')?.value) group.patchValue({ image: upload.poster });
   }
@@ -550,6 +550,9 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const from = this.route.snapshot.queryParamMap.get('from');
+    // ?paso=step-card (desde los pendientes del dashboard): abre en el paso que arregla el pendiente.
+    const step = this.steps.findIndex((s) => s.id === this.route.snapshot.queryParamMap.get('paso'));
+    if (step >= 0) this.activeStep.set(step);
     if (id) {
       this.projectId = id;
       this.isEditMode.set(true);
@@ -562,7 +565,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     this.watchLocalDraft();
   }
 
-  /** "Duplicar": a new project that starts with everything from another one, unpublished, new address. */
+  /** "Duplicar": un proyecto nuevo que empieza con todo lo de otro, sin publicar y con dirección nueva. */
   private loadAsCopy(sourceId: string): void {
     this.loading.set(true);
     this.projectsService.getById(sourceId).subscribe({
@@ -585,13 +588,13 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     });
   }
 
-  // ---- Local draft: what you were writing survives a closed tab or a lost connection
+  // ---- Borrador local: lo que escribías sobrevive a una pestaña cerrada o a una conexión perdida
 
   private get draftKey(): string {
     return `ca-project-draft-${this.projectId ?? 'new'}`;
   }
 
-  /** A newer unsaved version of this form found in the browser (offered, never applied silently). */
+  /** Una versión más nueva y sin guardar de este formulario encontrada en el navegador (se ofrece, nunca se aplica en silencio). */
   protected readonly localDraft = signal<{ at: number; payload: ProjectInput } | null>(null);
 
   private checkLocalDraft(): void {
@@ -724,7 +727,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
   protected readonly improvementStatuses = IMPROVEMENT_STATUSES;
   protected readonly statusLabels = { planned: 'Planeada', in_progress: 'En curso', done: 'Hecha' };
 
-  /** "¿Cuántos videos?": value of the number field next to the button. */
+  /** "¿Cuántos videos?": valor del campo numérico junto al botón. */
   protected readonly videoCount = signal(1);
 
   createVideoSlots(): void {
@@ -753,7 +756,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     moveItem(this.form.controls[list] as unknown as FormArray, index, delta);
   }
 
-  /** Media pickers inside list items write the chosen path into that item's control. */
+  /** Los selectores de medios dentro de los elementos de lista escriben la ruta elegida en el control de ese elemento. */
   setItemPath(group: FormGroup, key: string, path: string): void {
     group.get(key)?.setValue(path);
     group.markAsDirty();
@@ -765,7 +768,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
 
   protected readonly maxHotspots = MAX_HOTSPOTS;
 
-  // ---- Mobile version: a vertical clip and up to six vertical captures (empty ones are not saved).
+  // ---- Versión móvil: un clip vertical y hasta seis capturas verticales (las vacías no se guardan).
 
   protected readonly maxMobileImages = MAX_MOBILE_IMAGES;
   protected readonly mobileImages = computed(() => this.value().mobileImages);
@@ -825,12 +828,12 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
 
     if (this.form.invalid) {
       this.errorMessage.set('Revisa los campos marcados antes de guardar.');
-      // Unfold the items with errors and open the first step that has one, then focus its field.
+      // Despliega los elementos con errores y abre el primer paso que tenga uno; luego enfoca su campo.
       const invalidItems = LIST_KEYS.flatMap((list) => (this.form.controls[list] as unknown as FormArray).controls.filter((item) => item.invalid));
       this.openItems.update((open) => new Set([...open, ...invalidItems]));
       const step = this.steps.findIndex((s) => s.controls.some((control) => control.invalid));
       if (step >= 0) this.activeStep.set(step);
-      // An English field with an error would be folded away in Spanish-only mode: show both languages.
+      // Un campo en inglés con error quedaría plegado en modo solo español: se muestran los dos idiomas.
       if (translationPairs(this.form).some((pair) => pair.en.invalid)) this.setEditLang('both');
       setTimeout(() => {
         const fieldset = step >= 0 ? document.getElementById(this.steps[step].id) : null;
@@ -868,7 +871,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     });
   }
 
-  /** The form as the payload saved to Supabase (also feeds the live preview). */
+  /** El formulario como el payload que se guarda en Supabase (también alimenta la vista previa). */
   private buildPayload(): ProjectInput {
     const value = this.form.getRawValue();
     return {
@@ -904,7 +907,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     if (this.previewOpen()) this.togglePreview(false);
   }
 
-  /** Ctrl/Cmd + S saves; Alt + arrows move between steps. */
+  /** Ctrl/Cmd + S guarda; Alt + flechas cambia de paso. */
   @HostListener('document:keydown', ['$event'])
   protected onShortcut(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
@@ -916,7 +919,7 @@ export class AdminProjectFormComponent implements OnInit, HasUnsavedChanges {
     }
   }
 
-  /** "Revisar y publicar": things worth fixing before publishing, each with the step that fixes it. */
+  /** "Revisar y publicar": cosas que conviene arreglar antes de publicar, cada una con el paso que la arregla. */
   protected readonly quality = computed(() => {
     const v = this.value();
     this.translator.version();

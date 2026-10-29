@@ -3,7 +3,7 @@ import { Project } from '../../../core/data/project.model';
 import { PAGE_SECTIONS, effectiveSectionOrder } from '../../../core/data/project-details';
 import { ProjectPageComponent } from '../../project-page/project-page.component';
 
-/** Whether a movable section will show on the page with the project as it is now. */
+/** Si una sección movible se verá en la página con el proyecto tal como está ahora. */
 function sectionHasContent(p: Project, id: string): boolean {
   switch (id) {
     case 's-demo': return !!p.demoVideoUrl && !!(p.previewVideo || p.previewImage);
@@ -23,9 +23,9 @@ function sectionHasContent(p: Project, id: string): boolean {
 }
 
 /**
- * "Organizar la página": the order of the project page sections. Drag the rows (or use the arrows),
- * watch the outline move, and check the real page on the right. Empty sections keep their place but
- * do not show until they get content. The order is saved with the project.
+ * "Organizar la página": el orden de las secciones de la página del proyecto. Arrastra las filas (o usa
+ * las flechas), mira cómo se mueve el esquema y comprueba la página real a la derecha. Las secciones
+ * vacías conservan su sitio pero no se ven hasta tener contenido. El orden se guarda con el proyecto.
  */
 @Component({
   selector: 'app-page-organizer',
@@ -74,7 +74,7 @@ export class PageOrganizerComponent implements AfterViewInit {
     this.apply(effectiveSectionOrder([]), null);
   }
 
-  // ---- Drag and drop (mouse); the arrows do the same with keyboard or touch.
+  // ---- Arrastrar y soltar (ratón); las flechas hacen lo mismo con teclado o táctil.
 
   protected onDragStart(event: DragEvent, id: string): void {
     this.dragged = id;
@@ -110,8 +110,8 @@ export class PageOrganizerComponent implements AfterViewInit {
   }
 
   /**
-   * New order with a FLIP animation: rows and outline blocks glide from where they were to where
-   * they go (transform only, compositor-friendly).
+   * Orden nuevo con animación FLIP: las filas y los bloques del esquema se deslizan de donde estaban a
+   * donde van (solo transform, apto para el compositor).
    */
   private apply(order: string[], focus: string | null): void {
     const host = this.dialog().nativeElement;

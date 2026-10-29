@@ -17,7 +17,7 @@
         @if (visibility()['clients'] !== false) { <app-clients /> }
       }
       @case ('lab') {
-        <!-- Deferred until the browser is idle: off the initial bundle, loaded before anyone scrolls there. -->
+        <!-- Diferido hasta que el navegador está libre: fuera del bundle inicial, pero cargado antes de que alguien llegue con el scroll. -->
         @if (visibility()['lab'] !== false) { @defer (on idle) { <app-lab /> } }
       }
       @case ('log') {
@@ -36,7 +36,7 @@
         @if (visibility()['roadmap'] !== false) { <app-roadmap /> }
       }
       @case ('comments') {
-        <!-- Deferred (forms code); a placeholder keeps the page height so the layout does not jump. -->
+        <!-- Diferido (código de formularios); un marcador conserva la altura para que la página no salte. -->
         @if (visibility()['comments'] !== false) {
           @defer (on viewport; prefetch on idle) { <app-comments /> } @placeholder { <div style="min-height: 480px"></div> }
         }

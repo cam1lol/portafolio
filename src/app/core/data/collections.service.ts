@@ -2,10 +2,10 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
-/** Simple ordered lists editable from the admin (migrations 0005, 0012 and 0014). */
+/** Listas ordenadas sencillas que se editan desde el admin (migraciones 0005, 0012 y 0014). */
 export type CollectionTable = 'services' | 'roadmap_items' | 'ticker_items' | 'clients' | 'testimonials' | 'lab_items' | 'log_entries';
 
-/** Rows keep Supabase's snake_case column names; field names in the admin config match them 1:1. */
+/** Las filas conservan los nombres snake_case de Supabase; los campos de la config del admin coinciden 1:1. */
 export interface CollectionRow {
   id: string;
   sort_order: number;
@@ -20,8 +20,8 @@ export class CollectionsService {
   private readonly supabase = inject(SupabaseService);
 
   /**
-   * Public read of published rows. Emits `null` when the query fails (e.g. migration 0005
-   * not applied yet) so sections can keep their built-in content instead of rendering empty.
+   * Lectura pública de las filas publicadas. Emite `null` si la consulta falla (p. ej. falta la
+   * migración 0005), para que las secciones usen su contenido de serie en vez de salir vacías.
    */
   getPublished(table: CollectionTable): Observable<CollectionRow[] | null> {
     return from(
@@ -55,7 +55,7 @@ export class CollectionsService {
     );
   }
 
-  /** New rows go to the end of the list. */
+  /** Las filas nuevas van al final de la lista. */
   create(table: CollectionTable, values: CollectionValues): Observable<void> {
     return from(
       this.supabase.client.from(table).select('sort_order').order('sort_order', { ascending: false }).limit(1),

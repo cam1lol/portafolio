@@ -1,5 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
 :root {
   --ink: #0A0B0D;
   --graphite: #101217;
@@ -13,15 +11,15 @@
   --ember-soft: rgba(242, 84, 27, .10);
   --good: #46C68B;
   --r: 2px;
-  --maxw: 1240px; /* wider on large screens, see the end of this file */
+  --maxw: 1240px; /* más ancho en pantallas grandes, ver el final de este archivo */
   --ease: cubic-bezier(.2, .7, .2, 1);
   --scrim: rgba(10, 11, 13, .72);
 }
 
-/* Modo dia: fondo piedra calido (menos brillo que el crema anterior) con superficies
-   mas claras encima, para que las tarjetas se lean como capas elevadas. Texto secundario
-   >= 4.5:1. El ember se oscurece un poco solo aqui para que el texto en ember sea legible
-   sobre fondo claro (4.3:1 frente a 3:1); en modo noche sigue siendo #F2541B. */
+/* Modo día: fondo piedra cálido (menos brillo que el crema anterior) con superficies más claras
+   encima, para que las tarjetas se lean como capas elevadas. Texto secundario >= 4.5:1. El ember se
+   oscurece un poco solo aquí para que el texto en ember sea legible sobre fondo claro (4.3:1 frente
+   a 3:1); en modo noche sigue siendo #F2541B. */
 [data-theme="day"] {
   --ink: #E6E2D9;
   --graphite: #F1EEE7;
@@ -39,13 +37,17 @@
 
 * {
   box-sizing: border-box;
+  /* Sin el rectángulo gris que los navegadores móviles pintan al tocar algo clicable. */
+  -webkit-tap-highlight-color: transparent;
   margin: 0;
   padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
-  /* Anchor jumps (#contact, #work...) land below the sticky header instead of under it. */
+  /* Barra de scroll con los colores del sistema (pulgar sobre el fondo de la página), también en modo día. */
+  scrollbar-color: var(--line) var(--ink);
+  /* Los saltos a anclas (#contact, #work...) caen bajo la cabecera fija y no debajo de ella. */
   scroll-padding-top: calc(var(--site-header-h) + 12px);
 }
 
@@ -110,7 +112,7 @@ app-root {
   transform: none;
 }
 
-/* Scan reveal (ScanRevealDirective): a cover lifts while an accent line sweeps down, once. */
+/* Revelado tipo escáner (ScanRevealDirective): una tapa se levanta mientras una línea de acento baja, una sola vez. */
 .scan-reveal { position: relative; overflow: hidden; }
 .scan-reveal:not(.scan-done)::before,
 .scan-reveal:not(.scan-done)::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; }
@@ -165,40 +167,40 @@ app-root {
   }
 }
 
-/* Height of the sticky site header, so other sticky bars (admin) sit just below it. */
+/* Altura de la cabecera fija del sitio, para que otras barras fijas (admin) queden justo debajo. */
 :root { --site-header-h: 69px; }
 
-/* Large screens: the content column grows with the screen so it does not look boxed in a
-   narrow strip; headings scale with it (their clamp() caps are sized for the widest column). */
+/* Pantallas grandes: la columna de contenido crece con la pantalla para no verse encajonada en una
+   franja estrecha; los titulares escalan con ella (sus topes de clamp() están pensados para la columna más ancha). */
 @media (min-width: 1600px) { :root { --maxw: 1440px; } }
 @media (min-width: 1880px) { :root { --maxw: 1600px; } }
-/* TVs and very large monitors (2400 CSS px and up). */
+/* Televisores y monitores muy grandes (2400 px CSS o más). */
 @media (min-width: 2400px) { :root { --maxw: 2000px; } }
 @media (min-width: 3200px) { :root { --maxw: 2800px; } }
 
 /* ---------------------------------------------------------------------------
-   View transitions: project card <-> project page, and home card <-> modal.
-   ProjectTransitionService sets html.vt-forward / html.vt-back (route changes) or
-   html.vt-modal (home modal), and --vt-x / --vt-y (last click). The active card, the
-   modal panel and the page share project-card / project-title / project-media.
+   View transitions: tarjeta de proyecto <-> página del proyecto, y tarjeta de la portada <-> modal.
+   ProjectTransitionService pone html.vt-forward / html.vt-back (cambios de ruta) o html.vt-modal
+   (modal de la portada), y --vt-x / --vt-y (último clic). La tarjeta activa, el panel del modal y la
+   página comparten project-card / project-title / project-media.
    --------------------------------------------------------------------------- */
 
 :root {
-  /* Spring with a light (~4%) overshoot, for the morphing card, title and media. */
+  /* Muelle con un rebote ligero (~4%), para la tarjeta, el título y los medios que se transforman. */
   --ease-spring: linear(0, .06 3%, .24 8%, .52 15%, .78 23%, .95 32%, 1.03 41%, 1.045 48%, 1.03 57%, 1.005 70%, .998 82%, 1);
   --vt-x: 50vw;
   --vt-y: 50vh;
 }
 
-/* Chrome that must not move with the page. */
+/* Marco que no debe moverse con la página. */
 app-root > header { view-transition-name: site-header; }
 app-ring-layer { view-transition-name: site-bg; }
 app-star-rain { view-transition-name: site-rain; }
-/* The HUD names itself on .hud (hud.component.css): naming the host would make it a layer painted
-   under the page, so the progress bar and index would hide behind opaque cards. */
+/* El HUD se nombra en .hud (hud.component.css): nombrar el host lo convertiría en una capa pintada
+   bajo la página, y la barra de progreso y el índice quedarían detrás de las tarjetas opacas. */
 
-/* HUD frame on the project page: the end point of the card growing to full screen.
-   Invisible at rest; visible only while a route transition captures it. */
+/* Marco HUD de la página del proyecto: el punto final de la tarjeta que crece a pantalla completa.
+   Invisible en reposo; solo se ve mientras una transición de ruta lo captura. */
 .vt-frame {
   position: fixed;
   inset: 10px;
@@ -224,14 +226,14 @@ app-star-rain { view-transition-name: site-rain; }
 html.vt-forward .vt-frame,
 html.vt-back .vt-frame { opacity: 1; }
 
-/* Ember ring riding the edge of the circular reveal (lives in the new page, so it animates live). */
+/* Anillo de acento que recorre el borde de la apertura circular (vive en la página nueva, así se anima en vivo). */
 .vt-ring {
   position: fixed;
   top: var(--vt-y);
   left: var(--vt-x);
   z-index: 60;
-  /* Grown with transform (compositor only, no layout per frame); 60vmax x5 reaches the same
-     radius as the circular reveal while keeping the GPU texture small. */
+  /* Crece con transform (solo compositor, sin layout por fotograma); 60vmax x5 llega al mismo radio
+     que la apertura circular manteniendo pequeña la textura de la GPU. */
   display: none;
   width: 60vmax;
   height: 60vmax;
@@ -244,7 +246,7 @@ html.vt-back .vt-frame { opacity: 1; }
 }
 html.vt-forward .vt-ring { display: block; animation: vt-ring .78s cubic-bezier(.3, .7, .2, 1) both; }
 
-/* Navigations that should not animate (same page, admin, after the swipe gesture): instant. */
+/* Navegaciones que no deben animarse (misma página, admin, tras el gesto de deslizar): instantáneas. */
 html.vt-instant::view-transition-group(*),
 html.vt-instant::view-transition-old(*),
 html.vt-instant::view-transition-new(*) { animation: none !important; }
@@ -253,8 +255,8 @@ html.vt-instant::view-transition-new(*) { animation: none !important; }
   animation-duration: .7s;
   animation-timing-function: var(--ease-spring);
 }
-/* Title and media: both snapshots scale with the moving box, so it reads as one element growing
-   (not a small and a big copy cross-fading at their own sizes). */
+/* Título y medios: las dos capturas escalan con la caja que se mueve, así se lee como un solo elemento
+   que crece (no una copia pequeña y otra grande fundiéndose cada una a su tamaño). */
 ::view-transition-old(project-title),
 ::view-transition-new(project-title) { height: 100%; width: auto; }
 ::view-transition-old(project-media),
@@ -262,29 +264,29 @@ html.vt-instant::view-transition-new(*) { animation: none !important; }
 ::view-transition-old(project-title) { animation: vt-fade-out .3s ease both; }
 ::view-transition-new(project-title) { animation: vt-fade-in .3s ease both; }
 
-/* ---- Desktop and tablet: open ---- */
-/* The new page opens as a circle from the click point; the old one dims away. */
+/* ---- Escritorio y tablet: abrir ---- */
+/* La página nueva se abre como un círculo desde el punto del clic; la anterior se oscurece. */
 html.vt-forward::view-transition-old(root) { animation: vt-dim-out .5s var(--ease) both; }
 html.vt-forward::view-transition-new(root) { animation: vt-reveal .78s cubic-bezier(.3, .7, .2, 1) both; }
-/* The card grows into the HUD frame: card content fades fast, the frame shows, then dissolves. */
+/* La tarjeta crece hasta el marco HUD: su contenido se desvanece rápido, el marco aparece y luego se disuelve. */
 html.vt-forward::view-transition-old(project-card) { animation: vt-fade-out .2s ease both; }
 html.vt-forward::view-transition-new(project-card) { animation: vt-frame-in-out .8s var(--ease) both; }
 
-/* ---- Desktop and tablet: back ---- */
+/* ---- Escritorio y tablet: volver ---- */
 html.vt-back::view-transition-group(*) { animation-duration: .55s; }
 html.vt-back::view-transition-old(root) { animation: vt-sink-out .4s var(--ease) both; }
 html.vt-back::view-transition-new(root) { animation: vt-fade-in .45s var(--ease) both; }
-/* The frame shrinks into the card, then the card shows through. */
+/* El marco se encoge hasta la tarjeta y luego la tarjeta asoma. */
 html.vt-back::view-transition-old(project-card) { animation: vt-fade-out .55s cubic-bezier(.7, 0, .8, .4) both; }
 html.vt-back::view-transition-new(project-card) { animation: vt-fade-in .3s ease .25s both; }
 
-/* Project page content enters in steps under the morphing title (frame excluded). */
+/* El contenido de la página del proyecto entra por pasos bajo el título que se transforma (sin el marco). */
 html.vt-forward app-project-page main > :not(.head, .vt-frame) { animation: vt-rise-in .6s var(--ease) .18s both; }
 html.vt-forward app-project-page main > :nth-child(n + 4):not(.vt-frame) { animation-delay: .26s; }
 html.vt-forward app-project-page main > :nth-child(n + 5):not(.vt-frame) { animation-delay: .34s; }
 
-/* ---- Home modal: the card grows into the panel ---- */
-/* The morph does the motion: the modal's own open / close CSS transition would be captured half-way. */
+/* ---- Modal de la portada: la tarjeta crece hasta el panel ---- */
+/* La transformación hace el movimiento: la transición CSS propia de abrir / cerrar el modal se capturaría a medias. */
 html.vt-modal app-modal .backdrop,
 html.vt-modal app-modal .modal { transition: none !important; }
 html.vt-modal::view-transition-group(*) { animation-duration: .55s; }
@@ -293,7 +295,7 @@ html.vt-modal::view-transition-new(root) { animation: vt-fade-in .3s var(--ease)
 html.vt-modal::view-transition-old(project-card) { animation: vt-fade-out .25s ease both; }
 html.vt-modal::view-transition-new(project-card) { animation: vt-fade-in .3s ease .15s both; }
 
-/* ---- Phones: app-like push; the previous screen slides back and darkens ---- */
+/* ---- Móviles: empuje tipo app; la pantalla anterior se desliza atrás y se oscurece ---- */
 @media (max-width: 760px) {
   [style*='view-transition-name'] { view-transition-name: none !important; }
   .vt-frame, .vt-ring { display: none; }
@@ -336,7 +338,7 @@ html.vt-modal::view-transition-new(project-card) { animation: vt-fade-in .3s eas
 @keyframes vt-pop-out { to { transform: translateX(100%); } }
 @keyframes vt-pop-in { from { transform: translateX(-30%); filter: brightness(.45); } }
 
-/* Reduced motion: no movement, just a short cross-fade. */
+/* Movimiento reducido: sin desplazamiento, solo un fundido corto. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*) { animation: none !important; }
   ::view-transition-old(*) { animation: vt-fade-out .15s linear both !important; }
@@ -346,14 +348,14 @@ html.vt-modal::view-transition-new(project-card) { animation: vt-fade-in .3s eas
 }
 
 /* ---------------------------------------------------------------------------
-   Icon motion: <app-icon animated> on public cards and in the admin icon picker.
-   Every icon breathes softly by default; the ones below get their own slow loop.
-   Icons are picked per project in the admin (shared/icons/icon-catalog.ts).
+   Movimiento de iconos: <app-icon animated> en las tarjetas públicas y en el selector de iconos del admin.
+   Cada icono respira suavemente por defecto; los de abajo tienen su propio bucle lento.
+   Los iconos se eligen por proyecto en el admin (shared/icons/icon-catalog.ts).
    --------------------------------------------------------------------------- */
 app-icon[data-anim] svg { overflow: visible; animation: icon-breathe 3.4s ease-in-out infinite; }
 app-icon[data-anim] svg * { transform-box: fill-box; transform-origin: center; }
 
-/* Loops on the whole icon */
+/* Bucles sobre el icono completo */
 app-icon[data-anim='box'] svg { animation: icon-spin 7s linear infinite; }
 app-icon[data-anim='aperture'] svg { animation: icon-turn 10s linear infinite; }
 app-icon[data-anim='cart'] svg { animation: icon-roll 2.4s var(--ease) infinite; }
@@ -362,7 +364,7 @@ app-icon[data-anim='pen'] svg { animation: icon-sway 3s ease-in-out infinite; tr
 app-icon[data-anim='smartphone'] svg { animation: icon-buzz 3.2s ease-in-out infinite; }
 app-icon[data-anim='rocket'] svg { animation: icon-float 2.6s ease-in-out infinite; }
 
-/* Loops on parts (the icon itself stays still) */
+/* Bucles sobre partes (el icono en sí queda quieto) */
 app-icon:is([data-anim='activity'], [data-anim='cpu'], [data-anim='layers'], [data-anim='terminal'], [data-anim='layout'],
   [data-anim='code'], [data-anim='globe'], [data-anim='database'], [data-anim='chart'], [data-anim='shield']) svg { animation: none; }
 app-icon[data-anim='activity'] svg path { stroke-dasharray: 64; animation: icon-draw 2.6s var(--ease) infinite; }
@@ -411,7 +413,7 @@ app-icon[data-anim='rocket'] svg path:first-child { animation: icon-flame .5s st
 
 
 /* ---------------------------------------------------------------------------
-   Line reveal (shared/directives/line-reveal.directive): words rise line by line.
+   Aparición por líneas (shared/directives/line-reveal.directive): las palabras suben línea a línea.
    --------------------------------------------------------------------------- */
 .lr-pending { opacity: 0; }
 .lr-play .lr-w { display: inline-block; animation: lr-rise .7s var(--ease) both; }
@@ -422,9 +424,9 @@ app-icon[data-anim='rocket'] svg path:first-child { animation: icon-flame .5s st
 }
 
 /* ---------------------------------------------------------------------------
-   Buttons: .fx-fill rises a fill from the bottom on hover (ember on outlined
-   buttons, bone on ember ones). .fx-ext adds an animated diagonal arrow to links
-   that open another site. Opt-in classes, so component button styles stay intact.
+   Botones: .fx-fill sube un relleno desde abajo al pasar el ratón (acento en los botones con borde,
+   hueso en los de acento). .fx-ext añade una flecha diagonal animada a los enlaces que abren otro
+   sitio. Clases opcionales, así los estilos de botón de cada componente quedan intactos.
    --------------------------------------------------------------------------- */
 .fx-fill { position: relative; z-index: 0; overflow: hidden; }
 .fx-fill::before {
@@ -464,8 +466,8 @@ app-icon[data-anim='rocket'] svg path:first-child { animation: icon-flame .5s st
 }
 
 /* ---------------------------------------------------------------------------
-   Film grain: a barely visible static noise over the whole site, so flat dark
-   surfaces do not read as "plain digital". Pure SVG turbulence, no image request.
+   Grano de película: un ruido estático casi invisible sobre todo el sitio, para que las superficies
+   oscuras planas no se lean como "digital plano". Turbulencia SVG pura, sin pedir imágenes.
    --------------------------------------------------------------------------- */
 body::after {
   content: '';
@@ -477,9 +479,11 @@ body::after {
   opacity: .045;
 }
 [data-theme='day'] body::after { opacity: .03; filter: invert(1); }
+/* Táctil: casi no se aprecia en una pantalla pequeña y obliga a mezclar toda la pantalla en cada fotograma. */
+@media (any-hover: none) and (pointer: coarse) { body::after { display: none; } }
 
 /* ---------------------------------------------------------------------------
-   Loading skeletons: ghost cards with an ember scan sweep, while data arrives.
+   Esqueletos de carga: tarjetas fantasma con un barrido de acento mientras llegan los datos.
    --------------------------------------------------------------------------- */
 .skel {
   position: relative;
@@ -511,16 +515,16 @@ body::after {
 @keyframes skel-scan { to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) { .skel::after { animation: none; } }
 
-/* Printing (recruiter mode one-pager): no site chrome or effects, plain white page. */
+/* Impresión (una página del modo reclutador): sin el marco del sitio ni efectos, página blanca simple. */
 @media print {
   body { background: #fff; }
   body::after, app-root > header, app-hud, app-ring-layer, app-star-rain, app-boot, footer, .vt-ring, .menu-scrim { display: none !important; }
 }
 
 /* ---------------------------------------------------------------------------
-   Interstitial: HUD label in the middle of the open-project transition
-   ("PROYECTO 03 // NAME"). Its own transition layer on top; visible only while a
-   forward transition runs. To turn it off, set .vt-interstitial { display: none }.
+   Intersticial: rótulo HUD en el centro de la transición al abrir un proyecto
+   ("PROYECTO 03 // NOMBRE"). Su propia capa de transición encima; solo se ve mientras corre una
+   transición hacia delante. Para quitarlo: .vt-interstitial { display: none }.
    --------------------------------------------------------------------------- */
 .vt-interstitial {
   position: fixed;
@@ -549,7 +553,7 @@ html.vt-forward .vt-interstitial { opacity: 1; }
 .vt-interstitial .br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
 @keyframes vt-corner { from { opacity: 0; transform: scale(2.2); } }
 
-/* Only the new (live) snapshot is shown: appear fast, hold, leave as the page settles. */
+/* Solo se muestra la captura nueva (en vivo): aparece rápido, se mantiene y se va cuando la página se asienta. */
 ::view-transition-old(vt-interstitial) { display: none; }
 ::view-transition-group(vt-interstitial) { animation: none; }
 ::view-transition-new(vt-interstitial) { animation: vt-interstitial .8s var(--ease) both; }
@@ -563,9 +567,9 @@ html.vt-forward .vt-interstitial { opacity: 1; }
 }
 
 /* ---------------------------------------------------------------------------
-   fx-lite (modest hardware, set in main.ts): same site, cheaper effects. The open
-   transition keeps the card morph and the content rise, without the circular reveal,
-   the ember ring or the HUD label; simpler ring glow; no grain.
+   fx-lite (equipos modestos, se activa en main.ts): el mismo sitio con efectos más baratos. La
+   transición de apertura conserva la transformación de la tarjeta y la subida del contenido, sin la
+   apertura circular, el anillo de acento ni el rótulo HUD; brillo de anillos más simple; sin grano.
    --------------------------------------------------------------------------- */
 html.fx-lite.vt-forward::view-transition-new(root),
 html[data-scene-transition="simple"].vt-forward::view-transition-new(root) { animation: vt-fade-in .4s var(--ease) both; }

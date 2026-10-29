@@ -4,15 +4,15 @@ import { SoundService } from '../sound/sound.service';
 import { SCENE_CACHE_KEY, SCENE_DEFAULTS, SCENE_FIELDS, SceneSettings, applyScene, pickKnown, readCachedScene } from './scene.config';
 
 /**
- * Applies the "Director de escena" settings to the whole site. Starts from the browser cache (so a
- * returning visitor gets them from the first frame) and follows `site_content` once it loads.
+ * Aplica los ajustes del "Director de escena" a todo el sitio. Arranca con la copia del navegador
+ * (un visitante que vuelve los tiene desde el primer fotograma) y sigue a `site_content` cuando carga.
  */
 @Injectable({ providedIn: 'root' })
 export class SceneService {
   private readonly content = inject(SiteContentService);
   private readonly sound = inject(SoundService);
 
-  /** Settings known at startup (cache or defaults); used for decisions taken before data arrives. */
+  /** Ajustes conocidos al arrancar (copia o valores por defecto); para decisiones previas a los datos. */
   readonly initial: SceneSettings = readCachedScene();
 
   readonly settings = computed<SceneSettings>(() => {

@@ -20,6 +20,7 @@ import { ModelAsset, ModelAssetMetadata } from '../../../core/data/model-asset.m
 import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
+import { SaveShortcutDirective } from '../shared/save-shortcut.directive';
 
 const BLOCK_TYPES: Block['type'][] = ['hero', 'text', 'card_grid', 'roadmap', 'gallery_3d'];
 const MAX_ITEMS = 12;
@@ -32,7 +33,7 @@ const TYPE_LABELS: Record<Block['type'], string> = {
   gallery_3d: 'Galería 3D',
 };
 
-/** Shown in the type catalog (step 1) so the choice is made by purpose, not by name. */
+/** Se muestra en el catálogo de tipos (paso 1) para elegir por el propósito, no por el nombre. */
 const TYPE_CATALOG: Record<Block['type'], { what: string; when: string }> = {
   hero: { what: 'Etiqueta, título grande y una introducción.', when: 'Para abrir un tema nuevo o destacar un mensaje.' },
   text: { what: 'Título opcional y un párrafo de texto.', when: 'Para explicar algo con calma.' },
@@ -105,7 +106,7 @@ function textControl(maxLength: number, multiline = false, value = ''): FormCont
 @Component({
   selector: 'app-admin-block-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent, UpperCasePipe, FormStepsComponent, FieldHintComponent],
+  imports: [ReactiveFormsModule, RouterLink, BlockDispatcherComponent, ModelUploadComponent, UpperCasePipe, FormStepsComponent, FieldHintComponent, SaveShortcutDirective],
   templateUrl: './admin-block-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-block-form.component.css'],
 })
@@ -177,7 +178,7 @@ export class AdminBlockFormComponent implements OnInit {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly isEditMode = signal(false);
-  /** Step 1 (catalog) until a type is picked; skipped when editing or when `?type=` is given. */
+  /** Paso 1 (catálogo) hasta elegir un tipo; se salta al editar o si llega `?type=`. */
   protected readonly typeChosen = signal(false);
   protected readonly previewLang = signal<'es' | 'en'>('es');
 
@@ -228,7 +229,7 @@ export class AdminBlockFormComponent implements OnInit {
     this.errorMessage.set('');
   }
 
-  /** Only before the first save: the type of a stored block is locked. */
+  /** Solo antes del primer guardado: el tipo de un bloque guardado queda fijo. */
   changeType(): void {
     if (this.isEditMode()) return;
     this.typeChosen.set(false);
@@ -287,7 +288,7 @@ export class AdminBlockFormComponent implements OnInit {
     this.submitting.set(true);
 
     if (this.blockId) {
-      // The type is locked after creation, so it is never part of the update.
+      // El tipo queda fijo al crearlo, así que nunca va en la actualización.
       this.blocksService
         .update(this.blockId, { page, config, published: value.published })
         .pipe(switchMap(() => this.pageItems.placeBlock(page, this.blockId!, value.placement)))
@@ -331,7 +332,7 @@ export class AdminBlockFormComponent implements OnInit {
     this.router.navigate(['/admin/structure']);
   }
 
-  /** "Nuevo bloque" / "+ Debajo" in the structure page pass `placement` (and Modelos 3D passes `type`). */
+  /** "Nuevo bloque" / "+ Debajo" en la estructura pasan `placement` (y Modelos 3D pasa `type`). */
   private applyCreateParams(): void {
     const params = this.route.snapshot.queryParamMap;
     const type = params.get('type');
@@ -492,7 +493,7 @@ export class AdminBlockFormComponent implements OnInit {
     return invalidFields;
   }
 
-  /** Base keys hold Spanish; `_en` keys are only written when filled (see BlockDispatcherComponent). */
+  /** Las claves base llevan el español; las `_en` solo se escriben si están rellenas (ver BlockDispatcherComponent). */
   private toConfig(value: BlockEditorValue): Record<string, unknown> {
     const pair = (key: string, es: string, en: string): Record<string, string> => {
       const english = en.trim();

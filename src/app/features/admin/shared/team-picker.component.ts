@@ -2,9 +2,9 @@ import { Component, forwardRef, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
- * Team size as a choice: "Solo yo" or a number of people. Stores the number ("1", "4"), which the
- * project page shows in the visitor's language ("Solo yo" / "Solo", "4 personas" / "4 people").
- * An old free-text value with a leading number ("3 personas") is read as that number.
+ * Tamaño del equipo como elección: "Solo yo" o un número de personas. Guarda el número ("1", "4"), que la
+ * página del proyecto muestra en el idioma del visitante ("Solo yo" / "Solo", "4 personas" / "4 people").
+ * Un valor antiguo de texto libre que empieza por un número ("3 personas") se lee como ese número.
  */
 @Component({
   selector: 'app-team-picker',

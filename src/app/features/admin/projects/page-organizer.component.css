@@ -20,7 +20,7 @@ h2 { margin: 6px 0 6px; font: 900 24px 'Archivo', sans-serif; letter-spacing: -.
 .org-body { display: grid; flex: 1; grid-template-columns: minmax(280px, 340px) 200px minmax(0, 1fr); min-height: 0; }
 .map-title { display: block; margin-bottom: 10px; color: var(--steel); font-size: 10px; letter-spacing: .12em; }
 
-/* 1. List */
+/* 1. Lista */
 .org-list { display: grid; align-content: start; gap: 6px; margin: 0; padding: 18px; overflow: auto; list-style: none; border-right: 1px solid var(--line); }
 .org-list li { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); }
 .org-list li.selected { border-color: var(--ember); }
@@ -40,7 +40,7 @@ h2 { margin: 6px 0 6px; font: 900 24px 'Archivo', sans-serif; letter-spacing: -.
 .row-arrows button:focus-visible { outline: 2px solid var(--ember); outline-offset: 1px; }
 .row-arrows svg { width: 14px; height: 14px; }
 
-/* 2. Outline */
+/* 2. Esquema */
 .org-map { padding: 18px 16px; overflow: auto; border-right: 1px solid var(--line); }
 .map-page { display: grid; gap: 5px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--graphite); }
 .blk { display: block; padding: 7px 8px; border: 1px solid var(--line); border-radius: 3px; background: var(--ink); color: var(--bone-dim); font: 9px/1.3 'Space Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
@@ -49,7 +49,7 @@ h2 { margin: 6px 0 6px; font: 900 24px 'Archivo', sans-serif; letter-spacing: -.
 .blk.empty { border-style: dashed; color: var(--steel); background: transparent; opacity: .7; }
 .blk.selected { border-color: var(--ember); color: var(--ember); }
 
-/* 3. Real page */
+/* 3. Página real */
 .org-preview { min-width: 0; padding: 18px 0 0; overflow: auto; overscroll-behavior: contain; }
 .org-preview .map-title { padding: 0 18px; }
 .loading { padding: 18px; color: var(--steel); font-size: 10px; }

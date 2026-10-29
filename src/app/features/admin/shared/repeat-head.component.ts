@@ -1,10 +1,10 @@
 import { Component, booleanAttribute, input, output } from '@angular/core';
 
 /**
- * Header of one item in a repeatable list: "Pantalla 2 de 5" plus move up/down and remove.
- * With `collapsible`, the label becomes a toggle that also shows a one-line summary (and a
- * thumbnail) of the item, so long lists fold into a compact index; the page hides the item body
- * while `expanded` is false.
+ * Cabecera de un elemento de una lista repetible: "Pantalla 2 de 5" más subir/bajar y quitar.
+ * Con `collapsible`, la etiqueta se vuelve un botón que además muestra un resumen en una línea (y una
+ * miniatura) del elemento, así las listas largas se pliegan en un índice compacto; la página oculta el
+ * cuerpo del elemento mientras `expanded` es false.
  */
 @Component({
   selector: 'app-repeat-head',

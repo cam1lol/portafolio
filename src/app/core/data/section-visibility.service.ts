@@ -7,7 +7,7 @@ interface SectionVisibilityRow {
   visible: boolean;
 }
 
-/** Fixed display order for the known sections — the table has no order column. */
+/** Orden fijo de las secciones conocidas: la tabla no tiene columna de orden. */
 const SECTION_ORDER = [
   'hero',
   'manifesto',
@@ -43,7 +43,7 @@ export class SectionVisibilityService {
     );
   }
 
-  /** Admin: fetches all rows, sorted by the fixed `SECTION_ORDER` (table has no order column). */
+  /** Admin: trae todas las filas, ordenadas según `SECTION_ORDER`. */
   getAll(): Observable<SectionVisibilityRow[]> {
     return from(this.supabase.client.from('section_visibility').select('*')).pipe(
       map(({ data, error }) => {
@@ -60,7 +60,7 @@ export class SectionVisibilityService {
     );
   }
 
-  /** Admin: toggles a single section's visibility. Requires `is_admin()` per RLS. */
+  /** Admin: muestra u oculta una sección. RLS exige `is_admin()`. */
   setVisible(section: string, visible: boolean): Observable<void> {
     return from(
       this.supabase.client.from('section_visibility').update({ visible }).eq('section', section),

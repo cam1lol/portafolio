@@ -10,7 +10,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-// Named imports (not "* as THREE") so the build can drop the parts of three.js this file does not use.
+// Imports con nombre (no "* as THREE") para que el build descarte las partes de three.js que no se usan aquí.
 import { Box3, DirectionalLight, Group, HemisphereLight, Mesh, Object3D, PerspectiveCamera, SRGBColorSpace, Scene, Texture, Vector3, WebGLRenderer } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';

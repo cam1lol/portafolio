@@ -1,5 +1,5 @@
 .block {
-  /* Vertical only, so .wrap keeps its side gutter on mobile. */
+  /* Solo vertical, para que .wrap conserve su margen lateral en móvil. */
   padding-top: 96px;
   padding-bottom: 96px;
   border-top: 1px solid var(--line-soft);
@@ -10,7 +10,7 @@
 .card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); transition: border-color .25s; }
 .card:hover, .card:focus-within { border-color: var(--steel); }
 
-/* Clip strip; the hover zoom is a transform (compositor only). */
+/* Franja del clip; el zoom al pasar el ratón es un transform (solo compositor). */
 .media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--ink); }
 .media video { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
 .card:hover .media video { transform: scale(1.03); }

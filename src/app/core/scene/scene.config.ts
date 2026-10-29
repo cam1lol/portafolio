@@ -1,7 +1,7 @@
 /**
- * "Director de escena": how the site performs, set from the admin (Escena) and stored in
- * `site_content` as `scene_*` keys (no migration). Each setting has a safe default, which is
- * exactly how the site behaves when nothing has been saved.
+ * "Director de escena": cómo se comporta el sitio, ajustado desde el admin (Escena) y guardado en
+ * `site_content` con claves `scene_*` (sin migración). Cada ajuste tiene un valor por defecto seguro,
+ * que es justo como se comporta el sitio si no se ha guardado nada.
  */
 export interface SceneOption {
   value: string;
@@ -99,7 +99,7 @@ export const SCENE_FIELDS: SceneField[] = [
 
 export const SCENE_DEFAULTS = Object.fromEntries(SCENE_FIELDS.map((field) => [field.key, field.fallback])) as SceneSettings;
 
-/** Browser cache of the last settings seen, so the next visit starts with them (before Supabase answers). */
+/** Copia en el navegador de los últimos ajustes vistos, para que la siguiente visita empiece con ellos (antes de que responda Supabase). */
 export const SCENE_CACHE_KEY = 'ca-scene-v1';
 
 export function readCachedScene(): SceneSettings {
@@ -111,7 +111,7 @@ export function readCachedScene(): SceneSettings {
   }
 }
 
-/** Keeps only known keys with one of their allowed values. */
+/** Se queda solo con las claves conocidas y con uno de sus valores permitidos. */
 export function pickKnown(values: Partial<Record<string, string>>): Partial<SceneSettings> {
   const out: Partial<SceneSettings> = {};
   for (const field of SCENE_FIELDS) {
@@ -121,10 +121,10 @@ export function pickKnown(values: Partial<Record<string, string>>): Partial<Scen
   return out;
 }
 
-/** Ring spin duration multiplier per rhythm (CSS --scene-spin). */
+/** Multiplicador de la duración del giro de los anillos según el ritmo (CSS --scene-spin). */
 export const SPIN_SCALE: Record<string, string> = { calm: '1.6', normal: '1', lively: '0.65' };
 
-/** Writes the settings onto <html> (data attributes and a CSS variable) for CSS and effects to read. */
+/** Escribe los ajustes en <html> (atributos data y una variable CSS) para que los lean el CSS y los efectos. */
 export function applyScene(settings: SceneSettings, root: HTMLElement = document.documentElement): void {
   root.dataset['sceneRings'] = settings.scene_rings;
   root.dataset['sceneRain'] = settings.scene_rain;

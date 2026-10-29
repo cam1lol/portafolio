@@ -1,43 +1,43 @@
 import { Injectable, Injector, afterNextRender, inject, signal } from '@angular/core';
 import { ActivatedRouteSnapshot, ViewTransitionInfo } from '@angular/router';
 
-/** Route depth of the project screens: home 0, /proyectos 1, /proyectos/:slug 2. */
+/** Profundidad de las pantallas de proyecto: inicio 0, /proyectos 1, /proyectos/:slug 2. */
 const DEPTH: Record<string, number> = { '': 0, proyectos: 1, 'proyectos/:slug': 2 };
 
-/** Window event the background rings listen to: spin faster and fire a pulse (ring-layer.component). */
+/** Evento de ventana que escuchan los anillos del fondo: giran más rápido y lanzan un pulso (ring-layer.component). */
 export const RING_BURST_EVENT = 'portfolio:ring-burst';
 
 export type TransitionDirection = 'forward' | 'back';
 export type SharedPart = 'card' | 'title' | 'media';
 
 /**
- * Coordinates the animated move between a project card (home, modal, /proyectos) and its page,
- * using the View Transitions API (router `withViewTransitions`, plus `startViewTransition` for the
- * home modal). The active card, the modal and the page share three names (`project-card`,
- * `project-title`, `project-media`): the browser morphs one into the other. styles.css adds the
- * circular reveal from the click point, the HUD frame and the phone slide.
+ * Coordina el paso animado entre la tarjeta de un proyecto (inicio, modal, /proyectos) y su página con
+ * la View Transitions API (`withViewTransitions` del router, más `startViewTransition` para el modal
+ * del inicio). La tarjeta activa, el modal y la página comparten tres nombres (`project-card`,
+ * `project-title`, `project-media`) y el navegador transforma uno en otro. styles.css añade la
+ * apertura circular desde el clic, el marco HUD y el deslizamiento en móvil.
  */
 @Injectable({ providedIn: 'root' })
 export class ProjectTransitionService {
   private readonly injector = inject(Injector);
 
-  /** Project whose card should carry the shared names: the one just opened, or the one we come back from. */
+  /** Proyecto cuya tarjeta lleva los nombres compartidos: el que se acaba de abrir o del que se vuelve. */
   readonly activeSlug = signal<string | null>(null);
-  /** HUD label shown in the middle of the screen while a project opens ("PROYECTO 03 // NAME"). */
+  /** Rótulo HUD en el centro de la pantalla mientras se abre un proyecto ("PROYECTO 03 // NOMBRE"). */
   readonly interstitial = signal<{ index: string; name: string } | null>(null);
-  /** True while a project transition runs; the page title waits for it before its decode effect. */
+  /** True mientras corre una transición de proyecto; el título de la página la espera antes de su efecto de descifrado. */
   readonly transitioning = signal(false);
 
-  /** Set by the swipe-back gesture: the page already slid away with the finger, so skip the next animation. */
+  /** Lo activa el gesto de deslizar para volver: la página ya se fue con el dedo, así que se salta la siguiente animación. */
   private skipNext = false;
-  /** The browser (e.g. iOS edge swipe) already animated this history step. */
+  /** El navegador (p. ej. el gesto de borde de iOS) ya animó este paso del historial. */
   private uaAnimatedPop = false;
 
   constructor() {
     window.addEventListener('popstate', (event) => {
       this.uaAnimatedPop = !!(event as PopStateEvent & { hasUAVisualTransition?: boolean }).hasUAVisualTransition;
     });
-    // The reveal circle opens from the last click or tap (keyboard: the focused element's center).
+    // El círculo se abre desde el último clic o toque (con teclado: el centro del elemento enfocado).
     const root = document.documentElement;
     const origin = (x: number, y: number) => {
       root.style.setProperty('--vt-x', `${Math.round(x)}px`);
@@ -55,12 +55,12 @@ export class ProjectTransitionService {
     );
   }
 
-  /** Shared `view-transition-name`, only on the active project's card (names must be unique on a page). */
+  /** `view-transition-name` compartido, solo en la tarjeta del proyecto activo (los nombres deben ser únicos en la página). */
   name(slug: string, part: SharedPart): string | null {
     return this.activeSlug() === slug ? `project-${part}` : null;
   }
 
-  /** A card was chosen: it carries the shared names, and its name/number feed the HUD label. */
+  /** Se eligió una tarjeta: lleva los nombres compartidos, y su nombre y número alimentan el rótulo HUD. */
   select(slug: string, name?: string, position?: number): void {
     this.activeSlug.set(slug);
     this.interstitial.set(name ? { index: String((position ?? 0) + 1).padStart(2, '0'), name } : null);
@@ -70,7 +70,7 @@ export class ProjectTransitionService {
     this.skipNext = true;
   }
 
-  /** Router hook (`withViewTransitions({ onViewTransitionCreated })`): animate only project navigations. */
+  /** Gancho del router (`withViewTransitions({ onViewTransitionCreated })`): solo anima navegaciones de proyecto. */
   onRouterTransition(info: ViewTransitionInfo): void {
     const from = leafPath(info.from);
     const to = leafPath(info.to);
@@ -80,8 +80,8 @@ export class ProjectTransitionService {
     this.skipNext = false;
     this.uaAnimatedPop = false;
     if (skip) {
-      // Not skipTransition(): Angular logs every skipped transition as an AbortError in dev mode.
-      // An instant transition (no animation, styles.css) looks the same and keeps the console clean.
+      // No skipTransition(): Angular registra cada transición saltada como AbortError en desarrollo. Una
+      // transición instantánea (sin animación, en styles.css) se ve igual y deja la consola limpia.
       const root = document.documentElement.classList;
       root.add('vt-instant');
       info.transition.finished.finally(() => root.remove('vt-instant'));
@@ -91,9 +91,9 @@ export class ProjectTransitionService {
   }
 
   /**
-   * Runs a DOM change (opening or closing the home modal) as a view transition, so the card grows
-   * into the modal panel. Falls back to an instant change without the API. With reduced motion
-   * styles.css turns every transition into a short fade.
+   * Ejecuta un cambio del DOM (abrir o cerrar el modal del inicio) como view transition, para que la
+   * tarjeta crezca hasta el panel del modal. Sin la API, el cambio es instantáneo. Con movimiento
+   * reducido styles.css convierte cada transición en un fundido corto.
    */
   run(change: () => void): void {
     const doc = document as Document & {
@@ -103,18 +103,18 @@ export class ProjectTransitionService {
       change();
       return;
     }
-    // The browser takes the "old" snapshot on its next frame, after Angular has painted the card's
-    // shared names; the "new" one once Angular has rendered the change.
+    // El navegador toma la captura "vieja" en su siguiente fotograma, cuando Angular ya pintó los nombres
+    // compartidos de la tarjeta; la "nueva" cuando Angular renderizó el cambio.
     const transition = doc.startViewTransition(
       () =>
         new Promise<void>((resolve) => {
           change();
           afterNextRender(() => resolve(), { injector: this.injector });
-          setTimeout(resolve, 300); // never leave the page frozen waiting for a render
+          setTimeout(resolve, 300); // nunca dejar la página congelada esperando un render
         }),
     );
     transition.ready.catch(() => undefined);
-    // Only the shared card / title / media morph; no page slide (that is for route changes).
+    // Solo se transforman la tarjeta, el título y la imagen compartidos; sin deslizar la página (eso es para cambios de ruta).
     this.begin('vt-modal', transition.finished);
   }
 
@@ -131,14 +131,14 @@ export class ProjectTransitionService {
   }
 }
 
-/** Path pattern of the deepest active route, e.g. `proyectos/:slug`. */
+/** Patrón de la ruta activa más profunda, p. ej. `proyectos/:slug`. */
 export function leafPath(snapshot: ActivatedRouteSnapshot): string {
   let node = snapshot;
   while (node.firstChild) node = node.firstChild;
   return node.routeConfig?.path ?? '';
 }
 
-/** Deeper screen = forward (slide in); shallower = back. Project to project counts as forward. */
+/** Pantalla más profunda = avanzar (entra deslizando); menos profunda = volver. De proyecto a proyecto cuenta como avanzar. */
 export function direction(from: string, to: string): TransitionDirection {
   return (DEPTH[to] ?? 0) >= (DEPTH[from] ?? 0) ? 'forward' : 'back';
 }

@@ -4,10 +4,9 @@ import { from, map } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
 /**
- * Protects `/admin/**`. Deliberately resolves its own `getSession()` call
- * instead of reading `AuthService.session()` — that signal is populated
- * asynchronously in the service constructor, so depending on it here could
- * race against the guard running before the initial session has loaded.
+ * Protege `/admin/**`. Hace su propia llamada a `getSession()` en vez de leer
+ * `AuthService.session()`: esa señal se llena de forma asíncrona en el constructor del
+ * servicio y el guard podría ejecutarse antes de que exista la sesión inicial.
  */
 export const authGuard: CanActivateFn = (_route, state) => {
   const supabase = inject(SupabaseService);

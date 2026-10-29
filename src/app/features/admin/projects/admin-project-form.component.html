@@ -33,7 +33,7 @@
       </div>
 
       <form class="layout-main" [formGroup]="form" (ngSubmit)="submit()" novalidate [class.es-only]="editLang() === 'es'" [class.hints-off]="!hintsOn()">
-        <!-- Editing tools: which languages are on screen, the long explanations, and the translator. -->
+        <!-- Herramientas de edición: qué idiomas hay en pantalla, las explicaciones largas y el traductor. -->
         <div class="form-tools">
           <div class="seg" role="radiogroup" aria-label="Idiomas en pantalla">
             <button type="button" role="radio" [class.on]="editLang() === 'es'" [attr.aria-checked]="editLang() === 'es'" (click)="setEditLang('es')">SOLO ES</button>
@@ -233,7 +233,7 @@
               </div>
             </div>
 
-            <!-- How the phone will look with what is filled in. -->
+            <!-- Cómo se verá el teléfono con lo que está relleno. -->
             <div class="mobile-preview" aria-hidden="true">
               <span class="label-like">Así se verá</span>
               <div class="mobile-phone">
@@ -573,7 +573,7 @@
                     }
 
                     @default {
-                      <!-- image and compare: one or two images, layout, alt text and caption -->
+                      <!-- imagen y comparar: una o dos imágenes, ancho, texto alternativo y pie -->
                       <div class="grid-2">
                         <div class="field">
                           <label [for]="'ch-media-' + i">{{ chapter.controls.type.value === 'compare' ? 'Imagen de antes' : 'Imagen' }}</label>
@@ -646,7 +646,7 @@
                 </button>
               }
             </div>
-            <!-- Live preview of the type under the pointer: the real public chapter with example content. -->
+            <!-- Vista previa del tipo bajo el puntero: el capítulo público real con contenido de ejemplo. -->
             <aside class="picker-preview" aria-live="polite">
               <span class="pv-head mono"><span class="tag">EJEMPLO</span> {{ chapterLabel(hoverChapterType()) }} · así se verá en la página</span>
               @if (hoverChapterType() === 'model') {

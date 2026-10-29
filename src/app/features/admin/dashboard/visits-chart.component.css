@@ -19,7 +19,7 @@ svg { display: block; width: 100%; height: auto; overflow: visible; }
 .hit { fill: transparent; cursor: default; outline: none; }
 .hit:focus-visible { stroke: var(--bone); stroke-width: 1; }
 
-/* Text wears ink tokens, never the series color. */
+/* El texto usa los tokens de tinta, nunca el color de la serie. */
 .peak-label { fill: var(--bone); font: 11px 'Space Mono', monospace; }
 .axis-label { fill: var(--steel); font: 10px 'Space Mono', monospace; }
 

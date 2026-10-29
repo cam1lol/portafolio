@@ -14,7 +14,7 @@
   letter-spacing: .14em;
   border: 1px solid var(--line);
   padding: 5px 9px;
-  /* Never wider than the scene on small phones. */
+  /* Nunca más ancho que la escena en móviles pequeños. */
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -13,7 +13,7 @@
         @if (i === peakIndex()) {
           <text class="peak-label" [attr.x]="bar.x + bar.width / 2" y="22" text-anchor="middle">{{ bar.day.count }}</text>
         }
-        <!-- Hit target: the whole column, larger than the bar, also reachable by keyboard. -->
+        <!-- Zona de impacto: toda la columna, más grande que la barra, también accesible con teclado. -->
         <rect class="hit" [attr.x]="bar.x" y="0" [attr.width]="bar.width + 2" [attr.height]="baseline" tabindex="0"
           [attr.aria-label]="formatDay(bar.day.date) + ': ' + bar.day.count + ' visitas'"
           (mouseenter)="hovered.set(i)" (mouseleave)="hovered.set(null)" (focus)="hovered.set(i)" (blur)="hovered.set(null)" />

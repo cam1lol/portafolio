@@ -1,0 +1,45 @@
+<article class="policies wrap">
+  <header class="head">
+    <span class="eyebrow mono">// {{ 'pol_eyebrow' | transloco }}</span>
+    <h1>{{ 'pol_title' | transloco }}</h1>
+    <p class="lead">{{ 'pol_lead' | transloco }}</p>
+    <dl class="meta mono">
+      <div><dt>{{ 'pol_owner' | transloco }}</dt><dd>{{ owner.name }}</dd></div>
+      <div><dt>{{ 'pol_contact' | transloco }}</dt><dd><a [href]="'mailto:' + owner.email">{{ owner.email }}</a></dd></div>
+      <div><dt>{{ 'pol_updated' | transloco }}</dt><dd>{{ updated() }}</dd></div>
+    </dl>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" [attr.aria-label]="'pol_toc' | transloco">
+      <span class="toc-k mono">{{ 'pol_toc' | transloco }}</span>
+      <ol>
+        @for (section of sections; track section.id; let i = $index) {
+          <li>
+            <a routerLink="." [fragment]="section.id" [class.on]="active() === section.id" [attr.aria-current]="active() === section.id ? 'location' : null">
+              <span class="mono">{{ pad(i) }}</span>{{ title(section) }}
+            </a>
+          </li>
+        }
+      </ol>
+    </nav>
+
+    <div class="body">
+      @for (section of sections; track section.id; let i = $index) {
+        <section #section class="sec" [id]="section.id" [attr.aria-labelledby]="section.id + '-h'">
+          <span class="no mono" aria-hidden="true">{{ pad(i) }} / {{ pad(sections.length - 1) }}</span>
+          <h2 [id]="section.id + '-h'">{{ title(section) }}</h2>
+          @for (block of section.blocks; track $index) {
+            <p>{{ text(block) }}</p>
+            @if (items(block).length) {
+              <ul>
+                @for (item of items(block); track $index) { <li>{{ item }}</li> }
+              </ul>
+            }
+          }
+        </section>
+      }
+      <a class="back mono" routerLink="/">{{ 'pol_back' | transloco }}</a>
+    </div>
+  </div>
+</article>

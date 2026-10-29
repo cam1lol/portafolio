@@ -30,17 +30,17 @@ export class ModalComponent {
   protected readonly tab = signal<'summary' | 'how'>('summary');
 
   private readonly host = inject(ElementRef<HTMLElement>);
-  /** Element focused before opening (the card), to return focus to it on close. */
+  /** Elemento enfocado antes de abrir (la tarjeta), para devolverle el foco al cerrar. */
   private opener: HTMLElement | null = null;
 
   constructor() {
-    // Every time a different item opens, start on the summary tab.
+    // Cada vez que se abre otro elemento, empieza en la pestaña de resumen.
     effect(() => {
       this.active();
       this.tab.set('summary');
     });
 
-    // Keyboard and TV remotes: focus moves into the dialog on open and back to the card on close.
+    // Teclado y mandos de TV: el foco entra al diálogo al abrir y vuelve a la tarjeta al cerrar.
     effect(() => {
       if (this.active()) {
         if (!this.opener) this.opener = document.activeElement as HTMLElement | null;
@@ -84,19 +84,19 @@ export class ModalComponent {
     return `EXPERIENCE // ${this.period(state.data)}`;
   });
 
-  /** The panel is the end point of the home card growing into the modal (projects only). */
+  /** El panel es el punto final de la tarjeta de la portada creciendo hasta el modal (solo proyectos). */
   protected panelName(): string | null {
     const state = this.active();
     return state?.kind === 'project' ? this.vt.name(state.data.slug, 'card') : null;
   }
 
-  /** Closing a project shrinks the panel back into its home card. */
+  /** Cerrar un proyecto encoge el panel de vuelta a su tarjeta de la portada. */
   close(): void {
     if (this.active()?.kind === 'project') this.vt.run(() => this.modalService.close());
     else this.modalService.close();
   }
 
-  /** "Open project page": the router runs its own transition, so close without one. */
+  /** "Abrir página del proyecto": el router hace su propia transición, así que se cierra sin ella. */
   protected closeForNavigation(): void {
     const state = this.active();
     if (state?.kind === 'project') this.vt.select(state.data.slug, state.data.name);
@@ -109,7 +109,7 @@ export class ModalComponent {
     }
   }
 
-  /** Keeps Tab inside the open dialog. */
+  /** Mantiene Tab dentro del diálogo abierto. */
   @HostListener('keydown.tab', ['$event'])
   @HostListener('keydown.shift.tab', ['$event'])
   onTab(event: Event): void {

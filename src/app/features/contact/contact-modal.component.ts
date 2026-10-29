@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ElementRef, HostListener, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -11,12 +11,12 @@ type ModalState = 'idle' | 'sending' | ContactSubmitResult;
 const EMAIL_PATTERN = /^[^\s@<>()",;]+@[^\s@<>()",;]+\.[^\s@<>()",;]{2,}$/;
 const MESSAGE_MIN = 10;
 const MESSAGE_MAX = 5000;
-/** Order used to move focus to the first field with an error. */
+/** Orden para llevar el foco al primer campo con error. */
 const FIELD_IDS = { name: 'contact-name', email: 'contact-email', message: 'contact-message' } as const;
 
 /**
- * Contact dialog. Rendered only while open (the parent wraps it in @if), so it takes focus on
- * creation and hands it back to `returnFocusTo` when it closes.
+ * Diálogo de contacto. Solo existe mientras está abierto (el padre lo envuelve en @if), así toma el
+ * foco al crearse y lo devuelve a `returnFocusTo` al cerrarse.
  */
 @Component({
   selector: 'app-contact-modal',
@@ -25,14 +25,16 @@ const FIELD_IDS = { name: 'contact-name', email: 'contact-email', message: 'cont
   templateUrl: './contact-modal.component.html',
   styleUrl: './contact-modal.component.css',
 })
-export class ContactModalComponent implements AfterViewInit {
+export class ContactModalComponent implements OnInit, AfterViewInit {
   private readonly contactService = inject(ContactService);
   private readonly transloco = inject(TranslocoService);
   private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly returnFocusTo = input<HTMLElement | null>(null);
-  /** Shown as the direct-email fallback when sending fails. */
+  /** Se muestra como alternativa de email directo si el envío falla. */
   readonly contactEmail = input('kmilo0230@gmail.com');
+  /** Servicio elegido con "Cotizar esto": el tema pasa a proyecto y el mensaje empieza nombrándolo. */
+  readonly service = input('');
   readonly closed = output<void>();
 
   private readonly dialog = viewChild.required<ElementRef<HTMLElement>>('dialog');
@@ -60,12 +62,18 @@ export class ContactModalComponent implements AfterViewInit {
   private readonly messageValue = toSignal(this.form.controls.message.valueChanges, { initialValue: '' });
   private readonly emailValue = toSignal(this.form.controls.email.valueChanges, { initialValue: '' });
 
-  /** "Did you mean ana@gmail.com?" for typos in common domains; null when nothing to suggest. */
+  /** "¿Quisiste decir ana@gmail.com?" para erratas en dominios comunes; null si no hay nada que sugerir. */
   protected readonly emailSuggestion = computed(() => suggestEmail(this.emailValue() ?? ''));
 
   protected readonly placeholderKey = computed(() => `ct_m_ph_${this.topicValue() || 'other'}`);
   protected readonly messageLength = computed(() => this.messageValue().trim().length);
   protected readonly missing = computed(() => Math.max(0, MESSAGE_MIN - this.messageLength()));
+
+  ngOnInit(): void {
+    const service = this.service().trim();
+    if (!service) return;
+    this.form.patchValue({ topic: 'project', message: `${this.transloco.translate('ct_m_service', { service })}\n\n` });
+  }
 
   ngAfterViewInit(): void {
     this.focusField('contact-name');
@@ -133,7 +141,7 @@ export class ContactModalComponent implements AfterViewInit {
     }
     if (event.key !== 'Tab') return;
 
-    // Focus trap: Tab and Shift+Tab cycle inside the dialog.
+    // Trampa de foco: Tab y Shift+Tab dan la vuelta dentro del diálogo.
     const focusable = Array.from(
       this.dialog().nativeElement.querySelectorAll<HTMLElement>('button, input:not([tabindex="-1"]), textarea, a[href]'),
     ).filter((element) => !element.hasAttribute('disabled'));

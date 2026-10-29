@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, from, map } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 
-/** Row shape of the Supabase `site_content` table (migration 0005). */
+/** Forma de la tabla `site_content` de Supabase (migración 0005). */
 export interface SiteContentRow {
   key: string;
   value_es: string;
@@ -19,10 +19,10 @@ export class SiteContentService {
   private readonly supabase = inject(SupabaseService);
   private loadStarted = false;
 
-  /** Shared map read by `SiteTextPipe`. Empty until loaded or if the table does not exist yet. */
+  /** Mapa compartido que lee `SiteTextPipe`. Vacío hasta que carga o si la tabla aún no existe. */
   readonly content = signal<Record<string, SiteContentValue>>({});
 
-  /** Loads the public texts once per app session; callers fall back to i18n meanwhile. */
+  /** Carga los textos públicos una vez por sesión; mientras tanto se usa el i18n. */
   ensureLoaded(): void {
     if (this.loadStarted) return;
     this.loadStarted = true;
@@ -33,8 +33,8 @@ export class SiteContentService {
   }
 
   /**
-   * Value for a language, falling back to Spanish. For keys that never live in i18n (CV URLs,
-   * availability): read inside a computed() so it follows the language and the loaded content.
+   * Valor en un idioma, con el español como respaldo. Para claves que nunca están en el i18n (URLs del
+   * CV, disponibilidad): se lee dentro de un computed() para que siga al idioma y al contenido cargado.
    */
   valueFor(key: string, lang: string): string {
     const row = this.content()[key];
@@ -51,7 +51,7 @@ export class SiteContentService {
     );
   }
 
-  /** Admin: upserts the given keys (requires `is_admin()`) and refreshes the shared map. */
+  /** Admin: guarda (upsert) las claves dadas (requiere `is_admin()`) y refresca el mapa compartido. */
   saveMany(rows: SiteContentRow[]): Observable<void> {
     const payload = rows.map((row) => ({ ...row, updated_at: new Date().toISOString() }));
     return from(this.supabase.client.from('site_content').upsert(payload, { onConflict: 'key' })).pipe(

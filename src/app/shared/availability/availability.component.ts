@@ -6,9 +6,9 @@ export type AvailabilityState = 'open' | 'limited' | 'closed';
 const STATES: AvailabilityState[] = ['open', 'limited', 'closed'];
 
 /**
- * "Available from November" pill with a status dot, edited in Textos del sitio > Disponibilidad
- * (site_content keys availability_state and availability_text). Hidden when the state is
- * "hidden" or the text is empty.
+ * Píldora "Disponible desde noviembre" con un punto de estado; se edita en Textos del sitio >
+ * Disponibilidad (claves availability_state y availability_text de site_content). Se oculta si el
+ * estado es "hidden" o el texto está vacío.
  */
 @Component({
   selector: 'app-availability',
@@ -31,7 +31,7 @@ const STATES: AvailabilityState[] = ['open', 'limited', 'closed'];
     .dot { position: relative; width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: var(--steel); }
     [data-state='open'] .dot { background: var(--good); }
     [data-state='limited'] .dot { background: var(--ember); }
-    /* Only "available" pulses: the one state that asks for action. */
+    /* Solo "disponible" late: el único estado que invita a actuar. */
     [data-state='open'] .dot::after {
       content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--good);
       animation: avail-pulse 2s ease-out infinite;
@@ -50,7 +50,7 @@ export class AvailabilityComponent {
 
   protected readonly text = computed(() => this.content.valueFor('availability_text', this.transloco.activeLang()));
 
-  /** The state to show, or null when the pill is hidden. */
+  /** Estado a mostrar, o null si la píldora está oculta. */
   protected readonly state = computed<AvailabilityState | null>(() => {
     const state = this.content.valueFor('availability_state', 'es') as AvailabilityState;
     return STATES.includes(state) && this.text() ? state : null;

@@ -1,11 +1,11 @@
 /**
- * Small building blocks so every new effect is fluid by construction (AGENTS.md, 8.1). Callers
- * run them outside Angular (NgZone.runOutsideAngular) when the work only touches the DOM.
+ * Piezas pequeñas para que cada efecto nuevo sea fluido desde el principio (AGENTS.md, 8.1).
+ * Quien las usa las ejecuta fuera de Angular (NgZone.runOutsideAngular) si solo tocan el DOM.
  */
 
 /**
- * Calls `onChange(true/false)` as the element enters or leaves the screen (with `margin` of slack),
- * to pause loops, videos or WebGL while they are not visible. Returns a function that stops it.
+ * Llama a `onChange(true/false)` cuando el elemento entra o sale de la pantalla (con `margin` de
+ * holgura), para pausar bucles, videos o WebGL que no se ven. Devuelve la función que lo detiene.
  */
 export function whenVisible(element: Element, onChange: (visible: boolean) => void, margin = '0px'): () => void {
   if (!('IntersectionObserver' in window)) {
@@ -18,16 +18,16 @@ export function whenVisible(element: Element, onChange: (visible: boolean) => vo
 }
 
 export interface IdleLoop {
-  /** Starts the loop if it is asleep (cheap to call on every input event). */
+  /** Arranca el bucle si está dormido (barato de llamar en cada evento). */
   wake(): void;
-  /** Stops it for good (component destroyed). */
+  /** Lo detiene del todo (componente destruido). */
   stop(): void;
 }
 
 /**
- * An animation-frame loop that sleeps by itself: `step(now, dt)` returns true while there is still
- * something moving and false once everything has settled; the loop then costs nothing until
- * `wake()` is called again (from a scroll, a pointer move, a timer...).
+ * Bucle de requestAnimationFrame que se duerme solo: `step(now, dt)` devuelve true mientras algo se
+ * mueve y false cuando todo se asentó; desde ahí no cuesta nada hasta que se llame a `wake()`
+ * (desde un scroll, un movimiento del puntero, un temporizador...).
  */
 export function idleLoop(step: (now: number, dt: number) => boolean): IdleLoop {
   let frameId = 0;
@@ -52,7 +52,7 @@ export function idleLoop(step: (now: number, dt: number) => boolean): IdleLoop {
   };
 }
 
-/** True when effects should be reduced: the visitor asked for less motion, or the device is modest. */
+/** True si hay que reducir efectos: el visitante pidió menos movimiento o el equipo es modesto. */
 export function prefersLightEffects(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('fx-lite');
 }

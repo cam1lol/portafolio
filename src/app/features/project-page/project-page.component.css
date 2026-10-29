@@ -1,10 +1,10 @@
-/* Project page: hero, frame, fact strip, section index and headings. Section contents live in
-   project-page-details.component.css (each sheet stays under the 8 kB component style budget). */
+/* Página del proyecto: hero, marco, franja de datos, índice de secciones y titulares. El contenido de las
+   secciones está en project-page-details.component.css (cada hoja por debajo del límite de 8 kB). */
 :host { display: block; position: relative; z-index: 1; overflow-x: clip; }
 
 .project-page { padding-top: 112px; padding-bottom: 96px; }
 
-/* ---- Hero: text | framed media */
+/* ---- Hero: texto | medios enmarcados */
 .hero-text { min-width: 0; container-type: inline-size; }
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 64px); align-items: center; min-height: min(78vh, 760px); }
 .back { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 28px; color: var(--steel); font-size: 11px; letter-spacing: .1em; text-decoration: none; }
@@ -15,7 +15,7 @@
 .status[data-status='live'] { color: var(--good); }
 .status[data-status='wip'] { color: var(--ember); }
 h1 {
-  /* Sized by its column (cqi), so a long single word ("EMPRESARIAL") fits instead of breaking mid-word. */
+  /* Tamaño según su columna (cqi), para que una palabra larga ("EMPRESARIAL") quepa sin partirse. */
   margin: 14px 0 18px; color: var(--bone); font: 900 clamp(32px, 12cqi, 96px) / .95 'Archivo', sans-serif;
   letter-spacing: -.03em; text-transform: uppercase; overflow-wrap: break-word;
 }
@@ -28,7 +28,7 @@ h1 {
 .btn.primary { background: var(--ember); border-color: var(--ember); color: var(--ink); font-weight: 700; }
 .btn:focus-visible, .back:focus-visible, .pager-link:focus-visible, .toc a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 
-/* The media as a HUD screen: corner ticks, browser chrome (or phone body), dark mat around it. */
+/* Los medios como pantalla HUD: marcas de esquina, barra de navegador (o cuerpo de teléfono) y fondo oscuro alrededor. */
 .frame { position: relative; padding: 14px; border: 1px solid var(--line); background: rgba(16, 18, 23, .7); }
 .tick { position: absolute; width: 16px; height: 16px; border-color: var(--ember); border-style: solid; }
 .tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
@@ -46,7 +46,7 @@ h1 {
 .frame.phone .tick { display: none; }
 .frame.phone .screen { aspect-ratio: 9 / 19; border-radius: 24px; }
 
-/* ---- Fact strip */
+/* ---- Franja de datos */
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 40px; margin-bottom: 0; border-block: 1px solid var(--line); }
 .fact { padding: 20px 22px; border-left: 1px solid var(--line-soft); }
 .fact:first-child { border-left: 0; padding-left: 0; }
@@ -54,7 +54,7 @@ h1 {
 .fact-no { color: var(--ember); }
 .fact dd { margin: 0; color: var(--bone); font: 700 clamp(17px, 1.5vw, 22px) / 1.25 'Archivo', sans-serif; letter-spacing: -.01em; }
 
-/* ---- Body: sticky index | sections */
+/* ---- Cuerpo: índice fijo | secciones */
 .body { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: clamp(32px, 4vw, 64px); align-items: start; margin-top: 72px; }
 .body:not(:has(.toc)) { grid-template-columns: minmax(0, 1fr); }
 .toc { position: sticky; top: calc(var(--site-header-h, 70px) + 28px); display: grid; gap: 2px; }
@@ -67,14 +67,14 @@ h1 {
 .sections { display: flex; flex-direction: column; min-width: 0; }
 .sec { scroll-margin-top: calc(var(--site-header-h, 70px) + 24px); margin-bottom: 96px; }
 
-/* Section heading: index, decoding title, a rule that runs to the edge. */
+/* Titular de sección: índice, título que se descifra y una regla que llega al borde. */
 .sh { display: flex; align-items: baseline; gap: 16px; margin-bottom: 32px; }
 .sh-idx { color: var(--ember); font-size: 13px; }
 .sh h2 { margin: 0; color: var(--bone); font: 800 clamp(24px, 2.6vw, calc(var(--maxw) * .026)) / 1 'Archivo', sans-serif; letter-spacing: -.02em; text-transform: uppercase; }
 .sh-count { padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--steel); font-size: 10px; }
 .sh-rule { flex: 1; align-self: center; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
 
-/* ---- Pager */
+/* ---- Paginador */
 .pager { display: flex; justify-content: space-between; gap: 16px; padding-top: 28px; border-top: 1px solid var(--line); }
 .pager-link { display: grid; gap: 6px; color: var(--bone); text-decoration: none; }
 .pager-link.next { text-align: right; }
@@ -97,10 +97,10 @@ h1 {
 @media (prefers-reduced-motion: reduce) { .back svg, .toc a { transition: none; } }
 @media (pointer: coarse) { .back { min-height: 40px; margin-bottom: 20px; } }
 
-/* Admin example of one section: no page chrome around it. */
+/* Ejemplo de una sección en el admin: sin el marco de la página alrededor. */
 .focus-mode { padding-top: 24px; padding-bottom: 8px; }
 .focus-mode .body { margin-top: 0; }
 .focus-mode .sec { margin-bottom: 16px; }
-/* Inside admin panels (live preview, organizer) the hero does not need a screen-tall block. */
+/* Dentro de los paneles del admin (vista previa, organizador) el hero no necesita ocupar toda la pantalla. */
 .in-preview .hero { min-height: 0; padding-block: 8px; }
 .in-preview.project-page { padding-top: 40px; }

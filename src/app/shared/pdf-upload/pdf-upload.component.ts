@@ -5,8 +5,8 @@ const BUCKET = 'documents';
 const MAX_BYTES = 10 * 1024 * 1024;
 
 /**
- * Uploads a PDF to the public `documents` bucket (migration 0012) and emits its public URL.
- * Used for the CV in Textos del sitio: it works from the published admin, not only locally.
+ * Sube un PDF al bucket público `documents` (migración 0012) y emite su URL pública. Se usa para el CV
+ * en Textos del sitio: funciona desde el admin publicado, no solo en local.
  */
 @Component({
   selector: 'app-pdf-upload',
@@ -55,9 +55,9 @@ export class PdfUploadComponent {
   private readonly supabase = inject(SupabaseService);
 
   readonly value = input('');
-  /** Folder inside the bucket, e.g. `cv`. */
+  /** Carpeta dentro del bucket, p. ej. `cv`. */
   readonly folder = input('docs');
-  /** Id for the main button, so a <label for> can point at it. */
+  /** Id del botón principal, para que un <label for> apunte a él. */
   readonly inputId = input<string | null>(null);
   readonly valueChange = output<string>();
 
@@ -83,7 +83,7 @@ export class PdfUploadComponent {
 
     this.uploading.set(true);
     try {
-      // A fresh name per upload, so browsers and the CDN never serve the previous CV from cache.
+      // Un nombre nuevo en cada subida, para que ni el navegador ni la CDN sirvan el CV anterior desde caché.
       const path = `${this.folder()}/${this.slug(file.name)}-${crypto.randomUUID().slice(0, 8)}.pdf`;
       const storage = this.supabase.client.storage.from(BUCKET);
       const { error } = await storage.upload(path, file, { contentType: 'application/pdf', upsert: false });

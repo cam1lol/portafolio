@@ -3,11 +3,11 @@ import { Directive, ElementRef, OnDestroy, effect, inject, input, untracked } fr
 const STAGGER_MS = 90;
 
 /**
- * Reveals a paragraph line by line when it scrolls into view: words are wrapped, grouped by the line
- * they actually fall on (so it follows the real width), and each line rises with a small delay.
- * Inline markup (bold, muted spans) is kept. `appLineReveal` takes the rendered content (text or
- * HTML) only to know when it changes: after the first reveal, new content (language switch) shows
- * without replaying. Skipped with reduced motion.
+ * Muestra un párrafo línea a línea al entrar en pantalla: envuelve las palabras, las agrupa por la
+ * línea en la que caen de verdad (sigue el ancho real) y cada línea sube con un pequeño retraso.
+ * Conserva el marcado en línea (negritas, spans atenuados). `appLineReveal` recibe el contenido solo
+ * para saber cuándo cambia: tras la primera aparición, el contenido nuevo (cambio de idioma) se ve
+ * sin repetir la animación. Se salta con movimiento reducido.
  */
 @Directive({ selector: '[appLineReveal]', standalone: true })
 export class LineRevealDirective implements OnDestroy {
@@ -25,7 +25,7 @@ export class LineRevealDirective implements OnDestroy {
       this.content();
       untracked(() => {
         if (reduce) return;
-        // Wait for Angular to write the new content into the element.
+        // Espera a que Angular escriba el contenido nuevo en el elemento.
         queueMicrotask(() => (this.revealed ? this.el.classList.remove('lr-pending') : this.watch()));
       });
     });
@@ -47,7 +47,7 @@ export class LineRevealDirective implements OnDestroy {
   private play(): void {
     this.revealed = true;
     const words = this.wrapWords();
-    // Group by rendered line (offsetTop), then stagger per line.
+    // Agrupa por línea pintada (offsetTop) y escalona por línea.
     let line = -1;
     let lastTop = Number.NEGATIVE_INFINITY;
     for (const word of words) {
@@ -61,7 +61,7 @@ export class LineRevealDirective implements OnDestroy {
     this.el.classList.add('lr-play');
   }
 
-  /** Wraps every word of every text node in a span, keeping the surrounding elements. */
+  /** Envuelve cada palabra de cada nodo de texto en un span, conservando los elementos que la rodean. */
   private wrapWords(): HTMLElement[] {
     const words: HTMLElement[] = [];
     const walker = document.createTreeWalker(this.el, NodeFilter.SHOW_TEXT);

@@ -7,7 +7,7 @@
 
 .hero-grid {
   display: grid;
-  /* The text column grows to fit the title at full size (desktop); mobile goes to one minmax(0,1fr) column. */
+  /* La columna de texto crece para que el título quepa a tamaño completo (escritorio); en móvil es una sola columna minmax(0,1fr). */
   grid-template-columns: 1fr 1.05fr;
   gap: 56px;
   width: 100%;
@@ -18,7 +18,7 @@
   font-family: "Archivo";
   font-weight: 900;
   line-height: .92;
-  font-size: clamp(46px, 7vw, calc(var(--maxw) * .084)); /* cap follows the content width */
+  font-size: clamp(46px, 7vw, calc(var(--maxw) * .084)); /* el tope sigue al ancho del contenido */
   letter-spacing: -.03em;
   text-transform: uppercase;
 }
@@ -113,15 +113,15 @@
   }
 }
 
-/* Availability pill above the eyebrow; collapses when hidden. */
+/* Píldora de disponibilidad sobre el eyebrow; se pliega si está oculta. */
 .hero-avail:not(:empty) { margin-bottom: 22px; }
 
-/* Small phones: the widest title word (MOVIMIENTO) must fit the column at 320px. */
+/* Móviles pequeños: la palabra más ancha del título (MOVIMIENTO) debe caber en la columna a 320px. */
 @media (max-width: 480px) {
   .hero h1 { font-size: min(46px, 11.5vw); }
 }
 
-/* Large screens: intro, figures and eyebrow grow with the title. */
+/* Pantallas grandes: entradilla, cifras y eyebrow crecen con el título. */
 @media (min-width: 1600px) {
   .hero .lead { max-width: 520px; font-size: 18px; }
   .meta-row .b .v { font-size: 24px; }
@@ -138,14 +138,14 @@
   .meta-row .b .k { font-size: 18px; }
 }
 
-/* Scroll parallax (--hp from the component, 0 at the top, 1 once the hero has scrolled away):
-   the title lines split apart, the text fades and the 3D object recedes. */
+/* Parallax de scroll (--hp lo escribe el componente: 0 arriba, 1 cuando el hero salió de pantalla):
+   las líneas del título se separan, el texto se desvanece y el objeto 3D se aleja. */
 .hero h1 .clip-wrap { transform: translateX(calc(var(--hp, 0) * -70px)); }
 .hero h1 .clip-wrap:nth-child(2) { transform: translateX(calc(var(--hp, 0) * 110px)); }
 .hero h1 .clip-wrap:nth-child(3) { transform: translateX(calc(var(--hp, 0) * -40px)); }
 .hero-grid > div:first-child { opacity: calc(1 - var(--hp, 0) * .85); }
 app-hero-scene {
-  display: block; /* transforms do not apply to inline elements */
+  display: block; /* los transform no se aplican a elementos en línea */
   transform: translateY(calc(var(--hp, 0) * 90px)) scale(calc(1 - var(--hp, 0) * .3)) rotate(calc(var(--hp, 0) * 18deg));
   opacity: calc(1 - var(--hp, 0) * .7);
 }

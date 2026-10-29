@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanDeactivateFn } from '@angular/router';
 import { ConfirmDialogService } from './confirm-dialog.service';
 
-/** Implemented by admin forms; the admin layout also uses it to warn before closing the tab. */
+/** Lo implementan los formularios del admin; el layout del admin también lo usa para avisar antes de cerrar la pestaña. */
 export interface HasUnsavedChanges {
   hasUnsavedChanges(): boolean;
 }

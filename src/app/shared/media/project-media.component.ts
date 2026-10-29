@@ -1,22 +1,22 @@
 import { Component, ElementRef, computed, input, signal, viewChild } from '@angular/core';
 import { Project } from '../../core/data/project.model';
 
-/** True when the project has something real to show (demo video, clip or image). */
+/** True si el proyecto tiene algo real que mostrar (video demo, clip o imagen). */
 export function hasProjectMedia(project: Project): boolean {
   return !!(project.demoVideoUrl || project.previewVideo || project.previewImage);
 }
 
-/** True when the project has a still or a looping clip (what a card or a hero shows). */
+/** True si el proyecto tiene una imagen o un clip en bucle (lo que muestra una tarjeta o un hero). */
 export function hasProjectVisual(project: Project): boolean {
   return !!(project.previewVideo || project.previewImage);
 }
 
 /**
- * Project media, best first: the full demo (a file in public/media/projects, native player that downloads
- * nothing until play), then the looping preview clip, then the still image.
- * - `auto` (default, the modal): that order.
- * - `visual` (project page hero): only the clip or the image, never the demo.
- * - `demo` (project page DEMO block): only the demo, with its poster and a large play button.
+ * Medios del proyecto, del mejor al peor: la demo completa (un archivo en public/media/projects, con el
+ * reproductor nativo que no descarga nada hasta dar play), luego el clip en bucle y luego la imagen.
+ * - `auto` (por defecto, el modal): ese orden.
+ * - `visual` (hero de la página del proyecto): solo el clip o la imagen, nunca la demo.
+ * - `demo` (bloque DEMO de la página del proyecto): solo la demo, con su póster y un botón grande de play.
  */
 @Component({
   selector: 'app-project-media',
@@ -42,7 +42,7 @@ export function hasProjectVisual(project: Project): boolean {
     :host { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
     video, img { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
     img { object-fit: cover; }
-    /* .cover (full-bleed hero): the looping clip fills the frame too. */
+    /* .cover (hero a sangre): el clip en bucle también llena el marco. */
     :host(.cover) video { object-fit: cover; }
     .play {
       position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 84px; height: 84px; translate: -50% -50%;

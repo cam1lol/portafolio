@@ -1,51 +1,51 @@
 import { CollectionTable } from '../../../core/data/collections.service';
 
 export interface CollectionField {
-  /** Column base name; bilingual fields map to `<name>_es` / `<name>_en`. */
+  /** Nombre base de la columna; los campos bilingües van a `<nombre>_es` / `<nombre>_en`. */
   name: string;
   label: string;
   bilingual: boolean;
   multiline?: boolean;
-  /** `'es'`: only the Spanish column is required (English falls back to it on the site). */
+  /** `'es'`: solo la columna en español es obligatoria (en el sitio el inglés recurre a ella). */
   required?: boolean | 'es';
   /**
-   * `image` uploads to Supabase Storage (previews bucket) and stores the public URL; `url` must start with http(s);
-   * `video` picks or uploads (optimized) a file under public/media/projects/<mediaFolder>/; `select` uses `options`;
-   * `date` stores YYYY-MM-DD.
+   * `image` sube a Supabase Storage (bucket previews) y guarda la URL pública; `url` debe empezar por http(s);
+   * `video` elige o sube (optimizado) un archivo en public/media/projects/<mediaFolder>/; `select` usa `options`;
+   * `date` guarda AAAA-MM-DD.
    */
   kind?: 'text' | 'image' | 'url' | 'video' | 'select' | 'date';
   options?: { value: string; label: string }[];
-  /** Initial value of a new item (select and date fields). `today` = current date. */
+  /** Valor inicial de un elemento nuevo (campos select y date). `today` = fecha actual. */
   defaultValue?: string;
-  /** `video`: media folder, and the field that receives the poster generated on upload. */
+  /** `video`: carpeta de medios y el campo que recibe el póster generado al subir. */
   mediaFolder?: string;
   posterField?: string;
   maxLength: number;
   placeholder?: string;
   hint?: string;
-  /** Where the field shows on the public site, for the line under it. */
+  /** Dónde aparece el campo en el sitio público, para la línea bajo él. */
   where?: string;
 }
 
 export interface CollectionConfig {
   key: string;
   table: CollectionTable;
-  /** Admin route segment, e.g. `services` -> `/admin/services`. */
+  /** Segmento de la ruta del admin, p. ej. `services` -> `/admin/services`. */
   path: string;
   title: string;
   help: string;
   singular: string;
   newLabel: string;
   fields: CollectionField[];
-  /** Icon for the page header and menu. */
+  /** Icono de la cabecera de la página y del menú. */
   icon: string;
-  /** Section on the public page, for "Ver en el sitio" (empty: top of the page). */
+  /** Sección de la página pública para "Ver en el sitio" (vacío: arriba de la página). */
   siteAnchor: string;
-  /** Column shown as the row title in the list (Spanish side when bilingual). */
+  /** Columna que se muestra como título de la fila en la lista (la española si es bilingüe). */
   listTitle: string;
-  /** Optional second column in the list. */
+  /** Segunda columna opcional en la lista. */
   listDetail?: string;
-  /** Migration that creates the table, named in the load error (default 0005_site_content.sql). */
+  /** Migración que crea la tabla, citada en el error de carga (por defecto 0005_site_content.sql). */
   migration?: string;
 }
 
@@ -64,6 +64,8 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
       { name: 'title', label: 'Título', bilingual: true, required: true, maxLength: 120, placeholder: 'WEB APPS', where: 'título de la tarjeta en Servicios' },
       { name: 'description', label: 'Descripción', bilingual: true, multiline: true, maxLength: 1000, where: 'texto de la tarjeta en Servicios' },
       { name: 'price', label: 'Precio o condición', bilingual: true, maxLength: 120, placeholder: 'DESDE · COTIZACIÓN POR ALCANCE', hint: 'Si queda vacío no se muestra.', where: 'tarjeta en Servicios' },
+      { name: 'timeline', label: 'Plazo típico', bilingual: true, maxLength: 60, placeholder: '2 A 6 SEMANAS', hint: 'Si queda vacío no se muestra.', where: 'sello de plazo en la ficha del servicio' },
+      { name: 'includes', label: 'Qué incluye', bilingual: true, multiline: true, maxLength: 1500, hint: 'Un punto por línea. Si queda vacío no se muestra.', where: 'lista "Incluye" en la ficha del servicio' },
     ],
     listTitle: 'title_es',
     listDetail: 'price_es',
@@ -202,7 +204,7 @@ export const COLLECTIONS: Record<string, CollectionConfig> = {
   },
 };
 
-/** Column names a config writes, used to build the form and the payload. */
+/** Nombres de columna que escribe una config, para construir el formulario y el payload. */
 export function collectionColumns(config: CollectionConfig): string[] {
   return config.fields.flatMap((field) => (field.bilingual ? [`${field.name}_es`, `${field.name}_en`] : [field.name]));
 }

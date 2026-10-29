@@ -8,7 +8,7 @@ export interface Toast {
 
 const DURATION_MS = 3500;
 
-/** Small confirmation messages for the admin ("Guardado", "Eliminado"), shown by ToastComponent. */
+/** Mensajes cortos de confirmación del admin ("Guardado", "Eliminado"), los muestra ToastComponent. */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   private nextId = 1;

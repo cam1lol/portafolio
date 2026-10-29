@@ -1,5 +1,5 @@
 .block {
-  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
+  padding-block: 96px; /* solo vertical: .wrap conserva el margen lateral */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -32,7 +32,7 @@
   font-size: 13px;
 }
 
-/* ===== experience timeline ===== */
+/* ===== línea de tiempo de experiencia ===== */
 .tl {
   position: relative;
   padding-left: 34px;
@@ -53,7 +53,7 @@
   position: absolute;
   inset: 0;
   background: var(--ember);
-  /* --tl (0..1) follows the scroll, set from the component; .draw = full (reduced motion). */
+  /* --tl (0..1) sigue al scroll, lo escribe el componente; .draw = completa (movimiento reducido). */
   transform: scaleY(var(--tl, 0));
   transform-origin: top;
   transition: transform .15s linear;
@@ -83,7 +83,7 @@
   transition: background .3s ease;
 }
 
-/* Reached by the line: filled, with one pulse as it lights up. */
+/* Alcanzado por la línea: relleno, con un pulso al encenderse. */
 .tl-node.lit::before,
 .tl.draw .tl-node::before { background: var(--ember); }
 .tl-node.lit:not(.now)::before { animation: node-lit .7s var(--ease); }
@@ -92,21 +92,31 @@
   to { box-shadow: 0 0 0 12px rgba(242, 84, 27, 0); transform: none; }
 }
 
-.tl-node.now::before {
-  box-shadow: 0 0 0 0 var(--ember);
-  animation: pulse 2.4s var(--ease) infinite;
+/* Puesto actual: un anillo que crece y se desvanece alrededor del punto, en el compositor (solo
+   transform y opacity; el pulso anterior con box-shadow repintaba en cada fotograma). */
+.tl-node.now::after {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--ember);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: now-ring 2.4s var(--ease) infinite;
 }
 
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(242, 84, 27, .5);
-  }
-  70% {
-    box-shadow: 0 0 0 9px rgba(242, 84, 27, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(242, 84, 27, 0);
-  }
+@keyframes now-ring {
+  0% { transform: scale(1); opacity: .7; }
+  70%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-node.now::after { animation: none; display: none; }
 }
 
 .xp-card {
@@ -190,9 +200,9 @@
   transform: translateX(4px);
 }
 
-/* Second place to download the CV, after the timeline; collapses when there is no PDF. */
+/* Segundo lugar para descargar el CV, tras la línea de tiempo; se pliega si no hay PDF. */
 .xp-cv { display: flex; justify-content: center; margin-top: 40px; }
 .xp-cv:not(:has(a)) { display: none; }
 
-/* Keyboard / TV remote focus: thick ember ring, readable from a distance. */
+/* Foco con teclado o mando de TV: anillo grueso de acento, legible a distancia. */
 .xp-card:focus-visible { outline: 3px solid var(--ember); outline-offset: 4px; }

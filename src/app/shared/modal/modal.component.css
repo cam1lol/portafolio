@@ -86,7 +86,7 @@
   margin-bottom: 22px;
 }
 
-/* front preview — browser */
+/* vista previa front: navegador */
 .browser {
   position: absolute;
   inset: 0;
@@ -157,7 +157,7 @@
   opacity: 0.8;
 }
 
-/* phone preview */
+/* vista previa de teléfono */
 .phone {
   position: absolute;
   inset: 0;
@@ -177,7 +177,7 @@
   gap: 8px;
 }
 
-/* back preview — data flow */
+/* vista previa back: flujo de datos */
 .flow {
   position: absolute;
   inset: 0;
@@ -289,7 +289,7 @@
   }
 }
 
-/* Real project media: YouTube facade, preview clip or image. */
+/* Medios reales del proyecto: fachada de YouTube, clip o imagen. */
 .media-preview { display: block; padding: 0; }
 
 .mtabs { display: flex; gap: 6px; margin: 4px 0 16px; }

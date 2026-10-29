@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 /**
- * Minimal admin-safe markup for `[innerHTML]`: the text is HTML-escaped first,
- * then `**bold**` -> <b>, `__muted__` -> <span class="muted">, a backtick span -> <code>, newline -> <br>.
- * The output still goes through Angular's default sanitizer (no bypass).
+ * Marcado mínimo y seguro para `[innerHTML]`: primero se escapa el HTML del texto y luego
+ * `**negrita**` -> <b>, `__atenuado__` -> <span class="muted">, texto entre comillas invertidas -> <code>,
+ * salto de línea -> <br>. El resultado sigue pasando por el saneado por defecto de Angular (sin bypass).
  */
 export function renderInlineMarkup(text: string): string {
   const escaped = text

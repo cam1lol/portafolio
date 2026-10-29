@@ -17,7 +17,7 @@ import { ProjectCoverArtComponent } from '../../shared/media/project-cover-art.c
 
 const SITE_NAME = 'Camilo Ayala';
 
-/** /proyectos — every published project with filters by type, status, technology and text. */
+/** /proyectos: todos los proyectos publicados, con filtros por tipo, estado, tecnología y texto. */
 @Component({
   selector: 'app-projects-index',
   standalone: true,
@@ -27,7 +27,7 @@ const SITE_NAME = 'Camilo Ayala';
 })
 export class ProjectsIndexComponent {
   private readonly transloco = inject(TranslocoService);
-  /** Shared-element names for the open / back transition with the project page. */
+  /** Nombres compartidos para la transición de abrir / volver con la página del proyecto. */
   protected readonly vt = inject(ProjectTransitionService);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
@@ -44,6 +44,16 @@ export class ProjectsIndexComponent {
   protected readonly filtered = computed(() =>
     filterProjects(this.projects() ?? [], { type: this.type(), status: this.status(), tech: this.tech(), query: this.query() }),
   );
+  /** Cuántos proyectos mostraría cada pestaña de tipo y cada estado, combinado con los demás filtros. */
+  protected readonly typeCounts = computed(() => {
+    const base = { status: this.status(), tech: this.tech(), query: this.query() };
+    return Object.fromEntries(this.types.map((t) => [t.value, filterProjects(this.projects() ?? [], { ...base, type: t.value }).length]));
+  });
+  protected readonly statusCounts = computed(() => {
+    const base = { type: this.type(), tech: this.tech(), query: this.query() };
+    return Object.fromEntries(['all', ...this.statuses].map((st) => [st, filterProjects(this.projects() ?? [], { ...base, status: st as NonNullable<ProjectFilters['status']> }).length]));
+  });
+
   protected readonly hasFilters = computed(() => this.type() !== 'all' || this.status() !== 'all' || !!this.tech() || !!this.query().trim());
 
   protected readonly types: { value: NonNullable<ProjectFilters['type']>; key: string }[] = [
@@ -56,7 +66,7 @@ export class ProjectsIndexComponent {
 
   private readonly isEn = computed(() => this.transloco.activeLang() === 'en');
 
-  // selectTranslate waits for the file and follows language changes.
+  // selectTranslate espera al archivo y sigue los cambios de idioma.
   private readonly pageTitle = toSignal(this.transloco.selectTranslate<string>('pi_title'), { initialValue: '' });
   private readonly pageLead = toSignal(this.transloco.selectTranslate<string>('pi_lead'), { initialValue: '' });
 
@@ -70,9 +80,9 @@ export class ProjectsIndexComponent {
   }
 
   /**
-   * A12: while a row is being covered by the next one it shrinks a little and dims. Measures every
-   * row first, then writes only the values that changed. Off on narrow screens and reduced motion
-   * (the CSS keeps the plain list there).
+   * A12: mientras la siguiente fila tapa a una, esta se encoge un poco y se oscurece. Mide todas las filas
+   * primero y luego escribe solo los valores que cambiaron. Desactivado en pantallas estrechas y con
+   * movimiento reducido (ahí el CSS deja la lista simple).
    */
   private stackFrames(): void {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -92,7 +102,7 @@ export class ProjectsIndexComponent {
           return items.map((el, i) => {
             const next = rects[i + 1];
             if (!next) return { el, covered: 0 };
-            // 0 while the next row is a full row away, 1 once it sits on top of this one.
+            // 0 mientras la siguiente fila está a una fila de distancia, 1 cuando ya está encima de esta.
             const gap = next.top - rects[i].top - 14;
             return { el, covered: Math.min(1, Math.max(0, 1 - gap / rects[i].height)) };
           });
@@ -117,10 +127,14 @@ export class ProjectsIndexComponent {
     return this.isEn() ? en || es : es;
   }
 
-  /** "2025 · Full-stack · Velamentum": the fact sheet in one line, skipping empty fields. */
+  /** "2025 · Full-stack · Velamentum": la ficha en una línea, sin los campos vacíos. */
   protected factsLine(project: Project): string {
     const facts = project.facts;
     return [facts.year, this.loc(facts.roleEs, facts.roleEn), facts.client].filter((value) => value.trim()).join(' · ');
+  }
+
+  protected pad(n: number): string {
+    return String(n ?? 0).padStart(2, '0');
   }
 
   protected reset(): void {

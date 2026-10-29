@@ -4,9 +4,9 @@ import { ProjectPageComponent } from '../../project-page/project-page.component'
 import { ExampleSection, withExample } from './block-examples';
 
 /**
- * "¿Cómo se ve?": one section of the real project page, rendered by the public component itself.
- * With your content when the section has some (updates as you type), else with an example tagged
- * EJEMPLO so you know what the block is for before filling it.
+ * "¿Cómo se ve?": una sección de la página real del proyecto, pintada por el propio componente público.
+ * Con tu contenido si la sección lo tiene (se actualiza mientras escribes); si no, con un ejemplo marcado
+ * EJEMPLO para que sepas para qué sirve el bloque antes de rellenarlo.
  */
 @Component({
   selector: 'app-block-example',

@@ -1,6 +1,6 @@
 /**
- * Icons offered for projects in the admin picker. Each one has its own loop when shown with
- * <app-icon animated> (styles.css, "Icon motion"); the label is what the admin sees.
+ * Iconos que ofrece el selector del admin para los proyectos. Cada uno tiene su propio bucle con
+ * <app-icon animated> (styles.css, "Icon motion"); la etiqueta es lo que ve el admin.
  */
 export interface CatalogIcon {
   name: string;

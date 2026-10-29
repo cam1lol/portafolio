@@ -1,6 +1,6 @@
-// Lists the media in public/media/projects (videos, images, PDFs) so the admin can pick files
-// without uploading anything. Runs before `npm start` and `npm run build` (prestart / prebuild), also on Vercel.
-// scripts/media-server.mjs imports writeManifest() to refresh the list after each local upload.
+// Lista los medios de public/media/projects (videos, imágenes, PDFs) para que el admin elija archivos
+// sin subir nada. Corre antes de `npm start` y `npm run build` (prestart / prebuild), también en Vercel.
+// scripts/media-server.mjs importa writeManifest() para refrescar la lista tras cada subida local.
 import { readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, relative, sep, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +22,7 @@ function walk(dir) {
   });
 }
 
-/** Writes manifest.json and returns the list it wrote. */
+/** Escribe manifest.json y devuelve la lista que escribió. */
 export function writeManifest() {
   mkdirSync(MEDIA_DIR, { recursive: true });
   const files = walk(MEDIA_DIR)

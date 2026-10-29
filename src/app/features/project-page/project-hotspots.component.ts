@@ -4,9 +4,9 @@ import { ProjectHotspot } from '../../core/data/project-details';
 import { ScanRevealDirective } from '../../shared/directives/scan-reveal.directive';
 
 /**
- * "Dentro del producto" (A8): the card image with numbered points; each one opens its label on
- * hover, focus or tap. The label opens towards the side with more room. The pulse runs a few
- * times and stops (transform and opacity only).
+ * "Dentro del producto" (A8): la imagen de la tarjeta con puntos numerados; cada uno abre su etiqueta al
+ * pasar el ratón, enfocarlo o tocarlo. La etiqueta se abre hacia el lado con más espacio. El pulso se
+ * repite unas veces y se detiene (solo transform y opacity).
  */
 @Component({
   selector: 'app-project-hotspots',

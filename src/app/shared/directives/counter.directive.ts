@@ -4,9 +4,9 @@ const DURATION_MS = 1100;
 const FRAME_MS = 45;
 
 /**
- * Hero figures as a HUD readout: random digits that lock in from left to right until the target
- * shows ("37" -> "91" -> "14" -> "11"). Re-runs when the target changes (the value can arrive
- * later from Supabase). Reduced motion shows the number straight away.
+ * Cifras del hero como lectura HUD: dígitos al azar que se fijan de izquierda a derecha hasta mostrar
+ * el valor ("37" -> "91" -> "14" -> "11"). Se repite si el valor cambia (puede llegar más tarde de
+ * Supabase). Con movimiento reducido el número aparece directamente.
  */
 @Directive({
   selector: '[appCounter]',
@@ -31,7 +31,7 @@ export class CounterDirective implements OnChanges, OnDestroy {
     const start = performance.now();
     this.intervalId = setInterval(() => {
       const progress = Math.min(1, (performance.now() - start) / DURATION_MS);
-      // Digits lock one by one; the rest keep changing.
+      // Los dígitos se fijan uno a uno; el resto sigue cambiando.
       const locked = Math.floor(progress * (target.length + 1));
       let out = '';
       for (let i = 0; i < target.length; i++) {

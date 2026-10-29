@@ -2,10 +2,10 @@ import { Component, ElementRef, computed, effect, input, signal, viewChild } fro
 import { FormArray, FormControl } from '@angular/forms';
 
 /**
- * Short lists (stack, technologies) written as tags: Enter or comma adds, the X removes,
- * Backspace on the empty field removes the last one. With `suggestions`, the values already used
- * elsewhere show as chips under the field (filtered while typing): one click adds them. Edits the FormArray in place, so the
- * parent form becomes dirty and keeps its validators.
+ * Listas cortas (stack, tecnologías) escritas como etiquetas: Enter o coma añade, la X quita, Retroceso
+ * en el campo vacío quita la última. Con `suggestions`, los valores ya usados en otros sitios aparecen
+ * como chips bajo el campo (filtrados al escribir): un clic los añade. Edita el FormArray en el sitio,
+ * así el formulario padre queda modificado y conserva sus validadores.
  */
 @Component({
   selector: 'app-tag-input',
@@ -75,17 +75,17 @@ import { FormArray, FormControl } from '@angular/forms';
 })
 export class TagInputComponent {
   readonly array = input.required<FormArray<FormControl<string>>>();
-  /** Builds each new control, so the tags keep the same validators as before. */
+  /** Crea cada control nuevo, para que las etiquetas tengan los mismos validadores que antes. */
   readonly createControl = input.required<(value: string) => FormControl<string>>();
   readonly inputId = input<string | null>(null);
   readonly placeholder = input('Por ejemplo: Angular');
   readonly maxLength = input(80);
-  /** Values used elsewhere (most used first); the first ones that match and are not added yet show. */
+  /** Valores usados en otros sitios (los más usados primero); se muestran los primeros que coinciden y aún no están añadidos. */
   readonly suggestions = input<string[]>([]);
   readonly maxSuggestions = input(14);
 
   protected readonly draft = signal('');
-  /** Bumped when tags change, so the suggestion list (which hides added ones) updates. */
+  /** Se incrementa al cambiar las etiquetas, para que la lista de sugerencias (que oculta las añadidas) se actualice. */
   private readonly version = signal(0);
   protected readonly visibleSuggestions = computed(() => {
     this.version();
@@ -98,7 +98,7 @@ export class TagInputComponent {
   private readonly fieldRef = viewChild.required<ElementRef<HTMLInputElement>>('field');
 
   constructor() {
-    // Tags loaded or changed from outside (editing an existing project) also refresh the suggestions.
+    // Las etiquetas cargadas o cambiadas desde fuera (editar un proyecto existente) también refrescan las sugerencias.
     effect((onCleanup) => {
       const sub = this.array().valueChanges.subscribe(() => this.version.update((n) => n + 1));
       onCleanup(() => sub.unsubscribe());
@@ -118,7 +118,7 @@ export class TagInputComponent {
     }
   }
 
-  /** Adds what is typed (comma separated), skipping blanks and case-insensitive duplicates. */
+  /** Añade lo escrito (separado por comas), sin vacíos ni duplicados (sin distinguir mayúsculas). */
   protected commit(): void {
     const array = this.array();
     const existing = new Set(array.controls.map((control) => control.value.toLowerCase()));
@@ -138,7 +138,7 @@ export class TagInputComponent {
     }
   }
 
-  /** Adds one suggested value and keeps the focus in the field for the next one. */
+  /** Añade un valor sugerido y deja el foco en el campo para el siguiente. */
   protected add(value: string): void {
     this.draft.set(value);
     this.commit();

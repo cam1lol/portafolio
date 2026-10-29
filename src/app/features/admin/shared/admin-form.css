@@ -1,5 +1,5 @@
-/* Shared admin form pattern: heading, numbered steps, ES/EN tags and a sticky action bar.
-   Included next to each form's own stylesheet (styleUrls). */
+/* Patrón común de formulario del admin: titular, pasos numerados, etiquetas ES/EN y barra de acciones fija.
+   Se incluye junto a la hoja propia de cada formulario (styleUrls). */
 
 .form-head {
   display: flex;
@@ -64,7 +64,7 @@
 
 .btn svg { width: 14px; height: 14px; }
 
-/* ---- Fields, shared by every admin form (one source so spacing and widths match everywhere) ---- */
+/* ---- Campos, comunes a todos los formularios del admin (una sola fuente para que espacios y anchos coincidan) ---- */
 
 .form-step > legend { font-size: 11px; }
 .form-step > legend + .step-hint { margin-top: 2px; }
@@ -105,7 +105,7 @@
 .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--ember); }
 .field input.ng-invalid.ng-touched, .field textarea.ng-invalid.ng-touched { border-color: var(--ember); }
 
-/* Columns that can shrink: minmax(0, 1fr) keeps long URLs, selects or videos from pushing the form off screen. */
+/* Columnas que pueden encogerse: minmax(0, 1fr) evita que URLs largas, selects o videos empujen el formulario fuera de la pantalla. */
 .grid-2, .grid-3 { display: grid; gap: 0 18px; align-items: start; }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -118,7 +118,7 @@
 .checkbox-field label { display: flex; align-items: center; gap: 10px; color: var(--bone); font: 13px 'Space Grotesk', sans-serif; letter-spacing: .02em; text-transform: none; cursor: pointer; }
 .checkbox-field input[type='checkbox'] { width: 16px; height: 16px; margin: 0; accent-color: var(--ember); }
 
-/* Lists of sentences (highlights, points): one input per row. */
+/* Listas de frases (destacados, puntos): un input por fila. */
 .list-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .list-row input { flex: 1; min-width: 0; }
 .remove-btn, .add-btn {
@@ -138,7 +138,7 @@
 .add-btn:hover { color: var(--bone); }
 .list-field { display: flex; flex-direction: column; }
 
-/* Save bar: state on the left, actions on the right. */
+/* Barra de guardar: estado a la izquierda, acciones a la derecha. */
 .save-state { margin-right: auto; align-self: center; color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .08em; }
 .save-state.dirty { color: var(--ember); }
 
@@ -151,7 +151,7 @@
   .remove-btn, .add-btn { transition: none; }
 }
 
-/* Buttons and the error banner, same in every form. */
+/* Botones y el aviso de error, iguales en todos los formularios. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -199,7 +199,7 @@
   .sticky-actions .btn { flex: 1; padding: 11px 12px; }
 }
 
-/* Repeatable lists (screens, gallery, results, docs...): one card per item. */
+/* Listas repetibles (pantallas, galería, resultados, documentos...): una tarjeta por elemento. */
 .list-title {
   display: flex;
   align-items: center;
@@ -229,7 +229,7 @@
   .repeat-card { padding: 12px 12px 2px; }
 }
 
-/* Videos step: "how many" row and loading tips. */
+/* Paso de videos: fila de "cuántos" y consejos de carga. */
 .video-count { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
 .video-count label { color: var(--bone); font-size: 13px; }
 .video-count input {
@@ -250,7 +250,7 @@
 .grid-video-title { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 110px); gap: 0 18px; }
 @media (max-width: 760px) { .grid-video-title { grid-template-columns: minmax(0, 1fr); } }
 
-/* Touch screens: finger-sized targets (about 40px) without changing the desktop look. */
+/* Pantallas táctiles: zonas de toque del tamaño de un dedo (unos 40px) sin cambiar el aspecto en escritorio. */
 @media (pointer: coarse) {
   .remove-btn, .add-btn { min-height: 40px; }
 }

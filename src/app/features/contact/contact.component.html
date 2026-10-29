@@ -13,10 +13,11 @@
     {{ 'ct_or' | transloco }}
     @if (mailto(email); as href) { <a [href]="href">{{ email }}</a> } @else { <span>{{ email }}</span> }
   </p>
-  <!-- Loaded on first open: keeps the forms code out of the initial bundle. -->
+  <app-contact-clock class="contact-clock reveal" appReveal />
+  <!-- Se carga al abrir por primera vez: deja el código de formularios fuera del bundle inicial. -->
   @if (open()) {
     @defer (on immediate) {
-    <app-contact-modal [returnFocusTo]="trigger" [contactEmail]="email" (closed)="open.set(false)" />
+    <app-contact-modal [returnFocusTo]="returnTo() ?? trigger" [contactEmail]="email" [service]="service()" (closed)="onClosed()" />
     }
   }
 </section>

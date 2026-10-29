@@ -10,6 +10,11 @@ header {
   background: var(--scrim);
   backdrop-filter: blur(14px);
 }
+/* Táctil: el difuminado se recalcula en cada fotograma de scroll sobre toda la franja (caro en la GPU
+   de un móvil). Un fondo casi opaco se ve igual de limpio. */
+@media (any-hover: none) and (pointer: coarse) {
+  header { backdrop-filter: none; background: color-mix(in srgb, var(--ink) 94%, transparent); }
+}
 
 .brand {
   display: flex;
@@ -19,12 +24,13 @@ header {
   text-decoration: none;
 }
 
-/* Back to the home page: the mark reacts like the other HUD controls. */
+/* Volver a la portada: la marca reacciona como los demás controles HUD. */
 .brand .glyph { transition: border-color .2s, color .2s; }
 .brand:hover .glyph { border-color: var(--ember); color: var(--ember); }
 .brand:focus-visible { outline: 2px solid var(--ember); outline-offset: 4px; }
 
-.brand .glyph {
+.brand .glyph,
+.ft-brand .glyph {
   width: 30px;
   height: 30px;
   border: 1.5px solid var(--bone);
@@ -112,34 +118,79 @@ nav.links a:hover {
 main {
   position: relative;
   z-index: 1;
+  /* Lo que se desplaza de lado al hacer scroll (líneas del hero, tarjetas) no puede crear scroll
+     lateral, que en móvil deja arrastrar la página y ver el fondo. `clip` no rompe los sticky. */
+  overflow-x: clip;
 }
 
 footer {
   position: relative;
   z-index: 1;
   border-top: 1px solid var(--line-soft);
-  padding: 26px clamp(20px, 4vw, 48px);
+  padding: 0 clamp(20px, 4vw, 48px);
+}
+
+.ft-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  padding: 48px 0 40px;
+}
+.ft-brand { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 12px; align-content: start; }
+.ft-brand .nm { font: 800 15px 'Archivo', sans-serif; letter-spacing: .04em; color: var(--bone); }
+.ft-brand .eyebrow { font-size: 9px; letter-spacing: .16em; }
+.ft-brand p { grid-column: 1 / -1; max-width: 340px; margin: 18px 0 14px; color: var(--bone-dim); font-size: 14px; line-height: 1.55; }
+.ft-mail { grid-column: 1 / -1; justify-self: start; color: var(--ember); font-size: 12px; text-decoration: none; }
+.ft-mail:hover { text-decoration: underline; }
+
+.ft-col { display: grid; align-content: start; gap: 10px; }
+.ft-k { margin-bottom: 4px; color: var(--steel); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
+.ft-col a { justify-self: start; color: var(--bone-dim); font-size: 14px; text-decoration: none; transition: color .2s; }
+.ft-col a:hover { color: var(--ember); }
+.ft-col .ext { color: var(--steel); font-size: 11px; }
+.ft-col a:focus-visible, .ft-mail:focus-visible, .ft-top-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+
+.ft-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 14px;
+  padding: 22px 0 52px; /* deja sitio al rótulo fijo de sección del HUD en la esquina inferior */
+  border-top: 1px solid var(--line-soft);
 }
-
-footer .mono {
+footer .ft-bar .mono {
   font-size: 11px;
   color: var(--steel);
   letter-spacing: .1em;
 }
+.ft-top-btn {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: border-color .2s, color .2s;
+}
+footer .ft-top-btn:hover { border-color: var(--ember); color: var(--ember); }
 
-/* Narrow desktops: keep the header on one line (subtitle hidden, tighter links, icon-only search). */
+@media (max-width: 960px) {
+  .ft-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ft-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .ft-top { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: 36px; }
+}
+
+/* Escritorios estrechos: la cabecera en una línea (sin subtítulo, enlaces más juntos, búsqueda solo con icono). */
 @media (max-width: 1439px) {
   .brand .role { display: none; }
   nav.links { gap: 18px; }
   .cmd-btn span { display: none; }
 }
 
-/* ---- Mobile menu: hidden on desktop, where the links sit inline in the header. */
+/* ---- Menú móvil: oculto en escritorio, donde los enlaces van en la cabecera. */
 
 .menu-btn,
 .menu-controls,
@@ -177,7 +228,7 @@ nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px
   .controls { gap: 6px; }
   .menu-btn { display: grid; }
 
-  /* The nav becomes a panel that drops from the header. */
+  /* La navegación se convierte en un panel que cae desde la cabecera. */
   nav.links {
     position: absolute;
     top: 100%;
@@ -213,12 +264,11 @@ nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px
     inset: 0;
     z-index: 40;
     display: block;
-    background: rgba(5, 6, 8, .55);
-    backdrop-filter: blur(2px);
+    background: rgba(5, 6, 8, .7);
   }
 }
 
-/* Small phones: the header keeps only brand + menu; the controls move into the panel. */
+/* Móviles pequeños: la cabecera solo conserva marca + menú; los controles pasan al panel. */
 @media (max-width: 560px) {
   .header-controls { display: none; }
 
@@ -235,7 +285,7 @@ nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px
   .menu-controls .seg.theme button { padding: 0 14px; }
 }
 
-/* Touch screens: language, site/admin and theme buttons get a finger-sized target. */
+/* Pantallas táctiles: los botones de idioma, sitio/admin y tema tienen zona de toque del tamaño de un dedo. */
 @media (pointer: coarse) {
   .seg button {
     min-width: 40px;
@@ -254,7 +304,7 @@ nav.links a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px
   .menu-btn { transition: none; }
 }
 
-/* Command palette and sound buttons (in the controls group: header on wide screens, menu on phones). */
+/* Botones de paleta de comandos y sonido (en el grupo de controles: cabecera en pantallas anchas, menú en móvil). */
 .cmd-btn,
 .sound-btn {
   display: inline-flex;

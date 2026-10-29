@@ -1,11 +1,11 @@
 .block {
-  /* Vertical only, so .wrap keeps its side gutter on mobile. */
+  /* Solo vertical, para que .wrap conserve su margen lateral en móvil. */
   padding-top: 96px;
   padding-bottom: 96px;
   border-top: 1px solid var(--line-soft);
 }
 
-/* A terminal-like log: date, [TYPE], text. Lines rise one after another when the list appears. */
+/* Bitácora con aire de terminal: fecha, [TIPO], texto. Las líneas suben una tras otra al aparecer la lista. */
 .log { margin: 0; padding: 18px 22px; list-style: none; border: 1px solid var(--line); border-radius: var(--r); background: var(--graphite); font-size: 13px; }
 .line { display: grid; grid-template-columns: 76px 130px minmax(0, 1fr); gap: 0 16px; align-items: baseline; padding: 9px 0; border-bottom: 1px dashed var(--line-soft); }
 .date { color: var(--steel); font-size: 11px; letter-spacing: .06em; }
@@ -15,7 +15,7 @@
 a.text:hover { color: var(--ember); }
 a.text:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
-/* "Now" lines carry a live dot (opacity pulse: compositor only). */
+/* Las líneas "Ahora" llevan un punto en vivo (pulso de opacidad: solo compositor). */
 .k-now .kind::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--good); vertical-align: 1px; animation: live 1.8s ease-in-out infinite; }
 @keyframes live { 50% { opacity: .25; } }
 

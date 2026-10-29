@@ -1,11 +1,11 @@
-/** Real providers people commonly use; exact matches are never "corrected". */
+/** Proveedores reales que la gente usa a menudo; las coincidencias exactas nunca se "corrigen". */
 const KNOWN_DOMAINS = [
   'gmail.com', 'googlemail.com', 'hotmail.com', 'hotmail.es', 'outlook.com', 'outlook.es', 'live.com', 'msn.com',
   'yahoo.com', 'yahoo.es', 'ymail.com', 'icloud.com', 'me.com', 'mail.com', 'gmx.com', 'aol.com',
   'protonmail.com', 'proton.me',
 ];
 
-/** Up to this many edits (insert, delete, replace) a domain counts as a typo of a known one. */
+/** Hasta este número de ediciones (insertar, borrar, cambiar) un dominio cuenta como errata de uno conocido. */
 const MAX_DISTANCE = 2;
 
 function editDistance(a: string, b: string): number {
@@ -23,9 +23,9 @@ function editDistance(a: string, b: string): number {
 }
 
 /**
- * "¿Quisiste decir...?" for typos in common email domains (gmial.com, hotmial.com, gmail.con).
- * Returns the corrected address, or null when the domain is fine, unknown or incomplete.
- * The part before @ is kept exactly as typed.
+ * "¿Quisiste decir...?" para erratas en dominios de correo comunes (gmial.com, hotmial.com, gmail.con).
+ * Devuelve la dirección corregida, o null si el dominio está bien, es desconocido o está incompleto.
+ * La parte antes de la @ se conserva tal cual.
  */
 export function suggestEmail(email: string): string | null {
   const at = email.lastIndexOf('@');

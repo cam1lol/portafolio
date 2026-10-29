@@ -18,7 +18,7 @@
   } @else {
     <app-form-steps [steps]="steps" [form]="form" />
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="submit()" (appSaveShortcut)="!saving() && submit()" novalidate>
       <fieldset class="form-step" id="step-role">
         <legend>1 · PUESTO</legend>
         <p class="step-hint">La cabecera de la entrada en el timeline.</p>

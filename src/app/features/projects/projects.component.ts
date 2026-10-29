@@ -16,6 +16,9 @@ import { TiltDirective } from '../../shared/directives/tilt.directive';
 import { ScrambleDirective } from '../../shared/directives/scramble.directive';
 import { homeProjects } from '../../core/data/project-details';
 
+/** Tope de tarjetas en la portada: así el carrusel lateral nunca se hace eterno; el resto está en /proyectos. */
+const HOME_MAX = 7;
+
 type ProjectFilter = 'all' | 'web' | '3d' | 'tool';
 
 @Component({
@@ -31,11 +34,11 @@ export class ProjectsComponent {
   private readonly vt = inject(ProjectTransitionService);
   private readonly projectsService = inject(ProjectsService);
 
-  /** undefined while loading (skeleton cards), then the list. */
+  /** undefined mientras carga (tarjetas de esqueleto), luego la lista. */
   private readonly loadedProjects = toSignal(this.projectsService.getPublished());
   protected readonly loading = computed(() => this.loadedProjects() === undefined);
   private readonly allProjects = computed(() => this.loadedProjects() ?? []);
-  /** Home shows the featured projects (all of them while none is marked); /proyectos lists everything. */
+  /** La portada muestra los destacados (todos mientras no haya ninguno marcado); /proyectos lista todo. */
   private readonly projects = computed(() => homeProjects(this.allProjects()));
   protected readonly totalCount = computed(() => this.allProjects().length);
 
@@ -46,8 +49,11 @@ export class ProjectsComponent {
     const all = this.projects();
     return current === 'all' ? all : all.filter((p) => p.type === current);
   });
+  /** Las tarjetas que se pintan (como mucho HOME_MAX) y cuántas quedan para la tarjeta de cierre. */
+  protected readonly shown = computed(() => this.filtered().slice(0, HOME_MAX));
+  protected readonly moreCount = computed(() => this.filtered().length - this.shown().length);
 
-  /** Reactive active language signal — descriptions update without a reload. */
+  /** Señal del idioma activo: las descripciones cambian sin recargar. */
   private readonly lang = this.transloco.activeLang;
   protected readonly isEs = computed(() => this.lang() === 'es');
 
@@ -59,7 +65,6 @@ export class ProjectsComponent {
     return this.isEs() ? 'VER DETALLE +' : 'VIEW DETAIL +';
   }
 
-  /** Mirrors the prototype's `stLabel()` (lines 658). */
   protected statusLabel(status: Project['status']): string {
     if (this.isEs()) {
       return status === 'live' ? 'EN VIVO' : status === 'wip' ? 'EN CURSO' : 'ARCHIVO';
@@ -71,7 +76,7 @@ export class ProjectsComponent {
     this.filter.set(value);
   }
 
-  /** The card title morphs into the modal title: open as a view transition (see ProjectTransitionService). */
+  /** El título de la tarjeta se transforma en el del modal: se abre como view transition (ver ProjectTransitionService). */
   openProject(project: Project): void {
     this.vt.activeSlug.set(project.slug);
     this.vt.run(() => this.modalService.openProject(project));
@@ -88,22 +93,22 @@ export class ProjectsComponent {
   }
 
   /**
-   * A11: on wide screens with more than 3 projects the section pins and the cards slide sideways
-   * while scrolling down (the run is as tall as the extra width). Measure first, then write; the
-   * track only gets a transform, and nothing is written while the section is off screen.
+   * A11: en pantallas anchas con más de 3 proyectos la sección se fija y las tarjetas se deslizan de lado
+   * al bajar (el carrusel mide tanto como el ancho sobrante). Mide primero y escribe después; la pista solo
+   * recibe un transform y no se escribe nada mientras la sección está fuera de pantalla.
    */
   private driveRun(): void {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const scrollFrames = inject(ScrollFrameService);
     const last = { on: false, height: -1, x: '', no: '01', bar: '' };
     effect(() => {
-      this.filtered(); // new cards, new width
+      this.shown(); // tarjetas nuevas, ancho nuevo
       scrollFrames.request();
     });
     scrollFrames.register(
       {
         read: (frame) => {
-          const want = !reduce && frame.viewportWidth >= 1100 && this.filtered().length > 3;
+          const want = !reduce && frame.viewportWidth >= 1100 && this.shown().length > 3;
           if (!want || !last.on) return { want, extra: 0, progress: 0, visible: true };
           const runRect = this.run().nativeElement.getBoundingClientRect();
           const extra = Math.max(0, this.track().nativeElement.scrollWidth - this.run().nativeElement.clientWidth);
@@ -115,7 +120,7 @@ export class ProjectsComponent {
         write: (m) => {
           const run = this.run().nativeElement;
           if (m.want !== last.on) {
-            // Switching layout: the next frame measures the new width.
+            // Cambio de diseño: el siguiente fotograma mide el ancho nuevo.
             last.on = m.want;
             run.classList.toggle('h-on', m.want);
             if (!m.want) {
@@ -134,7 +139,7 @@ export class ProjectsComponent {
           if (x !== last.x) this.track().nativeElement.style.transform = last.x = x;
           const bar = `scaleX(${m.progress.toFixed(3)})`;
           if (bar !== last.bar) this.runBar().nativeElement.style.transform = last.bar = bar;
-          const count = this.filtered().length;
+          const count = this.shown().length;
           const no = String(Math.min(count, 1 + Math.floor(m.progress * count))).padStart(2, '0');
           if (no !== last.no) this.runNo().nativeElement.textContent = last.no = no;
         },
@@ -143,7 +148,7 @@ export class ProjectsComponent {
     );
   }
 
-  /** Keyboard: tabbing to a card that is off to the side scrolls the page to where it shows. */
+  /** Teclado: al tabular a una tarjeta que está fuera, de lado, la página baja hasta donde se ve. */
   protected revealFocused(event: FocusEvent): void {
     const run = this.run().nativeElement;
     if (!run.classList.contains('h-on')) return;
@@ -153,13 +158,13 @@ export class ProjectsComponent {
     if (index < 0) return;
     const extra = Math.max(0, this.track().nativeElement.scrollWidth - run.clientWidth);
     const progress = cards.length > 1 ? index / (cards.length - 1) : 0;
-    // The pin sticks under the header once the run's top reaches it; from there each pixel scrolled is a pixel of travel.
+    // La parte fija se pega bajo la cabecera cuando el carrusel llega a ella; desde ahí cada píxel de scroll es un píxel de recorrido.
     const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--site-header-h')) || 0;
     const runTop = run.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top: runTop - header + progress * extra, behavior: 'auto' });
   }
 
-  /** Shared names leave the card while the modal shows it (names must be unique on the page). */
+  /** Los nombres compartidos salen de la tarjeta mientras el modal la muestra (deben ser únicos en la página). */
   protected cardName(slug: string, part: SharedPart): string | null {
     return this.modalService.active() ? null : this.vt.name(slug, part);
   }

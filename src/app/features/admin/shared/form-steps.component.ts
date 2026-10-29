@@ -3,14 +3,14 @@ import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import { focusFirstInvalid } from './focus-first-invalid';
 
 export interface FormStep {
-  /** id of the fieldset the step jumps to. */
+  /** id del fieldset al que salta el paso. */
   id: string;
   label: string;
-  /** Controls checked for the error count of this step. */
+  /** Controles que cuentan para los errores de este paso. */
   controls: AbstractControl[];
 }
 
-/** Whether a control holds something worth showing (text, a checked box, list items). */
+/** Si un control tiene algo que mostrar (texto, una casilla marcada, elementos de lista). */
 export function controlHasValue(control: AbstractControl): boolean {
   if (control instanceof FormArray) return control.length > 0;
   if (control instanceof FormGroup) return Object.values(control.controls).some(controlHasValue);
@@ -21,11 +21,11 @@ export function controlHasValue(control: AbstractControl): boolean {
 }
 
 /**
- * Step index of a form, shows how many fields have errors (only once they were touched, so a new
- * form does not start all red).
- * - `scroll` (default): a sticky bar above a long form; each step jumps to its fieldset.
- * - `rail`: a vertical list beside the form, one step shown at a time (the page hides the others
- *   using `active`); each step also says whether it has content.
+ * Índice de pasos de un formulario; muestra cuántos campos tienen errores (solo tras tocarlos, para que
+ * un formulario nuevo no empiece todo en rojo).
+ * - `scroll` (por defecto): una barra fija sobre un formulario largo; cada paso salta a su fieldset.
+ * - `rail`: una lista vertical junto al formulario, con un paso a la vez (la página oculta los demás
+ *   con `active`); cada paso indica además si tiene contenido.
  */
 @Component({
   selector: 'app-form-steps',
@@ -73,7 +73,7 @@ export function controlHasValue(control: AbstractControl): boolean {
     .req-note { color: var(--steel); font-size: 11px; }
     .req { color: var(--ember); font: 700 14px/1 'Space Grotesk', sans-serif; }
 
-    /* ---- Rail: vertical list, the active step lit in ember. */
+    /* ---- Carril: lista vertical, con el paso activo iluminado en acento. */
     :host(.rail) { top: calc(var(--site-header-h) + 16px); flex-direction: column; align-items: stretch; flex-wrap: nowrap; margin: 0; padding: 0; border: 0; background: none; }
     :host(.rail) .steps { flex-direction: column; flex-wrap: nowrap; gap: 2px; }
     :host(.rail) button { position: relative; width: 100%; gap: 12px; padding: 10px 12px; border: 0; border-left: 2px solid var(--line); border-radius: 0; background: none; }
@@ -86,9 +86,9 @@ export function controlHasValue(control: AbstractControl): boolean {
     :host(.rail) .step-errors { margin-left: auto; }
     :host(.rail) .req-note { margin-top: 14px; padding-left: 14px; }
 
-    /* On phones the bar wraps to several rows, so it scrolls away instead of covering the form. */
+    /* En móvil la barra ocupa varias filas, así que se va con el scroll en vez de tapar el formulario. */
     @media (max-width: 760px) { :host { position: static; } button { padding: 6px 10px; } }
-    /* Rail on narrow screens: a horizontal strip of steps that scrolls sideways. */
+    /* Carril en pantallas estrechas: una franja horizontal de pasos que se desplaza de lado. */
     @media (max-width: 1100px) {
       :host(.rail) { position: static; margin-bottom: 18px; }
       :host(.rail) .steps { flex-direction: row; overflow-x: auto; scrollbar-width: thin; padding-bottom: 4px; }
@@ -104,13 +104,13 @@ export class FormStepsComponent {
   private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly steps = input.required<FormStep[]>();
-  /** Root form, only used to know when to recount. */
+  /** Formulario raíz, solo para saber cuándo recontar. */
   readonly form = input.required<AbstractControl>();
   readonly mode = input<'scroll' | 'rail'>('scroll');
-  /** Rail mode: index of the step on screen. */
+  /** Modo rail: índice del paso en pantalla. */
   readonly active = model(0);
 
-  /** Bumped on every form event (value, status, touched) so the counts recompute. */
+  /** Se incrementa con cada evento del formulario (valor, estado, tocado) para recalcular los contadores. */
   private readonly tick = signal(0);
 
   protected readonly errors = computed(() => {
@@ -134,7 +134,7 @@ export class FormStepsComponent {
     const index = this.steps().indexOf(step);
     if (this.mode() === 'rail') {
       this.active.set(index);
-      // The fieldset is shown on the next render; then its first error (if any) gets the focus.
+      // El fieldset se muestra en el siguiente render; luego su primer error (si lo hay) recibe el foco.
       if (this.errors()[index]) setTimeout(() => {
         const target = document.getElementById(step.id);
         if (target) focusFirstInvalid(target);
@@ -149,7 +149,7 @@ export class FormStepsComponent {
       return;
     }
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Leave room for the site header and this bar (when it is sticky) above the fieldset.
+    // Deja sitio para la cabecera del sitio y esta barra (si es fija) sobre el fieldset.
     const bar = this.host.nativeElement as HTMLElement;
     const offset = (getComputedStyle(bar).position === 'sticky' ? parseFloat(getComputedStyle(bar).top) + bar.offsetHeight : 0) + 12;
     window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: reduceMotion ? 'auto' : 'smooth' });

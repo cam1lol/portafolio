@@ -18,8 +18,8 @@ interface LabItem {
 }
 
 /**
- * Laboratorio (admin > Laboratorio, migration 0014): experiments as looping clips that play only
- * while visible. English falls back to Spanish. Renders nothing while there are no published items.
+ * Laboratorio (admin > Laboratorio, migración 0014): experimentos como clips en bucle que solo se
+ * reproducen mientras se ven. El inglés recurre al español. No pinta nada si no hay nada publicado.
  */
 @Component({
   selector: 'app-lab',

@@ -4,11 +4,11 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { SupabaseService } from '../supabase/supabase.service';
 
-/** One project page view (migration 0014): no personal data, only what was read and for how long. */
+/** Una visita a la página de un proyecto (migración 0014): sin datos personales, solo qué se leyó y cuánto tiempo. */
 export interface ProjectView {
   slug: string;
   lang: 'es' | 'en';
-  /** How far down the page the visitor got, 0-100. */
+  /** Hasta dónde bajó el visitante, 0-100. */
   depth: number;
   seconds: number;
   created_at?: string;
@@ -19,12 +19,12 @@ export interface ProjectStats {
   views: number;
   avgDepth: number;
   avgSeconds: number;
-  /** Share of views that reached the end of the case study (depth >= 90). */
+  /** Parte de las visitas que llegaron al final del caso de estudio (profundidad >= 90). */
   readToEnd: number;
   enShare: number;
 }
 
-/** Views shorter than this are bounces (a misclick, the back button): not counted. */
+/** Las visitas más cortas que esto son rebotes (un clic por error, el botón atrás): no cuentan. */
 const MIN_SECONDS = 2;
 
 @Injectable({ providedIn: 'root' })
@@ -33,8 +33,8 @@ export class ProjectViewsService {
   private readonly auth = inject(AuthService);
 
   /**
-   * Records a view when the visitor leaves the page. Uses fetch with keepalive so it is still sent
-   * while the tab closes; the admin's own visits (logged in) are not counted.
+   * Registra la visita cuando el visitante sale de la página. Usa fetch con keepalive para que se envíe
+   * aunque se cierre la pestaña; las visitas del propio admin (con sesión) no cuentan.
    */
   record(view: ProjectView): void {
     if (this.auth.session() || view.seconds < MIN_SECONDS) return;
@@ -53,10 +53,10 @@ export class ProjectViewsService {
         Prefer: 'return=minimal',
       },
       body,
-    }).catch(() => undefined); // analytics never break the page (table missing, offline...)
+    }).catch(() => undefined); // las estadísticas nunca rompen la página (tabla ausente, sin conexión...)
   }
 
-  /** Admin: views of the last `days` days. */
+  /** Admin: visitas de los últimos `days` días. */
   recent(days = 30): Observable<ProjectView[]> {
     const since = new Date(Date.now() - days * 864e5).toISOString();
     return from(
@@ -70,7 +70,7 @@ export class ProjectViewsService {
   }
 }
 
-/** Per-project summary, most viewed first. */
+/** Resumen por proyecto, los más vistos primero. */
 export function summarizeViews(views: ProjectView[]): ProjectStats[] {
   const groups = new Map<string, ProjectView[]>();
   for (const view of views) (groups.get(view.slug) ?? groups.set(view.slug, []).get(view.slug)!).push(view);

@@ -11,8 +11,8 @@ export interface PageItem {
 }
 
 /**
- * `before:`/`after:` take a section key; `after-item:` takes any `page_items.item_key`
- * (`section:<key>` or `block:<uuid>`), used by "+ DEBAJO" in the admin structure page.
+ * `before:`/`after:` reciben la clave de una sección; `after-item:` cualquier `page_items.item_key`
+ * (`section:<clave>` o `block:<uuid>`), lo usa "+ DEBAJO" en la estructura del admin.
  */
 export type PageBlockPlacement =
   | 'keep'

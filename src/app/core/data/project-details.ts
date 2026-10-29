@@ -1,6 +1,6 @@
 import { Project } from './project.model';
 
-/** Fact sheet shown at the top of the project page. Every field is optional (empty = hidden). */
+/** Ficha que se ve arriba en la página del proyecto. Todos los campos son opcionales (vacío = oculto). */
 export interface ProjectFacts {
   year: string;
   durationEs: string;
@@ -11,7 +11,7 @@ export interface ProjectFacts {
   team: string;
 }
 
-/** One screen of the product: a video and/or a still, with a short explanation. */
+/** Una pantalla del producto: un video y/o una imagen, con una explicación corta. */
 export interface ProjectScreen {
   titleEs: string;
   titleEn: string;
@@ -27,7 +27,7 @@ export interface ProjectPhoto {
   captionEn: string;
 }
 
-/** A number with context, e.g. "-40 %" / "tiempo de carga" / "tras migrar a Angular 20". */
+/** Una cifra con contexto, p. ej. "-40 %" / "tiempo de carga" / "tras migrar a Angular 20". */
 export interface ProjectResult {
   value: string;
   labelEs: string;
@@ -44,7 +44,7 @@ export interface ProjectImprovement {
   status: ImprovementStatus;
 }
 
-/** A file in the repo (PDF) or an external link (Notion, Figma, docs). */
+/** Un archivo del repositorio (PDF) o un enlace externo (Notion, Figma, documentación). */
 export interface ProjectDoc {
   titleEs: string;
   titleEn: string;
@@ -52,18 +52,18 @@ export interface ProjectDoc {
   url: string;
 }
 
-/** A video of the project, shown in the Videos grid and played in a modal. */
+/** Un video del proyecto: aparece en la cuadrícula de Videos y se reproduce en un modal. */
 export interface ProjectVideo {
   titleEs: string;
   titleEn: string;
   descEs: string;
   descEn: string;
   video: string;
-  /** Still shown before playing; without it the first frame is used. */
+  /** Imagen que se ve antes de reproducir; sin ella se usa el primer fotograma. */
   poster: string;
-  /** Short silent clip played on hover (generated on upload); without it the hover plays the video itself. */
+  /** Clip corto sin sonido que se reproduce al pasar el ratón (se genera al subir); sin él, se reproduce el propio video. */
   preview: string;
-  /** Free text, e.g. "2:15". */
+  /** Texto libre, p. ej. "2:15". */
   duration: string;
 }
 
@@ -75,8 +75,8 @@ export interface ProjectVersion {
 }
 
 /**
- * Case study in three steps (problem, process, result), shown as a numbered HUD strip on the
- * project page. Stored inside the `facts` jsonb column, so it needs no migration. Optional.
+ * Caso de estudio en tres pasos (problema, proceso, resultado), en una franja HUD numerada en la página
+ * del proyecto. Se guarda dentro de la columna jsonb `facts`, así que no necesita migración. Opcional.
  */
 export interface ProjectStory {
   challengeEs: string;
@@ -91,14 +91,14 @@ export type ChapterType = 'text' | 'image' | 'compare' | 'quote' | 'code' | 'mod
 export type ChapterLayout = 'contained' | 'full';
 
 /**
- * One piece of the case study, composed in the admin. A flat shape for every type (unused fields
- * stay empty), so the form and the jsonb stay simple:
- * - text: title + body (blank line between paragraphs, **bold**).
- * - image: media + alt + caption, contained or full-bleed.
- * - compare: media (before) + mediaAfter + alt + caption.
- * - quote: body + author.
- * - code: code + language + caption.
- * - model: media (GLB path in the `models` bucket) + caption.
+ * Una pieza del caso de estudio, compuesta en el admin. La misma forma para todos los tipos (los campos
+ * que no usa quedan vacíos), para que el formulario y el jsonb sean simples:
+ * - text: título + cuerpo (línea en blanco entre párrafos, **negrita**).
+ * - image: media + alt + pie, contenida o a sangre.
+ * - compare: media (antes) + mediaAfter + alt + pie.
+ * - quote: cuerpo + autor.
+ * - code: código + lenguaje + pie.
+ * - model: media (ruta del GLB en el bucket `models`) + pie.
  */
 export interface ProjectChapter {
   type: ChapterType;
@@ -119,7 +119,7 @@ export interface ProjectChapter {
 }
 
 export interface ProjectDetails {
-  /** Shown on the home page; /proyectos shows every published project. */
+  /** Se muestra en la portada; /proyectos muestra todos los publicados. */
   featured: boolean;
   facts: ProjectFacts;
   story: ProjectStory;
@@ -132,30 +132,30 @@ export interface ProjectDetails {
   videos: ProjectVideo[];
   chapters: ProjectChapter[];
   /**
-   * Part of the card image / clip that must always show when it is cropped (CSS object-position,
-   * e.g. "50% 0%" = top). Stored inside the facts jsonb like the story, so it needs no migration.
+   * Parte de la imagen o clip de la tarjeta que siempre debe verse al recortarla (object-position de CSS,
+   * p. ej. "50% 0%" = arriba). Se guarda en el jsonb facts como la historia, sin migración.
    */
   mediaFocus: string;
-  /** Order of the movable sections on the project page (ids of PAGE_SECTIONS); empty = default order. */
+  /** Orden de las secciones movibles de la página del proyecto (ids de PAGE_SECTIONS); vacío = orden por defecto. */
   sectionOrder: string[];
-  /** How the three-step story shows: numbered timeline (default) or a pinned screen with the steps scrolling by. */
+  /** Cómo se muestra la historia: línea de tiempo numerada (por defecto) o una pantalla fija con los pasos pasando. */
   storyLayout: StoryLayout;
-  /** How the results show: big numbers (default) or rings that fill (only for percentages and 0-100 values). */
+  /** Cómo se muestran los resultados: números grandes (por defecto) o anillos que se llenan (solo porcentajes y valores 0-100). */
   resultsStyle: ResultsStyle;
   /**
-   * Mobile version ("Escritorio y móvil"): a vertical clip played in the phone, and vertical
-   * captures (the first one is the phone's still when there is no clip). Both optional.
+   * Versión móvil ("Escritorio y móvil"): un clip vertical que se reproduce en el teléfono y capturas
+   * verticales (la primera es la imagen del teléfono si no hay clip). Ambos opcionales.
    */
   mobileVideo: string;
   mobileImages: string[];
-  /** Labeled points on the card image ("Dentro del producto"), placed by clicking it in the admin. */
+  /** Puntos con etiqueta sobre la imagen de la tarjeta ("Dentro del producto"); se colocan con un clic en el admin. */
   hotspots: ProjectHotspot[];
 }
 
 export type StoryLayout = 'timeline' | 'pinned';
 export type ResultsStyle = 'numbers' | 'rings';
 
-/** A point of interest on the card image: position in percent of its width / height and a label. */
+/** Un punto de interés sobre la imagen de la tarjeta: posición en porcentaje de su ancho / alto y una etiqueta. */
 export interface ProjectHotspot {
   x: number;
   y: number;
@@ -165,7 +165,7 @@ export interface ProjectHotspot {
 
 export const MAX_HOTSPOTS = 8;
 
-/** Sections of the project page that can be reordered from the admin ("Organizar la página"), in default order. */
+/** Secciones de la página del proyecto que se pueden reordenar desde el admin ("Organizar la página"), en su orden por defecto. */
 export const PAGE_SECTIONS: { id: string; label: string }[] = [
   { id: 's-demo', label: 'Video demo' },
   { id: 's-story', label: 'Historia en tres pasos' },
@@ -181,7 +181,7 @@ export const PAGE_SECTIONS: { id: string; label: string }[] = [
   { id: 's-extras', label: 'Mejoras, documentos y versiones' },
 ];
 
-/** A saved order completed with any section it does not mention (new ones go where they belong by default). */
+/** Un orden guardado, completado con las secciones que no menciona (las nuevas van a su sitio por defecto). */
 export function effectiveSectionOrder(saved: string[]): string[] {
   const known = PAGE_SECTIONS.map((section) => section.id);
   const order = saved.filter((id, i) => known.includes(id) && saved.indexOf(id) === i);
@@ -189,7 +189,7 @@ export function effectiveSectionOrder(saved: string[]): string[] {
   return order;
 }
 
-/** The nine focus points offered in the admin (3 x 3 grid), as object-position values. */
+/** Los nueve puntos de enfoque del admin (cuadrícula de 3 x 3), como valores de object-position. */
 export const MEDIA_FOCUS_POINTS = ['0% 0%', '50% 0%', '100% 0%', '0% 50%', '50% 50%', '100% 50%', '0% 100%', '50% 100%', '100% 100%'];
 export const DEFAULT_MEDIA_FOCUS = '50% 50%';
 
@@ -203,7 +203,7 @@ export function emptyChapter(type: ChapterType): ProjectChapter {
   };
 }
 
-/** Whether a chapter has what its type needs to be shown; incomplete ones are dropped on save. */
+/** Si un capítulo tiene lo que su tipo necesita para mostrarse; los incompletos se descartan al guardar. */
 export function chapterHasContent(chapter: ProjectChapter): boolean {
   const filled = (value: string) => value.trim() !== '';
   switch (chapter.type) {
@@ -228,7 +228,7 @@ export function emptyDetails(): ProjectDetails {
   return { featured: false, facts: emptyFacts(), story: emptyStory(), results: [], screens: [], gallery: [], improvements: [], docs: [], versions: [], videos: [], chapters: [], mediaFocus: DEFAULT_MEDIA_FOCUS, sectionOrder: [], storyLayout: 'timeline', resultsStyle: 'numbers', mobileVideo: '', mobileImages: [], hotspots: [] };
 }
 
-// ---- Row mapping (jsonb keys are snake_case, like `experience.subprojects`) ----
+// ---- Mapeo de filas (las claves del jsonb van en snake_case, como `experience.subprojects`) ----
 
 type Json = Record<string, unknown>;
 
@@ -236,7 +236,7 @@ const text = (source: Json, key: string): string => (typeof source[key] === 'str
 const list = (value: unknown): Json[] => (Array.isArray(value) ? value.filter((item): item is Json => !!item && typeof item === 'object') : []);
 const object = (value: unknown): Json => (value && typeof value === 'object' && !Array.isArray(value) ? (value as Json) : {});
 
-/** Maps a camelCase field list to snake_case keys: titleEs -> title_es. */
+/** Pasa una lista de campos camelCase a claves snake_case: titleEs -> title_es. */
 const snake = (key: string): string => key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
 
 function readItem<T>(source: Json, keys: (keyof T & string)[]): T {
@@ -247,7 +247,7 @@ function writeItem<T extends object>(item: T): Json {
   return Object.fromEntries(Object.entries(item).map(([key, value]) => [snake(key), typeof value === 'string' ? value.trim() : value]));
 }
 
-/** An item is kept only if some text field has content (ignores the status selector). */
+/** Un elemento se conserva solo si algún campo de texto tiene contenido (ignora el selector de estado). */
 function hasContent(item: object): boolean {
   return Object.entries(item).some(([key, value]) => key !== 'status' && typeof value === 'string' && value.trim() !== '');
 }
@@ -267,7 +267,7 @@ export const MAX_MOBILE_IMAGES = 6;
 const cleanMobileImages = (images: string[]): string[] =>
   images.map((src) => src.trim()).filter(Boolean).slice(0, MAX_MOBILE_IMAGES);
 
-/** Vertical captures; also reads the single `phone_image` of the first version of this section. */
+/** Capturas verticales; también lee la única `phone_image` de la primera versión de esta sección. */
 function readMobileImages(facts: Json): string[] {
   const images = Array.isArray(facts['mobile_images']) ? facts['mobile_images'].filter((src): src is string => typeof src === 'string') : [];
   return cleanMobileImages(images.length ? images : [text(facts, 'phone_image')]);
@@ -275,7 +275,7 @@ function readMobileImages(facts: Json): string[] {
 
 const percent = (value: unknown): number => Math.min(100, Math.max(0, Math.round(Number(value) * 10) / 10 || 0));
 
-/** Points with a label only, positions clamped to the image (0-100 %). */
+/** Solo puntos con etiqueta, con la posición limitada a la imagen (0-100 %). */
 function readHotspots(value: unknown): ProjectHotspot[] {
   return list(value)
     .map((item) => ({ x: percent(item['x']), y: percent(item['y']), labelEs: text(item, 'label_es'), labelEn: text(item, 'label_en') }))
@@ -290,7 +290,7 @@ function writeHotspots(spots: ProjectHotspot[]): Json[] {
     .map((spot) => ({ x: percent(spot.x), y: percent(spot.y), label_es: spot.labelEs.trim(), label_en: spot.labelEn.trim() }));
 }
 
-/** Unknown types are skipped (a newer admin, or a hand-edited row, must not break the page). */
+/** Los tipos desconocidos se saltan (un admin más nuevo o una fila editada a mano no deben romper la página). */
 function readChapters(value: unknown): ProjectChapter[] {
   return list(value).flatMap((item) => {
     const type = text(item, 'type') as ChapterType;
@@ -330,7 +330,7 @@ export function detailsToRow(details: ProjectDetails): Json {
   const items = <T extends object>(values: T[]): Json[] => values.filter(hasContent).map(writeItem);
   return {
     featured: details.featured,
-    // The story shares the facts column (no migration): its keys never collide with the fact keys.
+    // La historia comparte la columna facts (sin migración): sus claves nunca chocan con las de la ficha.
     facts: { ...writeItem(details.facts), ...writeItem(details.story), media_focus: details.mediaFocus || DEFAULT_MEDIA_FOCUS, section_order: details.sectionOrder.join(','), story_layout: details.storyLayout, results_style: details.resultsStyle,
       mobile_video: details.mobileVideo.trim(), mobile_images: cleanMobileImages(details.mobileImages), hotspots: writeHotspots(details.hotspots) },
     results: items(details.results),
@@ -344,11 +344,11 @@ export function detailsToRow(details: ProjectDetails): Json {
   };
 }
 
-// ---- Lists ----
+// ---- Listas ----
 
 const lower = (values: string[]): string[] => values.map((value) => value.toLowerCase());
 
-/** Other projects sharing technologies, most shared first; none if nothing is shared. */
+/** Otros proyectos que comparten tecnologías, los que más comparten primero; ninguno si no comparten nada. */
 export function relatedProjects(project: Project, all: Project[], max = 3): Project[] {
   const own = new Set(lower(project.stack));
   return all
@@ -360,7 +360,7 @@ export function relatedProjects(project: Project, all: Project[], max = 3): Proj
     .map((entry) => entry.other);
 }
 
-/** Home page: the featured projects, or all of them while none is marked. */
+/** Portada: los proyectos destacados, o todos mientras no haya ninguno marcado. */
 export function homeProjects(all: Project[]): Project[] {
   const featured = all.filter((project) => project.featured);
   return featured.length ? featured : all;
@@ -388,7 +388,7 @@ export function filterProjects(all: Project[], filters: ProjectFilters): Project
   });
 }
 
-/** Every technology used across the list, deduplicated case-insensitively, alphabetical. */
+/** Todas las tecnologías de la lista, sin repetir (sin distinguir mayúsculas), en orden alfabético. */
 export function allTechnologies(all: Project[]): string[] {
   const seen = new Map<string, string>();
   for (const tech of all.flatMap((project) => project.stack)) {

@@ -9,6 +9,7 @@ import { FormStep, FormStepsComponent } from '../shared/form-steps.component';
 import { FieldHintComponent } from '../shared/field-hint.component';
 import { TagInputComponent } from '../shared/tag-input.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
+import { SaveShortcutDirective } from '../shared/save-shortcut.directive';
 
 const COMPANY_MAX = 120;
 const ROLE_MAX = 120;
@@ -56,7 +57,7 @@ function listItemControl(value = ''): FormControl<string> {
 @Component({
   selector: 'app-admin-experience-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, FormStepsComponent, FieldHintComponent, TagInputComponent],
+  imports: [ReactiveFormsModule, RouterLink, FormStepsComponent, FieldHintComponent, TagInputComponent, SaveShortcutDirective],
   templateUrl: './admin-experience-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-experience-form.component.css'],
 })
@@ -91,7 +92,7 @@ export class AdminExperienceFormComponent implements OnInit, HasUnsavedChanges {
     { id: 'step-details', label: 'Logros y stack', controls: [this.c.summaryEs, this.c.summaryEn, this.c.pointsEs, this.c.pointsEn, this.c.stack, this.c.subprojects] },
     { id: 'step-publish', label: 'Publicación', controls: [this.c.published] },
   ];
-  /** Factory for new tags, so they keep the list item validators. */
+  /** Fábrica de etiquetas nuevas, para que conserven los validadores de los elementos de lista. */
   protected readonly newListItem = listItemControl;
 
   protected readonly isEditMode = signal(false);

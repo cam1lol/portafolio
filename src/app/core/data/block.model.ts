@@ -1,8 +1,6 @@
 /**
- * Mirrors the Supabase `blocks` table (Fase 4.7), mapped from snake_case to
- * camelCase by `BlocksService`. `config` shape depends on `type` and is
- * documented in `docs/superpowers/plans/2026-06-25-phase4-admin-plan.md`
- * (Fase 4.7, punto 3):
+ * Refleja la tabla `blocks` de Supabase; `BlocksService` la pasa de snake_case a camelCase. La forma
+ * de `config` depende de `type`:
  * - `text`: { title?, body }
  * - `card_grid`: { title?, items: { title, description, icon? }[] }
  * - `roadmap`: { title?, items: { when, title, description }[] }

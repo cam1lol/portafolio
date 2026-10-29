@@ -86,8 +86,8 @@ export class PublicShellComponent {
       }
     }
 
-    // Keep the page usable before the migration is applied and include new content
-    // created after the current layout was last saved.
+    // Mantiene la página usable antes de aplicar la migración e incluye contenido creado después de la
+    // última vez que se guardó el orden.
     for (const sectionKey of SECTION_ORDER) {
       if (!seenSections.has(sectionKey)) {
         result.push({ key: `section:${sectionKey}`, kind: 'section', sectionKey });

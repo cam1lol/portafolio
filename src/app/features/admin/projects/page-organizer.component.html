@@ -12,7 +12,7 @@
   </header>
 
   <div class="org-body">
-    <!-- 1. The list -->
+    <!-- 1. La lista -->
     <ol class="org-list" aria-label="Secciones en orden">
       @for (row of rows(); track row.id; let i = $index; let last = $last) {
         <li data-flip draggable="true" [class.selected]="selected() === row.id" [class.empty]="!row.filled"
@@ -37,7 +37,7 @@
       }
     </ol>
 
-    <!-- 2. The outline of the page -->
+    <!-- 2. El esquema de la página -->
     <div class="org-map" aria-hidden="true">
       <span class="map-title mono">ESQUEMA</span>
       <div class="map-page">
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <!-- 3. The real page with this order -->
+    <!-- 3. La página real con este orden -->
     <div class="org-preview" #preview>
       <span class="map-title mono">VISTA PREVIA REAL</span>
       @defer {

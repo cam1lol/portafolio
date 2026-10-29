@@ -10,8 +10,7 @@ interface SubprojectRow {
 }
 
 /**
- * Row shape returned by the Supabase `experience` table (snake_case),
- * restricted to the columns this app actually consumes.
+ * Forma de las filas de `experience` (snake_case), limitada a las columnas que usa la app.
  */
 interface ExperienceRow {
   id: string;
@@ -34,16 +33,15 @@ interface ExperienceRow {
 }
 
 /**
- * Admin-facing shape: `Experience` plus the two admin-only columns
- * (`published`, `sortOrder`) that the public `getPublished()` path doesn't
- * need and intentionally leaves unmapped.
+ * Forma del admin: `Experience` más las dos columnas solo del admin (`published`, `sortOrder`), que
+ * la lectura pública `getPublished()` no necesita y deja fuera.
  */
 export interface AdminExperience extends Experience {
   published: boolean;
   sortOrder: number;
 }
 
-/** Payload accepted by `create`/`update` — camelCase, mapped to snake_case before hitting Supabase. */
+/** Lo que aceptan `create`/`update`: camelCase, se pasa a snake_case antes de ir a Supabase. */
 export type ExperienceInput = Omit<AdminExperience, 'id' | 'sortOrder'>;
 
 @Injectable({ providedIn: 'root' })
@@ -68,7 +66,7 @@ export class ExperienceService {
     );
   }
 
-  /** Admin listing: every row (published or not), ordered by `sort_order`. */
+  /** Listado del admin: todas las filas (publicadas o no), por `sort_order`. */
   getAll(): Observable<AdminExperience[]> {
     return from(this.supabase.client.from('experience').select('*').order('sort_order')).pipe(
       map(({ data, error }) => {
@@ -137,8 +135,7 @@ export class ExperienceService {
   }
 
   /**
-   * Persists a new ordering after a drag&drop reorder: writes `sort_order`
-   * (0-based, by array position) for every id in `orderedIds`.
+   * Guarda el orden tras arrastrar: escribe `sort_order` (desde 0, según la posición) para cada id de `orderedIds`.
    */
   reorder(orderedIds: string[]): Observable<void> {
     const updates = orderedIds.map((id, index) =>
@@ -186,7 +183,7 @@ export class ExperienceService {
     };
   }
 
-  /** Maps a camelCase admin payload (full or partial) to a snake_case row patch. */
+  /** Pasa un payload del admin en camelCase (completo o parcial) a un parche de fila en snake_case. */
   private toRow(input: Partial<ExperienceInput>): Record<string, unknown> {
     const row: Record<string, unknown> = {};
     if (input.company !== undefined) row['company'] = input.company;

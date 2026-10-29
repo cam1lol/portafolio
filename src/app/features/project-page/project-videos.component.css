@@ -1,6 +1,6 @@
 :host { display: block; }
 
-/* ---- Grid of cards ---- */
+/* ---- Cuadrícula de tarjetas ---- */
 .vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 
 .vcard {
@@ -44,7 +44,7 @@
 }
 .vplay svg { width: 20px; height: 20px; margin-left: 3px; }
 .vcard:hover .vplay { border-color: var(--ember); background: var(--ember); color: var(--ink); transform: translate(-50%, -50%) scale(1.08); }
-/* While the preview runs, the button steps back so the motion reads. */
+/* Mientras corre la vista previa, el botón se aparta para que se vea el movimiento. */
 .vthumb:has(.vpreview) .vplay { opacity: .35; }
 
 .vdur, .vidx {
@@ -73,9 +73,9 @@
   -webkit-line-clamp: 2;
 }
 
-/* ---- Modal player ---- */
+/* ---- Reproductor en modal ---- */
 .vplayer {
-  /* margin: auto restores the native centring that the global reset removes. */
+  /* margin: auto recupera el centrado nativo que quita el reset global. */
   inset: 0;
   margin: auto;
   width: min(1100px, 100vw - 48px);
@@ -155,7 +155,7 @@
   .vp-loading { animation-duration: 2.4s; }
 }
 
-/* A single video: one large featured player (thumbnail and text side by side) instead of a lonely small card. */
+/* Un solo video: un reproductor destacado grande (miniatura y texto lado a lado) en vez de una tarjeta pequeña sola. */
 .vgrid.featured { grid-template-columns: minmax(0, 1fr); }
 .vgrid.featured .vcard { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: center; }
 .vgrid.featured .vbody { padding: 24px 28px; }

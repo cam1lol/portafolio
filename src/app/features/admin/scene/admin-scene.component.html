@@ -1,4 +1,4 @@
-<section class="scene-page">
+<section class="scene-page" (appSaveShortcut)="dirty() && !saving() && save()">
   <app-admin-page-header icon="eye" title="Escena" description="Cómo se comporta el sitio público: fondo, transiciones, intro, sonido y modo ligero. Lo que eliges se ve al momento en este navegador (los anillos también giran detrás del panel); los visitantes lo ven al guardar.">
     <a class="btn view-site" href="/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6" /></svg> VER EN EL SITIO</a>
   </app-admin-page-header>

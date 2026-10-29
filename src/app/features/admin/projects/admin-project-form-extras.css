@@ -1,7 +1,7 @@
-/* Second stylesheet of the project form (the first one stays under the component style budget):
-   chapter editor, live preview panel and private draft link. */
+/* Segunda hoja de estilos del formulario de proyectos (la primera se queda bajo el límite por componente):
+   editor de capítulos, panel de vista previa y enlace privado de borrador. */
 
-/* Chapters: type picker cards, layout switch and code editor. */
+/* Capítulos: tarjetas para elegir tipo, selector de ancho y editor de código. */
 .chapter-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 6px 0 12px; }
 .chapter-type {
   display: grid; grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: auto auto; gap: 2px 12px; align-items: center;
@@ -27,7 +27,7 @@
 @media (max-width: 760px) { .grid-code { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .chapter-type { transition: none; } .chapter-type:hover { transform: none; } }
 
-/* Live preview: the real project page in a side panel, non-interactive (inert), updated as you type. */
+/* Vista previa en vivo: la página real del proyecto en un panel lateral, sin interacción (inert), al día mientras escribes. */
 .head-actions .btn.on { border-color: var(--ember); color: var(--ember); }
 .live-preview {
   position: fixed; top: var(--site-header-h); right: 0; bottom: 0; z-index: 40; display: flex; flex-direction: column;
@@ -45,7 +45,7 @@
 .draft-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .draft-row input { flex: 1 1 320px; min-width: 0; padding: 9px 11px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); color: var(--bone-dim); font: 12px 'Space Mono', monospace; }
 
-/* Focus point: a 3 x 3 grid over the image; the chosen cell is lit. */
+/* Punto de enfoque: una cuadrícula de 3 x 3 sobre la imagen; la celda elegida se ilumina. */
 .focus-picker { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 16px; align-items: center; }
 .focus-thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink); }
 .focus-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -57,7 +57,7 @@
 .focus-picker .step-hint { margin: 0; }
 @media (max-width: 760px) { .focus-picker { grid-template-columns: minmax(0, 1fr); } }
 
-/* Local draft offer and the quality checklist. */
+/* Oferta de borrador local y la lista de calidad. */
 .draft-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 14px; border: 1px dashed var(--ember); border-radius: var(--r); color: var(--bone-dim); font-size: 13px; }
 .draft-offer span { flex: 1 1 260px; }
 .quality-list { margin: 0 0 22px; padding: 0; list-style: none; border-top: 1px solid var(--line-soft); }
@@ -67,13 +67,13 @@
 .q-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); }
 .quality-ok { margin: 0 0 22px; color: var(--good); font-size: 11px; letter-spacing: .1em; }
 
-/* "¿Cómo se ve?" buttons next to each section title. */
+/* Botones "¿Cómo se ve?" junto al título de cada sección. */
 .see-btn { margin-left: auto; padding: 5px 10px; border: 1px dashed var(--line); border-radius: 999px; background: none; color: var(--steel); font: 10px "Space Mono", monospace; letter-spacing: .08em; cursor: pointer; }
 .see-btn:hover, .see-btn.on { border-color: var(--ember); border-style: solid; color: var(--ember); }
 .see-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 .see-row { display: flex; margin: -4px 0 8px; }
 
-/* Chapter type picker: cards | live preview of the type under the pointer. */
+/* Selector de tipo de capítulo: tarjetas | vista previa del tipo bajo el puntero. */
 .picker-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 14px; align-items: start; margin: 6px 0 12px; }
 .picker-wrap .chapter-picker { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin: 0; }
 .chapter-type.on { border-color: var(--ember); }
@@ -87,12 +87,12 @@
 .organize-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
 .organize-row .step-hint { margin: 0; }
 
-/* Segmented display choices (story layout, results style) */
+/* Opciones segmentadas de presentación (diseño de la historia, estilo de resultados) */
 .choice { display: grid; justify-items: start; gap: 8px; margin: 4px 0 18px; }
 .choice-label { color: var(--steel); font: 10px 'Space Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
 .choice-hint { max-width: 70ch; color: var(--steel); font-size: 12px; line-height: 1.5; }
 
-/* Mobile version: fields | phone preview */
+/* Versión móvil: campos | vista previa en teléfono */
 .mobile-block { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; align-items: start; margin-bottom: 18px; }
 .mobile-fields { min-width: 0; }
 .mobile-shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 10px; }

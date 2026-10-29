@@ -49,13 +49,13 @@ export class TickerComponent implements AfterViewInit {
   });
 
   /**
-   * Scrolling speeds the strip up (scrolling up runs it backwards) and it eases back to normal,
-   * like the background rings. playbackRate keeps the position, so there is no jump; the loop only
-   * runs while the speed is settling.
+   * El scroll acelera la franja (hacia arriba la hace ir al revés) y luego vuelve despacio a lo normal,
+   * como los anillos del fondo. playbackRate conserva la posición, sin saltos; el bucle solo corre
+   * mientras la velocidad se asienta.
    */
   ngAfterViewInit(): void {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // Looked up once (getAnimations forces a style update); again only if the strip was re-rendered.
+    // Se busca una vez (getAnimations fuerza un recálculo de estilos); otra vez solo si la franja se volvió a pintar.
     let cached: Animation[] = [];
     const animations = () => (cached.length && cached[0].playState !== 'idle' ? cached : (cached = this.track().nativeElement.getAnimations()));
     let lastY = window.scrollY;
@@ -73,7 +73,7 @@ export class TickerComponent implements AfterViewInit {
       const onScroll = () => {
         const now = performance.now();
         const dy = window.scrollY - lastY;
-        const speed = Math.abs(dy) / Math.max(16, now - lastT); // px per ms
+        const speed = Math.abs(dy) / Math.max(16, now - lastT); // px por ms
         lastY = window.scrollY;
         lastT = now;
         const target = Math.sign(dy || 1) * (1 + Math.min(speed * 4, 6));

@@ -4,8 +4,8 @@ import { startWith } from 'rxjs';
 import { TranslatorService } from './translator.service';
 
 /**
- * Line under a field: where it shows on the site (hidden with the "Ayudas" switch off) and a
- * character counter when it has a limit. English fields filled by the translator say so.
+ * Línea bajo un campo: dónde aparece en el sitio (se oculta con el interruptor "Ayudas" apagado) y un
+ * contador de caracteres si tiene límite. Los campos en inglés rellenados por el traductor lo indican.
  */
 @Component({
   selector: 'app-field-hint',

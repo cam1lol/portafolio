@@ -1,7 +1,7 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 const CONTROL_CHARS = /[\x00-\x1F\x7F]/;
-/** Same set minus line feed and carriage return, for multiline textareas. */
+/** El mismo conjunto sin salto de línea ni retorno de carro, para textareas de varias líneas. */
 const CONTROL_CHARS_EXCEPT_NEWLINES = /[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/;
 
 export function noControlCharsValidator(options: { allowNewlines?: boolean } = {}): ValidatorFn {

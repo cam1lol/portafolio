@@ -11,12 +11,13 @@ import { FieldHintComponent } from '../shared/field-hint.component';
 import { focusFirstInvalid } from '../shared/focus-first-invalid';
 import { ImageUploadComponent } from '../../../shared/image-upload/image-upload.component';
 import { MediaPickerComponent, MediaUpload } from '../../../shared/media-picker/media-picker.component';
+import { SaveShortcutDirective } from '../shared/save-shortcut.directive';
 
-/** Create/edit screen shared by every simple collection, built from its `CollectionConfig`. */
+/** Pantalla de crear/editar común a todas las colecciones simples, construida desde su `CollectionConfig`. */
 @Component({
   selector: 'app-admin-collection-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent, ImageUploadComponent, MediaPickerComponent],
+  imports: [ReactiveFormsModule, RouterLink, UpperCasePipe, FormStepsComponent, FieldHintComponent, ImageUploadComponent, MediaPickerComponent, SaveShortcutDirective],
   templateUrl: './admin-collection-form.component.html',
   styleUrls: ['../shared/admin-form.css', './admin-collection-form.component.css'],
 })
@@ -98,20 +99,20 @@ export class AdminCollectionFormComponent implements OnInit {
     return field.required === true || (field.required === 'es' && !column.endsWith('_en'));
   }
 
-  /** New items start with the field default (first option of a select, today for a date). */
+  /** Los elementos nuevos empiezan con el valor por defecto del campo (primera opción de un select, hoy en una fecha). */
   private initialValue(field: CollectionField): string {
     if (field.defaultValue === 'today') return new Date().toISOString().slice(0, 10);
     return field.defaultValue ?? (field.kind === 'select' ? field.options?.[0]?.value ?? '' : '');
   }
 
-  /** An uploaded video brings its poster: it fills the poster field if that one is still empty. */
+  /** Un video subido trae su póster: rellena el campo de póster si aún está vacío. */
   protected onVideoUploaded(field: CollectionField, upload: MediaUpload): void {
     if (!field.posterField || !upload.poster) return;
     const poster = this.form.controls[field.posterField];
     if (poster && !poster.value) this.setValue(field.posterField, upload.poster);
   }
 
-  /** Values set by a widget instead of an input (image upload). */
+  /** Valores que pone un widget en vez de un input (subida de imagen). */
   protected setValue(column: string, value: string): void {
     const control = this.form.controls[column];
     control.setValue(value);
@@ -149,9 +150,14 @@ export class AdminCollectionFormComponent implements OnInit {
         this.toast.show('Cambios guardados.');
         this.router.navigate(['/admin', this.config.path]);
       },
-      error: () => {
+      error: (error: { code?: string } | null) => {
         this.submitting.set(false);
-        this.errorMessage.set('No se pudo guardar. Comprueba tu sesión de administrador e inténtalo de nuevo.');
+        // PGRST204: un campo del formulario aún no tiene columna (falta una migración).
+        this.errorMessage.set(
+          error?.code === 'PGRST204'
+            ? 'No se pudo guardar: falta aplicar en Supabase la última migración de supabase/migrations (campos nuevos).'
+            : 'No se pudo guardar. Comprueba tu sesión de administrador e inténtalo de nuevo.',
+        );
       },
     });
   }

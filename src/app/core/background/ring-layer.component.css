@@ -5,34 +5,40 @@
   display: grid;
   place-items: center;
   pointer-events: none;
-  /* The rings bleed past the screen on purpose; clip them so they never add a sideways scroll. */
+  /* Los anillos se salen de la pantalla a propósito; se recortan para que nunca creen scroll lateral. */
   overflow: hidden;
 }
 
 .rings {
-  position: relative;
-  /* Slightly larger than the short side: the outer ring bleeds past the edges. */
-  width: 108vmin;
-  height: 108vmin;
+  /* Centrado absoluto: en móvil vertical el círculo es más grande que la pantalla, y place-items:center
+     dentro de un contenedor con overflow:hidden lo pega al inicio (alineación segura) en vez de centrarlo. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Algo más grande que el lado corto: el anillo exterior se sale por los bordes. */
+  --size: 108vmin;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
   opacity: .78;
-  /* No filter here: a glow on the parent of spinning layers is recomputed over the whole area
-     every frame (it made page transitions stutter). Each layer carries its own glow instead. */
+  /* Sin filter aquí: un brillo en el padre de capas que giran se recalcula en toda el área en cada
+     fotograma (hacía que las transiciones se trabaran). Cada capa lleva su propio brillo. */
   transition: opacity .9s ease, transform 1.2s cubic-bezier(.2, .7, .2, 1), filter 1.2s ease;
 }
 
-/* Easter egg (RITUAL_EVENT): the circle comes alive for a few seconds. */
+/* Easter egg (RITUAL_EVENT): el círculo se activa unos segundos. */
 .rings.ritual {
   opacity: 1;
   transform: scale(1.06);
   filter: drop-shadow(0 0 14px rgba(242, 84, 27, .9)) drop-shadow(0 0 48px rgba(242, 84, 27, .5)) brightness(1.35);
 }
 
-/* Over text-heavy sections (set from the component) the circle steps back. */
+/* Sobre secciones con mucho texto (lo activa el componente) el círculo se atenúa. */
 .rings.dimmed { opacity: .32; }
 .rings.ritual.dimmed { opacity: 1; }
 
-/* Cursor parallax: the component sets each layer's transform directly (scaled by its depth --d),
-   so moving the mouse only re-composites, with no style work on the SVG inside. */
+/* Parallax del cursor: el componente escribe el transform de cada capa (escalado por su profundidad
+   --d), así mover el ratón solo recompone, sin trabajo de estilos en el SVG. */
 .depth {
   position: absolute;
   inset: 0;
@@ -49,17 +55,17 @@
   backface-visibility: hidden;
 }
 
-/* The glow sits on the shapes inside each SVG, not on the SVG that rotates: that way it is painted
-   once into the layer and the GPU only turns the finished image. A filter on the rotating element
-   itself is recomputed every frame over the whole layer (the main cause of lag on modest GPUs). */
+/* El brillo va en las formas dentro de cada SVG, no en el SVG que gira: se pinta una vez en la capa
+   y la GPU solo rota la imagen terminada. Un filter en el elemento que gira se recalcula en cada
+   fotograma (la causa principal de tirones en GPUs modestas). */
 .layer > :not(defs) {
   filter: drop-shadow(0 0 8px rgba(215, 72, 35, .55)) drop-shadow(0 0 24px rgba(215, 72, 35, .22));
 }
-/* The rune rings are tiny glyphs repainted when they light up: a single short glow looks the same
-   on them and costs a fraction of the double wide one. */
+/* Las runas son glifos pequeños que se repintan al encenderse: un brillo corto se ve igual y cuesta
+   una fracción del doble brillo ancho. */
 .layer > text { filter: drop-shadow(0 0 6px rgba(215, 72, 35, .6)); }
 
-/* The animated wrappers (rotation, pulse): plain boxes, so the compositor can run their animation. */
+/* Los envoltorios animados (giro, pulso): cajas simples para que el compositor lleve la animación. */
 .spin,
 .pulse {
   position: absolute;
@@ -73,8 +79,7 @@
   animation-iteration-count: infinite;
 }
 
-/* Independent rotations for each ring layer */
-/* --scene-spin: rhythm from the admin (Escena): 1.6 calm, 1 normal, .65 lively. */
+/* --scene-spin: ritmo elegido en el admin (Escena): 1.6 tranquilo, 1 normal, .65 vivo. */
 .l1 { animation-name: cw;  animation-duration: calc(55s * var(--scene-spin, 1)); }
 .l2 { animation-name: ccw; animation-duration: calc(40s * var(--scene-spin, 1)); }
 .l3 { animation-name: cw;  animation-duration: calc(80s * var(--scene-spin, 1)); }
@@ -85,34 +90,48 @@
 @keyframes cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
-/* Energy pulse: hidden at rest, animated from the component at irregular intervals. */
+/* Pulso de energía: oculto en reposo, lo dispara el componente a intervalos irregulares. */
 .pulse {
   opacity: 0;
   transform: scale(.12);
   will-change: transform, opacity;
 }
 
-/* Runes that light up (class toggled from the component). */
+/* Runas que se encienden (el componente alterna la clase). */
 .rune { transition: fill .7s ease, fill-opacity .7s ease; }
 .rune.lit { fill: #ffb48a; fill-opacity: 1; }
 
-/* Portrait phones: size by width so the circle does not shrink to a small badge. */
+/* Móviles en vertical: el tamaño sigue al ancho para que el círculo no quede como un sello pequeño. */
 @media (max-aspect-ratio: 3/4) {
-  .rings { width: 150vw; height: 150vw; }
+  .rings { --size: 150vw; }
 }
 
-/* Escena: softer rings, or none at all. */
+/* Teléfonos y tablets (any-hover: none: ninguna entrada permite hover; un portátil táctil con trackpad
+   conserva todo, parallax incluido). La GPU de un móvil no aguanta ocho capas a pantalla completa a
+   densidad 3x con brillos difuminados. Sin cursor, las capas de profundidad no necesitan capa propia; los
+   dos anillos más lentos (80 s y 100 s por vuelta, casi no se nota) quedan quietos y se pintan juntos; el
+   brillo pasa a uno solo y corto, y las runas, que se repintan al encenderse, van sin brillo. */
+@media (any-hover: none) and (pointer: coarse) {
+  /* backface-visibility: hidden da capa propia a cada SVG aunque esté quieto. */
+  .layer { backface-visibility: visible; }
+  .depth, .pulse { will-change: auto; }
+  .l3, .l4 { animation: none; will-change: auto; }
+  .layer > :not(defs) { filter: drop-shadow(0 0 5px rgba(215, 72, 35, .5)); }
+  .layer > text { filter: none; }
+}
+
+/* Escena: anillos más suaves o ninguno. */
 :host-context(html[data-scene-rings="soft"]) .rings { opacity: .42; }
 :host-context(html[data-scene-rings="soft"]) .rings.dimmed { opacity: .2; }
 :host-context(html[data-scene-rings="off"]) { display: none; }
 
-/* Day mode: softer on a light background */
+/* Modo día: más suave sobre fondo claro. */
 :host-context([data-theme="day"]) .rings {
   opacity: .25;
 }
 :host-context([data-theme="day"]) .layer > :not(defs) { filter: none; }
 
-/* fx-lite (modest hardware, see main.ts): no glow at all. */
+/* fx-lite (equipos modestos, ver main.ts): sin brillo. */
 :host-context(html.fx-lite) .layer > :not(defs) { filter: none; }
 
 :host-context([data-theme="day"]) .rings.dimmed { opacity: .12; }

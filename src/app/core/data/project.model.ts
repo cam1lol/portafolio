@@ -1,8 +1,7 @@
 import { ProjectDetails } from './project-details';
 
 /**
- * Mirrors the Supabase `projects` table (AGENTS.md §6), mapped from
- * snake_case to camelCase by `ProjectsService`.
+ * Refleja la tabla `projects` de Supabase (AGENTS.md §6); `ProjectsService` la pasa de snake_case a camelCase.
  */
 export interface Project extends ProjectDetails {
   id: string;
@@ -20,17 +19,17 @@ export interface Project extends ProjectDetails {
   highlightsEs: string[];
   highlightsEn: string[];
   stack: string[];
-  /** Admin-only fields (not consumed by the public site rendering today). */
+  /** Campos del admin (hoy el sitio público no los usa al pintar). */
   previewImage?: string;
   repoUrl?: string;
   liveUrl?: string;
-  /** URL segment for /proyectos/<slug>. */
+  /** Segmento de la URL /proyectos/<slug>. */
   slug: string;
-  /** Short looping clip (path under public/media/projects). */
+  /** Clip corto en bucle (ruta bajo public/media/projects). */
   previewVideo?: string;
-  /** Full walkthrough video (path under public/media/projects). */
+  /** Video completo del recorrido (ruta bajo public/media/projects). */
   demoVideoUrl?: string;
-  /** "Cómo está hecho": paragraphs separated by blank lines, **bold** allowed. */
+  /** "Cómo está hecho": párrafos separados por líneas en blanco, se permite **negrita**. */
   caseStudyEs: string;
   caseStudyEn: string;
 }

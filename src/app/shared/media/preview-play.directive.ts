@@ -1,8 +1,8 @@
 import { AfterViewInit, DestroyRef, Directive, ElementRef, NgZone, inject } from '@angular/core';
 
 /**
- * Plays a muted preview clip while its card is hovered (mouse) or mostly visible (touch),
- * and pauses it otherwise. Never autoplays for prefers-reduced-motion: the poster stays.
+ * Reproduce el clip de vista previa sin sonido mientras se pasa el ratón por su tarjeta o, en táctil,
+ * mientras se ve casi entera; si no, lo pausa. Con prefers-reduced-motion nunca se reproduce solo: queda el póster.
  */
 @Directive({
   selector: 'video[appPreviewPlay]',
@@ -45,7 +45,7 @@ export class PreviewPlayDirective implements AfterViewInit {
   }
 
   private play(): void {
-    // play() rejects if the browser blocks it or the source is missing; the poster stays visible.
+    // play() falla si el navegador lo bloquea o falta el archivo; el póster sigue visible.
     this.video.play()?.catch(() => undefined);
   }
 

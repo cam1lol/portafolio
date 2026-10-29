@@ -7,12 +7,9 @@ import { ProjectDetails, detailsFromRow, detailsToRow } from './project-details'
 const DETAIL_KEYS: (keyof ProjectDetails)[] = ['featured', 'facts', 'story', 'results', 'screens', 'gallery', 'improvements', 'docs', 'versions', 'videos', 'chapters', 'mediaFocus', 'sectionOrder', 'storyLayout', 'resultsStyle', 'mobileVideo', 'mobileImages', 'hotspots'];
 
 /**
- * Row shape returned by the Supabase `projects` table (snake_case),
- * restricted to the columns this app actually consumes. Mirrors the
- * `experience` table's row/service split (`experience.service.ts`):
- * `preview_image`/`repo_url`/`live_url` now have an equivalent in `Project`
- * (admin-editable, optional for the public model), while `sort_order` and
- * `published` stay admin-only via `AdminProject`.
+ * Forma de las filas de `projects` (snake_case), limitada a las columnas que usa la app. Sigue la misma
+ * separación fila/servicio que `experience.service.ts`: `sort_order` y `published` son solo del admin
+ * (`AdminProject`); el resto tiene su equivalente en `Project`.
  */
 interface ProjectRow {
   id: string;
@@ -40,7 +37,7 @@ interface ProjectRow {
   case_study_en: string | null;
   published: boolean;
   sort_order: number;
-  /** jsonb detail columns (0010), read by `detailsFromRow`. */
+  /** Columnas jsonb de detalle (0010), las lee `detailsFromRow`. */
   featured?: boolean;
   facts?: unknown;
   results?: unknown;
@@ -50,21 +47,20 @@ interface ProjectRow {
   docs?: unknown;
   versions?: unknown;
   videos?: unknown;
-  /** Case study chapters (0013). */
+  /** Capítulos del caso de estudio (0013). */
   chapters?: unknown;
 }
 
 /**
- * Admin-facing shape: `Project` plus the two admin-only columns
- * (`published`, `sortOrder`) that the public `getPublished()` path doesn't
- * need and intentionally leaves unmapped.
+ * Forma del admin: `Project` más las dos columnas solo del admin (`published`, `sortOrder`), que la
+ * lectura pública `getPublished()` no necesita y deja fuera.
  */
 export interface AdminProject extends Project {
   published: boolean;
   sortOrder: number;
 }
 
-/** Payload accepted by `create`/`update` — camelCase, mapped to snake_case before hitting Supabase. */
+/** Lo que aceptan `create`/`update`: camelCase, se pasa a snake_case antes de ir a Supabase. */
 export type ProjectInput = Omit<AdminProject, 'id' | 'sortOrder'>;
 
 @Injectable({ providedIn: 'root' })
@@ -72,12 +68,13 @@ export class ProjectsService {
   private readonly supabase = inject(SupabaseService);
 
   /**
-   * Session cache of the public list: home, /proyectos and each project page share one request, so a
-   * project page renders instantly (inside the open transition). Any admin write clears it.
+   * Caché de la lista pública durante la sesión: portada, /proyectos y cada página de proyecto comparten
+   * una sola petición, así una página de proyecto se pinta al instante (dentro de la transición de
+   * apertura). Cualquier escritura del admin la vacía.
    */
   private published$: Observable<Project[]> | null = null;
 
-  /** Public site read: only `published=true`, ordered for display. */
+  /** Lectura del sitio público: solo `published=true`, en orden. */
   getPublished(): Observable<Project[]> {
     return (this.published$ ??= from(
       this.supabase.client
@@ -89,7 +86,7 @@ export class ProjectsService {
       map(({ data, error }) => {
         if (error) {
           console.error('Failed to load projects from Supabase', error);
-          this.published$ = null; // retry on the next read instead of caching the failure
+          this.published$ = null; // reintenta en la siguiente lectura en vez de guardar el fallo en caché
           return [];
         }
         return ((data ?? []) as ProjectRow[]).map((row) => this.toProject(row));
@@ -103,8 +100,8 @@ export class ProjectsService {
   }
 
   /**
-   * Private draft link (/proyectos/<slug>?preview=<token>, migration 0014): returns the project even
-   * while unpublished, only when the token matches. Null if it does not (or the function is missing).
+   * Enlace privado de borrador (/proyectos/<slug>?preview=<token>, migración 0014): devuelve el proyecto
+   * aunque no esté publicado, solo si el token coincide. Null si no (o si falta la función).
    */
   getPreview(slug: string, token: string): Observable<Project | null> {
     return from(this.supabase.client.rpc('project_preview', { p_slug: slug, p_token: token })).pipe(
@@ -119,14 +116,14 @@ export class ProjectsService {
     );
   }
 
-  /** Admin: the secret token of a project's private link (migration 0014); null before the migration. */
+  /** Admin: el token secreto del enlace privado de un proyecto (migración 0014); null antes de la migración. */
   getPreviewToken(id: string): Observable<string | null> {
     return from(this.supabase.client.from('projects').select('preview_token').eq('id', id).maybeSingle()).pipe(
       map(({ data, error }) => (error || !data ? null : String((data as { preview_token?: string }).preview_token ?? '') || null)),
     );
   }
 
-  /** Admin: a new token, so links shared before stop working. */
+  /** Admin: un token nuevo, para que los enlaces compartidos antes dejen de funcionar. */
   regeneratePreviewToken(id: string): Observable<string | null> {
     const token = crypto.randomUUID();
     return from(this.supabase.client.from('projects').update({ preview_token: token }).eq('id', id)).pipe(
@@ -134,7 +131,7 @@ export class ProjectsService {
     );
   }
 
-  /** Admin listing: every row (published or not), ordered by `sort_order`. */
+  /** Listado del admin: todas las filas (publicadas o no), por `sort_order`. */
   getAll(): Observable<AdminProject[]> {
     return from(this.supabase.client.from('projects').select('*').order('sort_order')).pipe(
       map(({ data, error }) => {
@@ -206,8 +203,7 @@ export class ProjectsService {
   }
 
   /**
-   * Persists a new ordering after a drag&drop reorder: writes `sort_order`
-   * (0-based, by array position) for every id in `orderedIds`.
+   * Guarda el orden tras arrastrar: escribe `sort_order` (desde 0, según la posición) para cada id de `orderedIds`.
    */
   reorder(orderedIds: string[]): Observable<void> {
     const updates = orderedIds.map((id, index) =>
@@ -261,7 +257,7 @@ export class ProjectsService {
     };
   }
 
-  /** Maps a camelCase admin payload (full or partial) to a snake_case row patch. */
+  /** Pasa un payload del admin en camelCase (completo o parcial) a un parche de fila en snake_case. */
   private toRow(input: Partial<ProjectInput>): Record<string, unknown> {
     const row: Record<string, unknown> = {};
     if (input.name !== undefined) row['name'] = input.name;
@@ -287,7 +283,7 @@ export class ProjectsService {
     if (input.demoVideoUrl !== undefined) row['demo_video_url'] = input.demoVideoUrl || null;
     if (input.caseStudyEs !== undefined) row['case_study_es'] = input.caseStudyEs;
     if (input.caseStudyEn !== undefined) row['case_study_en'] = input.caseStudyEn;
-    // The detail columns are written together (the form sends all of them); a lone featured toggle also works.
+    // Las columnas de detalle se escriben juntas (el formulario las manda todas); también sirve un cambio suelto de destacado.
     if (DETAIL_KEYS.every((key) => input[key] !== undefined)) Object.assign(row, detailsToRow(input as ProjectDetails));
     else if (input.featured !== undefined) row['featured'] = input.featured;
     return row;

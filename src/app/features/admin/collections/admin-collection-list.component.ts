@@ -7,7 +7,7 @@ import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { COLLECTIONS, CollectionConfig } from './collection.config';
 import { AdminPageHeaderComponent } from '../shared/admin-page-header.component';
 
-/** One list screen for every simple collection (Servicios, Roadmap, Ticker), picked by `data.collection`. */
+/** Una sola pantalla de lista para todas las colecciones simples (Servicios, Roadmap, Ticker...), según `data.collection`. */
 @Component({
   selector: 'app-admin-collection-list',
   standalone: true,

@@ -1,6 +1,5 @@
 /**
- * Mirrors the Supabase `experience` table (AGENTS.md §6), mapped from
- * snake_case to camelCase by `ExperienceService`.
+ * Refleja la tabla `experience` de Supabase (AGENTS.md §6); `ExperienceService` la pasa de snake_case a camelCase.
  */
 export interface Experience {
   id: string;

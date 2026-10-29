@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 
-/** Chrome's built-in Translator API (Chrome 138+): on-device, free, no key, texts never leave the computer. */
+/** La Translator API integrada en Chrome (Chrome 138+): en el propio equipo, gratis, sin clave; los textos nunca salen del ordenador. */
 interface BuiltInTranslator {
   translate(text: string): Promise<string>;
 }
@@ -16,29 +16,29 @@ interface TranslatorStatic {
 
 export type TranslatorState = 'unsupported' | 'unavailable' | 'downloadable' | 'downloading' | 'ready' | 'working';
 
-/** The first use downloads Chrome's language model; past this, give up with a clear message. */
+/** El primer uso descarga el modelo de idioma de Chrome; pasado este tiempo se abandona con un mensaje claro. */
 const PREPARE_TIMEOUT_MS = 3 * 60_000;
 
-/** A Spanish control and its English sibling (`summaryEs` / `summaryEn`). */
+/** Un control en español y su hermano en inglés (`summaryEs` / `summaryEn`). */
 export interface TranslationPair {
   es: AbstractControl<string>;
   en: AbstractControl<string>;
 }
 
 /**
- * Spanish to English for the admin forms. Fills English only when it is empty, or when it still holds
- * an automatic translation nobody edited: whatever was written or corrected by hand is never replaced.
+ * Español a inglés para los formularios del admin. Solo rellena el inglés si está vacío o si aún tiene una
+ * traducción automática que nadie editó: lo escrito o corregido a mano nunca se reemplaza.
  */
 @Injectable({ providedIn: 'root' })
 export class TranslatorService {
   private readonly api = (globalThis as { Translator?: TranslatorStatic }).Translator;
   private translator: Promise<BuiltInTranslator> | null = null;
-  /** English controls filled automatically, with the text that was put there. */
+  /** Controles en inglés rellenados automáticamente, con el texto que se puso. */
   private readonly auto = new WeakMap<AbstractControl, string>();
-  /** Bumped when the automatic set changes, for badges and counters. */
+  /** Se incrementa cuando cambia el conjunto automático, para marcas y contadores. */
   readonly version = signal(0);
   readonly state = signal<TranslatorState>(this.api ? 'downloadable' : 'unsupported');
-  /** Download of the language model, 0-100 (first use only). */
+  /** Descarga del modelo de idioma, 0-100 (solo el primer uso). */
   readonly progress = signal(0);
 
   constructor() {
@@ -52,7 +52,7 @@ export class TranslatorService {
     return !!this.api && this.state() !== 'unavailable';
   }
 
-  /** Paragraph by paragraph, so blank lines (and the markup inside each paragraph) are kept. */
+  /** Párrafo a párrafo, para conservar las líneas en blanco (y el marcado dentro de cada párrafo). */
   async translate(text: string): Promise<string> {
     if (!this.api || !text.trim()) return '';
     this.translator ??= this.prepare();
@@ -62,7 +62,7 @@ export class TranslatorService {
     return out.join('');
   }
 
-  /** Creates the translator (downloading the model the first time), with progress and a time limit. */
+  /** Crea el traductor (descargando el modelo la primera vez), con progreso y un límite de tiempo. */
   private prepare(): Promise<BuiltInTranslator> {
     const api = this.api!;
     if (this.state() !== 'ready') this.state.set('downloading');
@@ -86,18 +86,18 @@ export class TranslatorService {
     );
   }
 
-  /** True while the English control still holds the automatic translation (not edited by hand). */
+  /** True mientras el control en inglés conserva la traducción automática (sin editar a mano). */
   isAuto(control: AbstractControl | null | undefined): boolean {
     this.version();
     return !!control && this.auto.has(control) && this.auto.get(control) === control.value;
   }
 
-  /** English is free to (re)fill: empty, or untouched automatic text. */
+  /** El inglés se puede (re)llenar: vacío o con texto automático sin tocar. */
   canFill(en: AbstractControl): boolean {
     return !String(en.value ?? '').trim() || this.isAuto(en);
   }
 
-  /** Translates one pair if the English side is free; returns whether it wrote something. */
+  /** Traduce un par si el lado en inglés está libre; devuelve si escribió algo. */
   async fill(pair: TranslationPair): Promise<boolean> {
     const source = String(pair.es.value ?? '');
     if (!source.trim() || !this.canFill(pair.en)) return false;
@@ -110,7 +110,7 @@ export class TranslatorService {
     return true;
   }
 
-  /** Translates every free pair; returns how many were filled. */
+  /** Traduce todos los pares libres; devuelve cuántos rellenó. */
   async fillAll(pairs: TranslationPair[]): Promise<number> {
     let filled = 0;
     for (const pair of pairs) {
@@ -122,7 +122,7 @@ export class TranslatorService {
   }
 }
 
-/** Every `xxxEs` / `xxxEn` sibling pair under a form (groups and arrays included). */
+/** Todos los pares hermanos `xxxEs` / `xxxEn` de un formulario (incluidos grupos y arrays). */
 export function translationPairs(root: AbstractControl): TranslationPair[] {
   const pairs: TranslationPair[] = [];
   const walk = (control: AbstractControl) => {
@@ -142,7 +142,7 @@ export function translationPairs(root: AbstractControl): TranslationPair[] {
   return pairs;
 }
 
-/** Whether `target` is `control` or lives inside it. */
+/** Si `target` es `control` o vive dentro de él. */
 export function containsControl(control: AbstractControl, target: AbstractControl): boolean {
   if (control === target) return true;
   if (control instanceof FormGroup) return Object.values(control.controls).some((child) => containsControl(child, target));

@@ -4,7 +4,7 @@
 .desk { left: 2%; top: 4%; width: 74%; }
 .phone { right: 4%; top: 14%; width: 21%; }
 
-/* Mobile version only: the phone alone, centered. */
+/* Solo versión móvil: el teléfono solo, centrado. */
 .stage.solo { display: grid; place-items: center; aspect-ratio: auto; padding-block: 8px; }
 .stage.solo .phone { position: relative; inset: auto; width: min(280px, 62vw); }
 
@@ -19,7 +19,7 @@
 .body { padding: 7px; border: 1px solid var(--line); border-radius: 26px; background: var(--graphite); }
 .body img, .body video { display: block; width: 100%; aspect-ratio: 9 / 19; object-fit: cover; object-position: top; border-radius: 19px; background: var(--ink); }
 
-/* The other captures, as a row of smaller phones (slides sideways on narrow screens). */
+/* El resto de capturas, en una fila de teléfonos más pequeños (se desliza de lado en pantallas estrechas). */
 .row { display: flex; justify-content: safe center; gap: 16px; margin-top: 28px; overflow-x: auto; scrollbar-width: thin; padding-bottom: 6px; }
 .body.small { flex: none; width: 150px; padding: 5px; border-radius: 20px; }
 .body.small img { border-radius: 15px; }

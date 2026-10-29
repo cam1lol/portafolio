@@ -6,18 +6,18 @@ interface Meteor {
   vx: number;
   vy: number;
   length: number;
-  life: number; // 0..1, fades in and out
-  speed: number; // life consumed per ms
+  life: number; // 0..1, aparece y se desvanece
+  speed: number; // vida consumida por ms
   ember: boolean;
 }
 
-/** Fall direction: steep diagonal, top-right to bottom-left (degrees from the x axis). */
+/** Dirección de caída: diagonal pronunciada, de arriba a la derecha hacia abajo a la izquierda (grados desde el eje x). */
 const ANGLE = (115 * Math.PI) / 180;
 
 /**
- * Sparse "data rain": thin diagonal meteors with a fading tail, between the rings and the content.
- * Cheap on purpose: the canvas only animates while a meteor is on screen, a few at a time (at most
- * two on phones), paused in background tabs, and absent with reduced motion.
+ * "Lluvia de datos" escasa: meteoros finos en diagonal con estela, entre los anillos y el contenido.
+ * Barata a propósito: el canvas solo anima mientras hay un meteoro en pantalla, pocos a la vez (dos
+ * como mucho en móvil), en pausa en pestañas de fondo y ausente con movimiento reducido.
  */
 @Component({
   selector: 'app-star-rain',
@@ -40,7 +40,7 @@ export class StarRainComponent implements AfterViewInit {
   private last = 0;
 
   ngAfterViewInit(): void {
-    // No rain with reduced motion or on modest hardware (fx-lite, see main.ts).
+    // Sin lluvia con movimiento reducido ni en equipos modestos (fx-lite, ver main.ts).
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('fx-lite')) return;
     const canvas = this.canvas().nativeElement;
     const ctx = canvas.getContext('2d');
@@ -48,7 +48,7 @@ export class StarRainComponent implements AfterViewInit {
 
     this.zone.runOutsideAngular(() => {
       const resize = () => {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = Math.round(window.innerWidth * dpr);
         canvas.height = Math.round(window.innerHeight * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -61,9 +61,9 @@ export class StarRainComponent implements AfterViewInit {
         const low = document.documentElement.dataset['sceneRain'] === 'low';
         const wait = (1600 + Math.random() * 2800) * (low ? 2 : 1);
         this.spawnTimer = setTimeout(() => {
-          // Not during a page transition: the browser is busy enough animating the snapshots.
+          // No durante una transición de página: el navegador ya está ocupado animando las capturas.
           const transitioning = /vt-(forward|back|modal)/.test(document.documentElement.className);
-          // Light mode may switch on later (measured frame rate, see main.ts): then it stops raining.
+          // El modo ligero puede activarse después (según los fps medidos, ver main.ts): entonces deja de llover.
           const lite = document.documentElement.classList.contains('fx-lite');
           const off = document.documentElement.dataset['sceneRain'] === 'off';
           if (!document.hidden && !transitioning && !lite && !off) {
@@ -85,9 +85,9 @@ export class StarRainComponent implements AfterViewInit {
   }
 
   private newMeteor(delayPx: number): Meteor {
-    const speed = 0.55 + Math.random() * 0.6; // px per ms
+    const speed = 0.55 + Math.random() * 0.6; // px por ms
     return {
-      // Start above the top edge, anywhere across (biased right, since they travel left).
+      // Empieza por encima del borde superior, en cualquier punto (más a la derecha, porque viajan a la izquierda).
       x: window.innerWidth * (0.15 + Math.random() * 1.0) + delayPx,
       y: -40 - Math.random() * window.innerHeight * 0.3,
       vx: Math.cos(ANGLE) * speed,
@@ -99,7 +99,7 @@ export class StarRainComponent implements AfterViewInit {
     };
   }
 
-  /** Runs the loop only while there is something to draw. */
+  /** El bucle solo corre mientras hay algo que dibujar. */
   private start(ctx: CanvasRenderingContext2D): void {
     if (this.frame) return;
     this.last = performance.now();
@@ -125,7 +125,7 @@ export class StarRainComponent implements AfterViewInit {
   }
 
   private draw(ctx: CanvasRenderingContext2D, m: Meteor): void {
-    // Fade in quickly, hold, fade out.
+    // Aparece rápido, se mantiene y se desvanece.
     const alpha = m.life < 0.15 ? m.life / 0.15 : m.life > 0.7 ? (1 - m.life) / 0.3 : 1;
     const tailX = m.x - Math.cos(ANGLE) * m.length;
     const tailY = m.y - Math.sin(ANGLE) * m.length;
@@ -139,7 +139,7 @@ export class StarRainComponent implements AfterViewInit {
     ctx.moveTo(m.x, m.y);
     ctx.lineTo(tailX, tailY);
     ctx.stroke();
-    // Bright head.
+    // Cabeza brillante.
     ctx.fillStyle = `rgba(${head}, ${alpha})`;
     ctx.fillRect(m.x - 1, m.y - 1, 2, 2);
   }

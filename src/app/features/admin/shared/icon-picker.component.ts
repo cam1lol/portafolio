@@ -3,9 +3,9 @@ import { IconComponent } from '../../../shared/icons/icon.component';
 import { PROJECT_ICONS } from '../../../shared/icons/icon-catalog';
 
 /**
- * Visual icon choice for a project: every icon of the catalog with its live animation, as a
- * radio group (arrow keys move, Space/Enter picks). A value outside the catalog (older projects)
- * is kept and shown as an extra "current" option, so nothing is lost.
+ * Elección visual del icono de un proyecto: todos los iconos del catálogo con su animación, como grupo
+ * de radio (las flechas mueven, Espacio/Enter elige). Un valor fuera del catálogo (proyectos antiguos)
+ * se conserva y se muestra como opción extra "actual", así no se pierde nada.
  */
 @Component({
   selector: 'app-icon-picker',
@@ -39,20 +39,20 @@ import { PROJECT_ICONS } from '../../../shared/icons/icon-catalog';
 })
 export class IconPickerComponent {
   readonly value = input('');
-  /** Id of the visible label, for the radio group's accessible name. */
+  /** Id de la etiqueta visible, para el nombre accesible del grupo de radio. */
   readonly labelledBy = input<string | null>(null);
   readonly valueChange = output<string>();
 
   protected readonly current = linkedSignal(() => this.value());
 
-  /** The catalog, plus the saved value when it is not in it. */
+  /** El catálogo, más el valor guardado si no está en él. */
   protected readonly options = computed(() => {
     const value = this.current();
     const known = PROJECT_ICONS.some((icon) => icon.name === value);
     return value && !known ? [...PROJECT_ICONS, { name: value, label: `Actual: ${value}` }] : PROJECT_ICONS;
   });
 
-  /** Roving tabindex: the selected option, or the first one. */
+  /** Tabindex itinerante: la opción elegida, o la primera. */
   protected readonly focusName = computed(() => this.current() || this.options()[0]?.name);
 
   protected pick(name: string): void {
@@ -60,7 +60,7 @@ export class IconPickerComponent {
     this.valueChange.emit(name);
   }
 
-  /** Arrow keys move between options and select, like native radio buttons. */
+  /** Las flechas se mueven entre opciones y eligen, como los radio buttons nativos. */
   protected onKey(event: KeyboardEvent): void {
     const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
     if (!step) return;

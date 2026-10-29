@@ -13,9 +13,9 @@ import { CvButtonComponent } from '../../shared/cv-button/cv-button.component';
 import { IconComponent } from '../../shared/icons/icon.component';
 
 /**
- * Recruiter mode (/reclutador, also /?modo=reclutador and Ctrl+K): the essentials on one screen,
- * built only from content that already exists (site texts, availability, CV, projects, experience,
- * ticker). Prints cleanly as a one-pager.
+ * Modo reclutador (/reclutador, también /?modo=reclutador y Ctrl+K): lo esencial en una pantalla, hecho
+ * solo con contenido que ya existe (textos del sitio, disponibilidad, CV, proyectos, experiencia,
+ * ticker). Se imprime limpio en una página.
  */
 @Component({
   selector: 'app-recruiter',

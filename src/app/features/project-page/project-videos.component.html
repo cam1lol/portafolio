@@ -9,7 +9,7 @@
           <video [src]="item.video + '#t=0.1'" preload="metadata" muted playsinline tabindex="-1" aria-hidden="true"></video>
         }
         @if (previewing() === i) {
-          <!-- The light hover clip when the upload generated one; otherwise the video itself. -->
+          <!-- El clip ligero de hover si la subida lo generó; si no, el propio video. -->
           <video class="vpreview" [src]="item.preview || item.video" [muted]="true" loop playsinline preload="auto" tabindex="-1" aria-hidden="true" (loadeddata)="playPreview($event)"></video>
         }
         <span class="vplay" aria-hidden="true">
@@ -28,7 +28,7 @@
 
 <dialog #player class="vplayer" (close)="onClosed()" (keydown)="onKey($event)" (click)="$event.target === player && close()"
   [attr.aria-label]="active() ? loc(active()!.titleEs, active()!.titleEn) : ('pp_videos' | transloco)">
-  <!-- The player only exists while open: nothing downloads before, and closing stops the download. -->
+  <!-- El reproductor solo existe mientras está abierto: antes no se descarga nada, y al cerrar se corta la descarga. -->
   @if (isOpen() && active(); as v) {
     <div class="vp-frame">
       <header class="vp-head">
@@ -38,7 +38,7 @@
       </header>
 
       <div class="vp-stage">
-        <!-- A fresh element per video, so switching always starts from 0 and fires its own events. -->
+        <!-- Un elemento nuevo por video, para que al cambiar siempre empiece de 0 y dispare sus propios eventos. -->
         @for (key of [current()]; track key) {
           <video #playerVideo [src]="v.video" [attr.poster]="v.poster || null" controls playsinline preload="auto"
             (loadeddata)="onPlayerReady($event)" (waiting)="buffering.set(true)" (playing)="buffering.set(false)" (error)="buffering.set(false)"></video>

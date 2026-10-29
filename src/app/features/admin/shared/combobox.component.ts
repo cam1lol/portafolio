@@ -2,9 +2,9 @@ import { Component, ElementRef, computed, forwardRef, input, signal, viewChild }
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
- * Text field with a visible list of suggestions (what you already used elsewhere): it opens when
- * the field gets the focus, filters while typing, and is driven with the arrows, Enter and Escape.
- * Anything new can still be typed. Works with formControlName like a plain input.
+ * Campo de texto con una lista visible de sugerencias (lo que ya usaste en otros sitios): se abre al
+ * enfocar el campo, filtra mientras escribes y se maneja con las flechas, Enter y Escape. Se puede
+ * escribir cualquier cosa nueva. Funciona con formControlName como un input normal.
  */
 @Component({
   selector: 'app-combobox',
@@ -62,7 +62,7 @@ export class ComboboxComponent implements ControlValueAccessor {
   protected readonly active = signal(-1);
   private readonly field = viewChild.required<ElementRef<HTMLInputElement>>('field');
 
-  /** Options that contain what is typed (all of them while empty), without the exact current value. */
+  /** Opciones que contienen lo escrito (todas si está vacío), sin el valor exacto actual. */
   protected readonly visible = computed(() => {
     const query = this.value().trim().toLowerCase();
     return this.options()

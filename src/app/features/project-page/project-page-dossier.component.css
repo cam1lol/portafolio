@@ -1,8 +1,8 @@
-/* Dossier touches on the project page: giant file number, stamps, kinetic title, name band,
-   classification seal and the next-project band. Motion is transform-only and driven by the
-   shared ScrollFrameService (project-page.component.ts, driveHero). */
+/* Toques de expediente en la página del proyecto: número gigante, sellos, título cinético, banda con el
+   nombre, sello de clasificación y la banda del siguiente proyecto. El movimiento es solo transform y lo
+   lleva el ScrollFrameService compartido (project-page.component.ts, driveHero). */
 
-/* ---- Giant outline number behind the hero text */
+/* ---- Número gigante en contorno detrás del texto del hero */
 .hero { position: relative; }
 .hero-text, .hero .frame { position: relative; z-index: 1; }
 .big-no {
@@ -11,17 +11,17 @@
   will-change: transform;
 }
 
-/* ---- Stamps and coordinates */
+/* ---- Sellos y coordenadas */
 .stamps { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .stamp { padding: 4px 10px; border: 1px solid var(--ember); color: var(--ember); font-size: 10px; letter-spacing: .14em; transform: rotate(-2deg); }
 .stamp.ghost { border-color: var(--line); color: var(--steel); transform: none; }
 .coords { margin: 22px 0 0; color: var(--steel); font-size: 10px; letter-spacing: .12em; }
 
-/* ---- Kinetic title: one block per line, the last one in outline */
+/* ---- Título cinético: un bloque por línea, el último en contorno */
 .tl-line { display: block; will-change: transform; }
 .tl-line.outline { color: transparent; -webkit-text-stroke: 1.5px var(--bone); }
 
-/* ---- Band with the name */
+/* ---- Banda con el nombre */
 .band { margin-top: 48px; overflow: hidden; padding-block: 16px; border-block: 1px solid var(--line); }
 .band-track {
   display: flex; gap: 40px; width: max-content; color: transparent; white-space: nowrap; will-change: transform;
@@ -30,7 +30,7 @@
 .band-track b { color: var(--ember); -webkit-text-stroke: 0; }
 .band + .facts-box .facts { margin-top: 0; border-top: 0; }
 
-/* ---- Classification seal on the fact strip */
+/* ---- Sello de clasificación en la franja de datos */
 .facts-box { position: relative; }
 .seal {
   position: absolute; right: max(16px, 2vw); bottom: -34px; display: grid; place-content: center; gap: 4px; width: 96px; height: 96px;
@@ -41,7 +41,7 @@
 .seal[data-status='live'] { border-color: var(--good); color: var(--good); }
 .seal[data-status='wip'] { border-color: var(--ember); color: var(--ember); }
 
-/* ---- Next project band */
+/* ---- Banda del siguiente proyecto */
 .next-band { position: relative; display: block; margin-top: 24px; overflow: hidden; border-block: 1px solid var(--line); color: var(--bone); text-decoration: none; }
 .nb-fill { position: absolute; inset: 0; background: var(--ember); transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
 .nb-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 48px; }
@@ -70,14 +70,14 @@
 @media (prefers-reduced-motion: reduce) {
   .nb-fill, .nb-label, .nb-name, .nb-arrow { transition: none; }
 }
-/* Admin panels: no dossier decoration competing with the form. */
+/* Paneles del admin: sin decoración de expediente que compita con el formulario. */
 .in-preview .big-no, .in-preview .band { display: none; }
 
-/* ---- Story as a pinned screen (wide screens); the timeline stays on narrow ones */
+/* ---- Historia como pantalla fija (pantallas anchas); en las estrechas queda la línea de tiempo */
 @media (max-width: 860px) { .story-wide { display: none; } }
 @media (min-width: 861px) { .timeline.story-narrow { display: none; } }
 
-/* ---- Result rings: two clipped half arcs rotate into place (compositor-only) */
+/* ---- Anillos de resultados: dos medios arcos recortados giran hasta su sitio (solo compositor) */
 .ring { position: relative; display: grid; place-items: center; width: 112px; height: 112px; margin-bottom: 6px; border-radius: 50%; box-shadow: inset 0 0 0 6px var(--line); }
 .ring strong { font-size: 26px; }
 .ring-half { position: absolute; inset: 0; }

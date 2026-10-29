@@ -22,7 +22,7 @@ interface RoadmapCard {
 export class RoadmapComponent {
   private readonly transloco = inject(TranslocoService);
 
-  /** `null` = not loaded or table missing: the template keeps the built-in i18n cards. */
+  /** `null` = sin cargar o tabla ausente: la plantilla usa las tarjetas de serie del i18n. */
   private readonly rows = toSignal(inject(CollectionsService).getPublished('roadmap_items'), { initialValue: null });
 
   protected readonly cards = computed<RoadmapCard[] | null>(() => {

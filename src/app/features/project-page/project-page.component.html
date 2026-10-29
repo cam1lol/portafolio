@@ -1,9 +1,9 @@
-<!-- Touch: swipe from the left edge to go back (to the previous screen, or /proyectos). -->
+<!-- Táctil: deslizar desde el borde izquierdo para volver (a la pantalla anterior o a /proyectos). -->
 <main class="project-page" [class.in-preview]="!!previewProject()" [class.focus-mode]="!!focusSection()" appSwipeBack="/proyectos" [swipeBackLabel]="'pp_all' | transloco">
-  <!-- End point of the card growing to full screen; only visible during the transition (styles.css). -->
+  <!-- Punto final de la tarjeta que crece a pantalla completa; solo se ve durante la transición (styles.css). -->
   <div class="vt-frame" [style.view-transition-name]="'project-card'" aria-hidden="true"></div>
 
-  <!-- Section heading shared by every block: index, title that decodes when it scrolls in, rule. -->
+  <!-- Titular de sección común a todos los bloques: índice, título que se descifra al aparecer y regla. -->
   <ng-template #sectionHead let-id="id" let-label="label" let-count="count">
     <header class="sh">
       <span class="sh-idx mono">{{ num(id) }}</span>
@@ -15,10 +15,10 @@
 
   @if (loaded()) {
     @if (project(); as p) {
-      <!-- ---- Hero: the text on one side, the media framed as a HUD screen on the other. -->
+      <!-- ---- Hero: el texto a un lado y los medios enmarcados como pantalla HUD al otro. -->
       @if (!focusSection()) {
       <section class="hero wrap">
-        <!-- Position of the project in the list, as a giant outline number behind the text. -->
+        <!-- Posición del proyecto en la lista, como número gigante en contorno detrás del texto. -->
         @if (fileNo(); as no) { <span class="big-no" #bigNo aria-hidden="true">{{ no }}</span> }
         <div class="hero-text">
           @if (isDraft()) { <p class="draft-banner mono" role="status">{{ 'pp_draft' | transloco }}</p> }
@@ -33,7 +33,7 @@
             </div>
           }
           <span class="eyebrow mono">{{ p.typeLabel }} · <span class="status" [attr.data-status]="p.status">{{ 'pp_status_' + p.status | transloco }}</span></span>
-          <!-- Kinetic title: the lines drift apart while the hero scrolls away. -->
+          <!-- Título cinético: las líneas se separan mientras el hero sale de pantalla. -->
           <h1 #title [style.view-transition-name]="'project-title'" [attr.aria-label]="p.name">
             @for (line of titleLines(p); track $index; let last = $last) {
               <span class="tl-line" [class.outline]="last && !$first" aria-hidden="true" [appScramble]="line"></span>
@@ -71,8 +71,8 @@
       </section>
       }
 
-      <!-- ---- Fact sheet as a HUD data strip. -->
-      <!-- ---- Band with the name, sliding sideways with the scroll. -->
+      <!-- ---- Ficha como franja de datos HUD. -->
+      <!-- ---- Banda con el nombre, que se desliza de lado con el scroll. -->
       @if (!focusSection()) {
         <div class="band" #band aria-hidden="true">
           <div class="band-track" #bandTrack>
@@ -94,7 +94,7 @@
               </div>
             }
           </dl>
-          <!-- Classification seal: file number and the real status of the project. -->
+          <!-- Sello de clasificación: número de expediente y estado real del proyecto. -->
           <div class="seal mono" [attr.data-status]="p.status" aria-hidden="true">
             @if (fileNo(); as no) { <span>{{ 'pp_file_short' | transloco }} {{ no }}</span> }
             <strong>{{ 'pp_status_' + p.status | transloco }}</strong>
@@ -103,7 +103,7 @@
       }
 
       <div class="body wrap">
-        <!-- Section index: where you are, and a jump to each part. -->
+        <!-- Índice de secciones: dónde estás y un salto a cada parte. -->
         @if (sections().length > 1 && !focusSection()) {
           <nav class="toc" [attr.aria-label]="'pp_toc' | transloco">
             <span class="toc-title mono">{{ 'pp_toc' | transloco }}</span>
@@ -149,7 +149,7 @@
                 @for (result of p.results; track $index; let i = $index) {
                   <div class="result reveal" appReveal [style.transition-delay.ms]="i * 90">
                     @if (p.resultsStyle === 'rings' && ringAngle(result.value) !== null) {
-                      <!-- Ring that fills to the value: two half arcs rotating (transform only). -->
+                      <!-- Anillo que se llena hasta el valor: dos medios arcos que giran (solo transform). -->
                       <span class="ring" [style.--r1]="halfTurn(result.value, 0) + 'deg'" [style.--r2]="halfTurn(result.value, 1) + 'deg'">
                         <span class="ring-half right" aria-hidden="true"><i></i></span>
                         <span class="ring-half left" aria-hidden="true"><i></i></span>
@@ -364,7 +364,7 @@
         </div>
       </div>
 
-      <!-- ---- Next project as a full-width band that fills with the accent on hover. -->
+      <!-- ---- Siguiente proyecto como banda a todo el ancho que se llena con el acento al pasar el ratón. -->
       @if (!focusSection() && next(); as nxt) {
         <a class="next-band" [routerLink]="['/proyectos', nxt.slug]">
           <span class="nb-fill" aria-hidden="true"></span>

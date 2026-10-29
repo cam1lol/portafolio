@@ -1,0 +1,39 @@
+<section class="nf wrap">
+  <span class="big mono" aria-hidden="true">404</span>
+
+  <div class="panel">
+    <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+
+    <div class="status mono">
+      <span class="bars" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+      {{ 'nf_eyebrow' | transloco }}
+    </div>
+
+    <h1 [attr.aria-label]="heading()" [appScramble]="heading()"></h1>
+
+    <p class="path mono">
+      <span class="k">{{ 'nf_requested' | transloco }}</span>
+      <code>{{ path }}</code><span class="caret" aria-hidden="true"></span>
+    </p>
+    <p class="lead">{{ 'nf_lead' | transloco }}</p>
+
+    @if (suggestions().length) {
+      <div class="maybe">
+        <span class="k mono">// {{ 'nf_maybe' | transloco }}</span>
+        <ul>
+          @for (s of suggestions(); track s.link) {
+            <li><a [routerLink]="s.link"><span class="mono">{{ s.link }}</span>{{ s.labelKey ? (s.labelKey | transloco) : s.label }}</a></li>
+          }
+        </ul>
+      </div>
+    }
+
+    <div class="actions">
+      <a class="btn solid" routerLink="/">{{ 'nf_home' | transloco }}</a>
+      <a class="btn" routerLink="/proyectos">{{ 'nf_projects' | transloco }}</a>
+      <button type="button" class="btn ghost" (click)="openSearch()">{{ 'nf_search' | transloco }} <kbd class="mono">CTRL K</kbd></button>
+    </div>
+
+    <p class="coords mono">LAT 4.71 · LON -74.07 · {{ 'nf_code' | transloco }}</p>
+  </div>
+</section>

@@ -1,20 +1,20 @@
 export interface SiteTextField {
-  /** `site_content.key`; same name as the i18n key when one exists. */
+  /** `site_content.key`; el mismo nombre que la clave i18n si existe. */
   key: string;
   label: string;
   bilingual: boolean;
   maxLength: number;
   multiline?: boolean;
-  /** Accepts the inline markup rendered by `InlineMarkupPipe`. */
+  /** Acepta el marcado en línea que pinta `InlineMarkupPipe`. */
   markup?: boolean;
-  /** `select` uses `options`; `pdf` uploads a file to Supabase Storage and stores its public URL. */
+  /** `select` usa `options`; `pdf` sube un archivo a Supabase Storage y guarda su URL pública. */
   kind?: 'text' | 'number' | 'email' | 'select' | 'pdf';
   options?: { value: string; label: string }[];
   placeholder?: string;
   hint?: string;
-  /** Value shown when neither Supabase nor i18n has one (keys that never lived in i18n). */
+  /** Valor que se muestra si ni Supabase ni i18n tienen uno (claves que nunca vivieron en i18n). */
   fallback?: string;
-  /** Do not prefill from i18n; show it as a reference instead (used for the pending contact email). */
+  /** No se rellena desde i18n; se muestra como referencia (se usa para el email de contacto pendiente). */
   referenceI18nKey?: string;
 }
 

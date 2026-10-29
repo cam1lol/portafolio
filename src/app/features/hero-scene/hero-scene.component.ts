@@ -7,7 +7,7 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-// Named imports (not "* as THREE") so the build can drop the parts of three.js this file does not use.
+// Imports con nombre (no "* as THREE") para que el build descarte las partes de three.js que no se usan aquí.
 import { Color, EdgesGeometry, Group, IcosahedronGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Scene, WebGLRenderer } from 'three';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
@@ -31,8 +31,8 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
   private onResize?: () => void;
 
   ngAfterViewInit(): void {
-    // The render loop and its listeners run outside Angular: a frame must not trigger change
-    // detection for the whole app (it did, 60 times a second, for as long as the page was open).
+    // El bucle de render y sus listeners corren fuera de Angular: un fotograma no debe disparar la
+    // detección de cambios de toda la app (lo hacía, 60 veces por segundo, mientras la página estaba abierta).
     this.zone.runOutsideAngular(() => this.initScene());
   }
 
@@ -64,7 +64,7 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
     const h = host.clientHeight;
 
     const renderer = new WebGLRenderer({ alpha: true, antialias: true });
-    // 1.5x is indistinguishable for thin lines and draws up to 44% fewer pixels than 2x.
+    // 1.5x no se distingue en líneas finas y dibuja hasta un 44% menos de píxeles que 2x.
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.setSize(w, h);
     host.appendChild(renderer.domElement);
@@ -88,9 +88,9 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
     let mx = 0;
     let my = 0;
     let scrollR = 0;
-    // Scroll-driven: as the hero scrolls away the object spins up, its vertices drift apart and the
-    // wireframe heats from bone to ember. All of it is per-frame math on a few objects (cheap).
-    let target = 0; // 0 at the top, 1 once the hero has scrolled away
+    // Según el scroll: al irse el hero el objeto gira más rápido, sus vértices se separan y la malla pasa
+    // del color hueso al de acento. Todo es cálculo por fotograma sobre pocos objetos (barato).
+    let target = 0; // 0 arriba, 1 cuando el hero ya salió de pantalla
     let progress = 0;
     let spin = 0;
     let lastY = window.scrollY;
@@ -113,7 +113,7 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
     };
     window.addEventListener('scroll', this.onScroll, { passive: true });
 
-    // Only draws while the object is on screen; scrolled away, the loop stops until it comes back.
+    // Solo dibuja mientras el objeto se ve; fuera de pantalla el bucle se detiene hasta que vuelve.
     let visible = true;
     const loop = () => {
       if (!visible) {
@@ -160,13 +160,13 @@ export class HeroSceneComponent implements AfterViewInit, OnDestroy {
 }
 
 /**
- * Vertical field of view that keeps the whole object in frame horizontally too: 45 degrees on wide
- * canvases, wider when the canvas is narrower than tall (e.g. the hero column at 1920px), so the
- * icosahedron (radius 1.15 plus the pointer parallax) never gets cut at the sides.
+ * Campo de visión vertical que mantiene todo el objeto en cuadro también en horizontal: 45 grados en
+ * lienzos anchos y más abierto si el lienzo es más estrecho que alto (p. ej. la columna del hero a
+ * 1920px), para que el icosaedro (radio 1.15 más el parallax del puntero) nunca se corte por los lados.
  */
 function fitFov(aspect: number): number {
-  const halfWidthNeeded = 1.45; // world units around the center
-  const distance = 3.4; // camera z
+  const halfWidthNeeded = 1.45; // unidades de mundo alrededor del centro
+  const distance = 3.4; // z de la cámara
   const fov = (2 * Math.atan(halfWidthNeeded / (distance * aspect)) * 180) / Math.PI;
   return Math.max(45, fov);
 }

@@ -1,5 +1,5 @@
 section.block {
-  padding-block: 96px; /* vertical only: .wrap keeps the side gutter */
+  padding-block: 96px; /* solo vertical: .wrap conserva el margen lateral */
   border-top: 1px solid var(--line-soft);
 }
 
@@ -151,6 +151,7 @@ section.block {
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 14px;
+  margin-bottom: 18px; /* el hueco que antes daba el pie, que ahora se empuja abajo */
 }
 
 .card .st {
@@ -211,7 +212,7 @@ section.block {
   }
 }
 
-/* Media strip: preview clip (plays on hover / when visible) or still image. */
+/* Franja de medios: clip de vista previa (suena al pasar el ratón / al verse) o imagen. */
 .card .media {
   position: relative;
   margin: -22px -22px 18px;
@@ -240,18 +241,21 @@ section.block {
   .card:hover .media video, .card:hover .media img { transform: none; }
 }
 
-/* Footer in normal flow: the hint and status never overlap the stack chips. */
+/* Pie en el flujo normal: la pista y el estado nunca se montan sobre las tecnologías. */
+/* La tarjeta es una columna para que el pie quede abajo y alineado en toda la fila,
+   aunque cada tarjeta tenga un texto o unas tecnologías de distinto largo. */
+.card { display: flex; flex-direction: column; }
 .card .card-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid var(--line-soft);
 }
 
-/* Link to the full /proyectos page under the grid. */
+/* Enlace a la página completa /proyectos bajo la cuadrícula. */
 .see-all-row { display: flex; justify-content: center; margin-top: 36px; }
 .see-all {
   display: inline-flex;
@@ -272,9 +276,9 @@ section.block {
 .see-all:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .see-all, .see-all svg { transition: none; } }
 
-/* Keyboard / TV remote focus: thick ember ring, readable from a distance; same lift as hover. */
+/* Foco con teclado o mando de TV: anillo grueso de acento, legible a distancia; misma elevación que al pasar el ratón. */
 .card:focus-visible { outline: 3px solid var(--ember); outline-offset: 4px; }
 
-/* The project icon over its banner (top-left), with its perpetual motion, like on cards without media. */
+/* El icono del proyecto sobre su banner (arriba a la izquierda), con su movimiento, como en las tarjetas sin imagen. */
 .card .media .ic-over { position: absolute; top: 10px; left: 10px; z-index: 2; margin: 0; border-color: rgba(242, 84, 27, .55); background: rgba(10, 11, 13, .88); }
 .card:hover .media .ic-over { transform: translateY(-2px) rotate(-6deg); }

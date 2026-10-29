@@ -29,7 +29,7 @@ export class MagneticDirective implements OnInit, OnDestroy {
       host.style.transform = '';
     };
 
-    // Only moves the element: no change detection per pointer event.
+    // Solo mueve el elemento: sin detección de cambios en cada evento del puntero.
     this.zone.runOutsideAngular(() => {
       host.addEventListener('pointermove', this.onPointerMove!, { passive: true });
       host.addEventListener('pointerleave', this.onPointerLeave!);

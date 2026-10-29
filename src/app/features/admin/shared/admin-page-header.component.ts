@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { IconComponent } from '../../../shared/icons/icon.component';
 
-/** Header shared by every admin screen: icon tile, title, one-line description, optional count and actions. */
+/** Cabecera común a todas las pantallas del admin: icono, título, descripción en una línea, contador opcional y acciones. */
 @Component({
   selector: 'app-admin-page-header',
   standalone: true,

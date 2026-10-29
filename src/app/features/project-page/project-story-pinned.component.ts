@@ -10,10 +10,10 @@ export interface PinnedStep {
 }
 
 /**
- * Story as scrollytelling (A6): a framed screen stays pinned while the problem / process / result
- * steps scroll by; the screen shows the image of the step in the middle of the viewport. One
- * IntersectionObserver, opacity crossfades only. Wide screens only; the page keeps the timeline on
- * narrow ones.
+ * Historia contada con scroll (A6): una pantalla enmarcada queda fija mientras pasan los pasos problema /
+ * proceso / resultado, y muestra la imagen del paso que está en el centro de la pantalla. Un solo
+ * IntersectionObserver y solo fundidos de opacidad. Solo en pantallas anchas; en las estrechas la página
+ * mantiene la línea de tiempo.
  */
 @Component({
   selector: 'app-project-story-pinned',
@@ -50,7 +50,7 @@ export interface PinnedStep {
 })
 export class ProjectStoryPinnedComponent {
   readonly steps = input.required<PinnedStep[]>();
-  /** One image per step when there are enough; they repeat otherwise. */
+  /** Una imagen por paso si hay suficientes; si no, se repiten. */
   readonly images = input<string[]>([]);
   readonly icon = input('');
   readonly name = input('');

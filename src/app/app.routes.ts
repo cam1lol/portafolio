@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: PublicShellComponent,
-    // Shareable shortcut: /?modo=reclutador (or ?mode=recruiter) opens recruiter mode.
+    // Atajo para compartir: /?modo=reclutador (o ?mode=recruiter) abre el modo reclutador.
     canActivate: [
       (route: ActivatedRouteSnapshot) => {
         const mode = route.queryParamMap.get('modo') ?? route.queryParamMap.get('mode');
@@ -27,7 +27,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/recruiter/recruiter.component').then((m) => m.RecruiterComponent),
   },
   {
+    path: 'politicas',
+    loadComponent: () => import('./features/policies/policies.component').then((m) => m.PoliciesComponent),
+  },
+  { path: 'policies', redirectTo: 'politicas' },
+  {
     path: 'admin',
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
   },
 ];
