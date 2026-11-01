@@ -1,0 +1,65 @@
+<section class="composer" aria-labelledby="composer-title">
+  <div class="composer-head">
+    <div>
+      <h3 id="composer-title" class="mono">PREPARAR RESPUESTA</h3>
+      <p class="hint">Rellena lo que quieras incluir (lo vacío no aparece), revisa la vista previa y copia. Gmail se abre con el destinatario y el asunto: pega con Ctrl + V y envía.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Idioma de la respuesta">
+      <button type="button" [class.on]="lang() === 'es'" [attr.aria-pressed]="lang() === 'es'" (click)="lang.set('es')">ES</button>
+      <button type="button" [class.on]="lang() === 'en'" [attr.aria-pressed]="lang() === 'en'" (click)="lang.set('en')">EN</button>
+    </div>
+  </div>
+
+  <div class="composer-grid">
+    <div>
+      @switch (thread().topic) {
+        @case ('project') {
+          <div class="field">
+            <label for="reply-summary">Lo que entendí</label>
+            <textarea id="reply-summary" rows="3" [value]="fields().summary" (input)="set('summary', $any($event.target).value)"></textarea>
+          </div>
+          <div class="field">
+            <label for="reply-scope">Alcance</label>
+            <textarea id="reply-scope" rows="3" [value]="fields().scope" (input)="set('scope', $any($event.target).value)"></textarea>
+          </div>
+          <div class="field">
+            <label for="reply-deliverables">Entregables</label>
+            <textarea id="reply-deliverables" rows="3" [value]="fields().deliverables" (input)="set('deliverables', $any($event.target).value)"></textarea>
+          </div>
+          <div class="field">
+            <label for="reply-timeline">Plazo estimado</label>
+            <input id="reply-timeline" type="text" [value]="fields().timeline" (input)="set('timeline', $any($event.target).value)" />
+          </div>
+          <div class="field">
+            <label for="reply-investment">Inversión</label>
+            <input id="reply-investment" type="text" [value]="fields().investment" (input)="set('investment', $any($event.target).value)" />
+          </div>
+          <p class="auto-note">Los siguientes pasos, el botón al portafolio y tu firma se añaden solos.</p>
+        }
+        @case ('job') {
+          <div class="field">
+            <label for="reply-availability">Disponibilidad</label>
+            <input id="reply-availability" type="text" [value]="fields().availability" [placeholder]="siteAvailability() || 'Inmediata, o desde una fecha'" (input)="set('availability', $any($event.target).value)" />
+          </div>
+          <p class="auto-note">Tu perfil en cifras, las preguntas para avanzar, el botón a tu perfil y CV y tu firma se añaden solos. Si dejas la disponibilidad vacía, se usa la de tu web.</p>
+        }
+        @default {
+          <div class="field">
+            <label for="reply-message">Tu respuesta</label>
+            <textarea id="reply-message" rows="6" [value]="fields().message" (input)="set('message', $any($event.target).value)"></textarea>
+          </div>
+          <p class="auto-note">El botón al portafolio y tu firma se añaden solos.</p>
+        }
+      }
+
+      <div class="composer-actions">
+        <button type="button" class="btn primary" (click)="copy(true)">COPIAR Y ABRIR GMAIL</button>
+        <button type="button" class="btn" (click)="copy(false)">SOLO COPIAR</button>
+        <a class="btn" [href]="quickUrl()" target="_blank" rel="noopener noreferrer" (click)="replied.emit()">RESPUESTA RÁPIDA EN TEXTO</a>
+      </div>
+      @if (error()) { <p class="composer-error" role="alert">{{ error() }}</p> }
+    </div>
+
+    <iframe class="composer-preview" title="Vista previa del correo" sandbox="" [srcdoc]="preview()"></iframe>
+  </div>
+</section>

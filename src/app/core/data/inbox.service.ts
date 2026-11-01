@@ -3,6 +3,7 @@ import { Observable, forkJoin, from, map, of, tap } from 'rxjs';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ContactTopic } from './contact.service';
+import { gmailComposeUrl } from './reply-email';
 
 export type InboxStatus = 'new' | 'read' | 'replied' | 'archived';
 
@@ -25,6 +26,9 @@ export interface InboxMessage {
 }
 
 export const TOPIC_LABELS: Record<ContactTopic, string> = { project: 'Proyecto', job: 'Oferta de trabajo', other: 'Otra cosa' };
+
+/** Caracteres del mensaje del visitante que se citan en la respuesta (la URL de Gmail no admite textos enormes). */
+const QUOTE_MAX = 1500;
 
 interface ThreadRow {
   id: string;
@@ -113,18 +117,18 @@ export class InboxService {
     return this.write(this.supabase.client.from('contact_threads').delete().eq('id', id)).pipe(tap(() => this.refreshUnread()));
   }
 
-  /** `mailto:` que abre el correo de Camilo con el asunto y el mensaje del visitante citado. */
-  replyMailto(thread: InboxThread, message: string): string {
-    const quoted = message
+  /**
+   * Enlace que abre la redacción de Gmail en la web (sin depender de qué programa tenga el navegador para
+   * `mailto:`) con el destinatario, el asunto y el mensaje del visitante citado. La cita se recorta para
+   * que la dirección no pase del límite de longitud de una URL.
+   */
+  replyGmailUrl(thread: InboxThread, message: string): string {
+    const text = message.length > QUOTE_MAX ? `${message.slice(0, QUOTE_MAX).trimEnd()} [...]` : message;
+    const quoted = text
       .split('\n')
       .map((line) => `> ${line}`)
       .join('\n');
-    const params = new URLSearchParams({
-      subject: `Re: ${TOPIC_LABELS[thread.topic]} · Camilo Ayala`,
-      body: `Hola ${thread.name},\n\n\n\n--\nCamilo Ayala\n\n${quoted}`,
-    });
-    // URLSearchParams codifica los espacios como "+", y los clientes de correo los muestran tal cual.
-    return `mailto:${thread.email}?${params.toString().replace(/\+/g, '%20')}`;
+    return gmailComposeUrl(thread.email, `Re: ${TOPIC_LABELS[thread.topic]} · Camilo Ayala`, `Hola ${thread.name},\n\n\n\n--\nCamilo Ayala\n\n${quoted}`);
   }
 
   /** Lo llama el layout del admin: carga el contador y lo mantiene al día. */

@@ -35,9 +35,6 @@
       }
     </ol>
 
-    <div class="reply">
-      <a class="btn primary" [href]="mailto()" (click)="onReply()">RESPONDER EN GMAIL</a>
-      <span class="hint">Abre tu correo con el asunto y el mensaje citado. La conversación queda marcada como respondida; si al final no envías nada, usa REABRIR.</span>
-    </div>
+    <app-reply-composer [thread]="current" [messages]="messages()" (replied)="onReply()" />
   }
 </section>

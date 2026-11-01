@@ -5,4 +5,6 @@ export const environment = {
   // Clave de Web3Forms (formulario "Portafolio · Contacto"). Pública por diseño: solo puede enviar correo
   // a la dirección con la que se creó.
   web3formsKey: '5f221267-f378-4402-a8bb-8938ec88da04',
+  // La pública también en desarrollo: el logo del correo tiene que cargar para quien lo recibe.
+  siteUrl: 'https://portafolio-chi-two-37.vercel.app',
 };

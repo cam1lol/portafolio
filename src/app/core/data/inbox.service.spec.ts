@@ -94,12 +94,23 @@ describe('InboxService', () => {
     expect(calls).toContain(jasmine.objectContaining({ method: 'eq', args: ['id', 't1'] }));
   });
 
-  it('replyMailto arma el asunto con el tema y cita el mensaje', () => {
+  it('replyGmailUrl abre la redacción de Gmail con destinatario, asunto del tema y mensaje citado', () => {
     const { service } = setup();
-    const href = service.replyMailto({ ...thread('read'), topic: 'job' }, 'Hola\nCamilo');
-    expect(href.startsWith('mailto:ana@mail.com?')).toBeTrue();
+    const href = service.replyGmailUrl({ ...thread('read'), topic: 'job' }, 'Hola\nCamilo');
+    expect(href.startsWith('https://mail.google.com/mail/?')).toBeTrue();
     const params = new URLSearchParams(href.split('?')[1]);
-    expect(params.get('subject')).toBe('Re: Oferta de trabajo · Camilo Ayala');
+    expect(params.get('view')).toBe('cm');
+    expect(params.get('to')).toBe('ana@mail.com');
+    expect(params.get('su')).toBe('Re: Oferta de trabajo · Camilo Ayala');
     expect(params.get('body')).toContain('> Hola\n> Camilo');
+    expect(href).not.toContain('+');
+  });
+
+  it('replyGmailUrl recorta un mensaje larguísimo para que la URL no se pase de longitud', () => {
+    const { service } = setup();
+    const href = service.replyGmailUrl(thread('read'), 'x'.repeat(5000));
+    const body = new URLSearchParams(href.split('?')[1]).get('body') ?? '';
+    expect(body.endsWith('[...]')).toBeTrue();
+    expect(body.length).toBeLessThan(1700);
   });
 });

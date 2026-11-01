@@ -1,15 +1,16 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InboxMessage, InboxService, InboxThread, TOPIC_LABELS } from '../../../core/data/inbox.service';
 import { ConfirmDialogService } from '../shared/confirm-dialog.service';
 import { ToastService } from '../shared/toast.service';
 import { STATUS_LABELS } from './admin-inbox-list.component';
+import { ReplyComposerComponent } from './reply-composer.component';
 
 @Component({
   selector: 'app-admin-inbox-thread',
   standalone: true,
-  imports: [RouterLink, DatePipe, UpperCasePipe],
+  imports: [RouterLink, DatePipe, UpperCasePipe, ReplyComposerComponent],
   templateUrl: './admin-inbox-thread.component.html',
   styleUrl: './admin-inbox-thread.component.css',
 })
@@ -26,12 +27,6 @@ export class AdminInboxThreadComponent implements OnInit {
   protected readonly messages = signal<InboxMessage[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal('');
-
-  /** Gmail se abre con el asunto y el mensaje del visitante citado. */
-  protected readonly mailto = computed(() => {
-    const thread = this.thread();
-    return thread ? this.inbox.replyMailto(thread, this.messages().map((message) => message.body).join('\n\n')) : '';
-  });
 
   private readonly id = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -52,13 +47,13 @@ export class AdminInboxThreadComponent implements OnInit {
     });
   }
 
-  /** El enlace mailto abre el correo; a la vez la conversación se marca como respondida. */
+  /** Al copiar la respuesta o abrir Gmail, la conversación se marca como respondida. Si al final no se envía, ARCHIVAR y REABRIR. */
   onReply(): void {
     const thread = this.thread();
     if (!thread || thread.status === 'replied') return;
     this.inbox.markReplied(thread.id).subscribe({
       next: () => this.thread.set({ ...thread, status: 'replied' }),
-      error: () => this.errorMessage.set('Se abrió tu correo, pero no se pudo marcar como respondida.'),
+      error: () => this.errorMessage.set('Se abrió Gmail, pero no se pudo marcar como respondida.'),
     });
   }
 
